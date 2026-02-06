@@ -121,4 +121,29 @@ export type DebugEndEvent = BaseEvent & {
   };
 };
 
+export type FileSavedEvent = BaseEvent & {
+  type: "FILE_SAVED";
+  payload: {
+    path: string;
+    languageId: string;
+    size_bytes: number;
+    audit_on: boolean;
+    diff: string | null;
+  };
+};
+
+export type IntegrityCheckEvent = BaseEvent & {
+  type: "INTEGRITY_CHECK";
+  payload: {
+    ok: boolean;
+    total: number;
+    file: string;
+    firstError?: {
+      line: number;
+      reason: string;
+      seq?: number;
+    };
+  };
+};
+
 export type AnyEvent = BaseEvent & { payload?: unknown };

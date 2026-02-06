@@ -4,6 +4,7 @@
   "description": "Autonomous VS Code operation logger (Phase 1: session + JSONL writer + autosave proof copy).",
   "version": "0.1.0",
   "publisher": "ngks-systems",
+  "icon": "assets/icon.png",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -11,7 +12,13 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished",
+    "onCommand:ngksAutologger.startSession",
+    "onCommand:ngksAutologger.stopSession", 
+    "onCommand:ngksAutologger.toggle",
+    "onCommand:ngksAutologger.openAgentBridge",
+    "onCommand:ngksAutologger.runWithAudit",
+    "onCommand:ngksAutologger.verifyIntegrity"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -35,6 +42,10 @@
       {
         "command": "ngksAutologger.runWithAudit",
         "title": "NGKs: Run with Audit"
+      },
+      {
+        "command": "ngksAutologger.verifyIntegrity",
+        "title": "NGKs: Verify Log Integrity"
       }
     ],
     "views": {
