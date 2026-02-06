@@ -53,4 +53,72 @@ export type AgentOutputEvent = BaseEvent & {
   };
 };
 
+export type AuditCmdStartEvent = BaseEvent & {
+  type: "AUDIT_CMD_START";
+  payload: {
+    cmd: string;
+    cwd: string;
+    terminal_id: string;
+    request_id: string;
+    ts_start: string;
+  };
+};
+
+export type AuditCmdOutputEvent = BaseEvent & {
+  type: "AUDIT_CMD_OUTPUT";
+  payload: {
+    request_id: string;
+    stream: "stdout" | "stderr";
+    chunk: string;
+    chunk_index: number;
+  };
+};
+
+export type AuditCmdEndEvent = BaseEvent & {
+  type: "AUDIT_CMD_END";
+  payload: {
+    request_id: string;
+    exit_code: number | null;
+    signal?: string;
+    duration_ms: number;
+  };
+};
+
+export type TaskStartEvent = BaseEvent & {
+  type: "TASK_START";
+  payload: {
+    task_name: string;
+    task_source?: string;
+    execution_id?: string;
+  };
+};
+
+export type TaskEndEvent = BaseEvent & {
+  type: "TASK_END";
+  payload: {
+    task_name: string;
+    task_source?: string;
+    execution_id?: string;
+    exit_code?: number | null;
+  };
+};
+
+export type DebugStartEvent = BaseEvent & {
+  type: "DEBUG_START";
+  payload: {
+    session_name: string;
+    type?: string;
+    workspace_folder?: string;
+  };
+};
+
+export type DebugEndEvent = BaseEvent & {
+  type: "DEBUG_END";
+  payload: {
+    session_name: string;
+    type?: string;
+    workspace_folder?: string;
+  };
+};
+
 export type AnyEvent = BaseEvent & { payload?: unknown };

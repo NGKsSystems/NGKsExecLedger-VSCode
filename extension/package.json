@@ -31,6 +31,10 @@
       {
         "command": "ngksAutologger.openAgentBridge",
         "title": "NGKs: Open Agent Bridge"
+      },
+      {
+        "command": "ngksAutologger.runWithAudit",
+        "title": "NGKs: Run with Audit"
       }
     ],
     "views": {

@@ -39,6 +39,9 @@ const vscode = __importStar(require("vscode"));
 const statusBarToggle_1 = require("./ui/statusBarToggle");
 const agentBridgePanel_1 = require("./bridge/agentBridgePanel");
 const agentBridgeCommands_1 = require("./bridge/agentBridgeCommands");
+const auditRunner_1 = require("./command/auditRunner");
+const taskWatcher_1 = require("./watchers/taskWatcher");
+const debugWatcher_1 = require("./watchers/debugWatcher");
 async function activateExtension(context, sessions) {
     const cfg = vscode.workspace.getConfiguration("ngksAutologger");
     const enabled = !!cfg.get("enabled");
@@ -50,6 +53,15 @@ async function activateExtension(context, sessions) {
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(agentBridgePanel_1.AgentBridgePanel.viewType, agentBridgeProvider));
     // Register agent bridge commands (open/focus)
     (0, agentBridgeCommands_1.registerAgentBridgeCommands)(context);
+    // Register audit commands
+    (0, auditRunner_1.registerAuditCommands)(context, sessions);
+    // Setup task and debug watchers
+    const taskWatcher = new taskWatcher_1.TaskWatcher(sessions);
+    const debugWatcher = new debugWatcher_1.DebugWatcher(sessions);
+    taskWatcher.activate();
+    debugWatcher.activate();
+    context.subscriptions.push(taskWatcher);
+    context.subscriptions.push(debugWatcher);
     // Commands (manual control)
     context.subscriptions.push(vscode.commands.registerCommand("ngksAutologger.startSession", () => {
         sessions.start(context);
