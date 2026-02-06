@@ -1,0 +1,10 @@
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts:94:      ts: nowIso(),
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts:95:      level: reason === "error_exit" ? "ERROR" : "INFO",
+> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts:96:      type: "SESSION_END",
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts:97:      session_id: session.sessionId,
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts:98:      payload: {
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\types\events.ts:23:
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\types\events.ts:24:export type SessionEndEvent = BaseEvent & {
+> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\types\events.ts:25:  type: "SESSION_END";
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\types\events.ts:26:  payload: {
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\types\events.ts:27:    reason: "normal_exit" | "error_exit" | "manual_stop";
