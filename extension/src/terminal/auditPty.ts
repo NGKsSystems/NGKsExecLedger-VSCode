@@ -4,6 +4,7 @@ import * as child_process from "child_process";
 import { v4 as uuidv4 } from "uuid";
 import { SessionManager } from "../core/sessionManager";
 import { nowIso } from "../util/time";
+import { redactText } from "../core/redactor";
 
 interface CommandExecution {
   requestId: string;
@@ -174,13 +175,24 @@ export class AuditPty implements vscode.Pseudoterminal {
     const chunkIndex = this.currentExecution.outputChunks.length;
     this.currentExecution.outputChunks.push({ stream, chunk, index: chunkIndex });
 
-    // Log AUDIT_CMD_OUTPUT event
-    this.sessions.log("AUDIT_CMD_OUTPUT", {
+    // Redact sensitive data before logging
+    const redactionResult = redactText(chunk);
+
+    // Log AUDIT_CMD_OUTPUT event with redacted content
+    const payload: any = {
       request_id: this.currentExecution.requestId,
       stream,
-      chunk,
+      chunk: redactionResult.text,
       chunk_index: chunkIndex
-    });
+    };
+
+    // Add redaction metadata
+    if (redactionResult.redacted) {
+      payload.redacted = true;
+      payload.redaction_hits = redactionResult.hits;
+    }
+
+    this.sessions.log("AUDIT_CMD_OUTPUT", payload);
   }
 
   private handleProcessEnd(exitCode: number | null, signal: string | null): void {
