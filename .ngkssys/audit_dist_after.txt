@@ -1,0 +1,4 @@
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\dist\core\sessionManager.js:109:            ts: (0, time_1.nowIso)(),
+> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\dist\core\sessionManager.js:110:            level: reason === "error_exit" ? "ERROR" : "INFO",
+> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\dist\core\sessionManager.js:111:            type: "SESSION_END",
+  C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\dist\core\sessionManager.js:112:            session_id: session.sessionId,
