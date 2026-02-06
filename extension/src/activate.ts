@@ -5,8 +5,10 @@ import { StatusBarToggle } from "./ui/statusBarToggle";
 import { AgentBridgePanel } from "./bridge/agentBridgePanel";
 import { registerAgentBridgeCommands } from "./bridge/agentBridgeCommands";
 import { registerAuditCommands } from "./command/auditRunner";
+import { registerIntegrityCommand } from "./command/integrityCommand";
 import { TaskWatcher } from "./watchers/taskWatcher";
 import { DebugWatcher } from "./watchers/debugWatcher";
+import { FileWatcher } from "./watchers/fileWatcher";
 
 export async function activateExtension(context: vscode.ExtensionContext, sessions: SessionManager): Promise<void> {
   const cfg = vscode.workspace.getConfiguration("ngksAutologger");
@@ -28,15 +30,27 @@ export async function activateExtension(context: vscode.ExtensionContext, sessio
   // Register audit commands
   registerAuditCommands(context, sessions);
 
+  // Register integrity verification command
+  registerIntegrityCommand(context, sessions);
+
   // Setup task and debug watchers
   const taskWatcher = new TaskWatcher(sessions);
   const debugWatcher = new DebugWatcher(sessions);
+  const fileWatcher = new FileWatcher(sessions);
   
-  taskWatcher.activate();
   debugWatcher.activate();
+  fileWatcher.activate();
+  
+  // TaskWatcher auto-activates in constructor
+  context.subscriptions.push(
+    { dispose: () => taskWatcher.dispose() },
+    { dispose: () => debugWatcher.dispose() },
+    { dispose: () => fileWatcher.dispose() }
+  );
   
   context.subscriptions.push(taskWatcher);
   context.subscriptions.push(debugWatcher);
+  context.subscriptions.push(fileWatcher);
 
   // Commands (manual control)
   context.subscriptions.push(
@@ -74,3 +88,4 @@ export async function activateExtension(context: vscode.ExtensionContext, sessio
     vscode.window.setStatusBarMessage("NGKs Log: ACTIVE", 2500);
   }
 }
+    

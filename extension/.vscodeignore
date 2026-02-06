@@ -1,0 +1,27 @@
+# NGKs Autologger VSCode Extension - Build assets only
+# Option A: Ship dist/**, exclude src/**
+
+# Exclude source files (we ship compiled dist)
+src/**
+tsconfig.json
+
+# Exclude logs and sessions
+**/.ngkssys/**
+**/*.jsonl
+
+# Exclude development dependencies
+**/node_modules/**
+**/.git/**
+**/.vscode/**
+
+# Exclude development artifacts
+.history/**
+pnpm-lock.yaml
+
+# Keep dist (compiled output) and assets
+!dist/**
+!assets/**
+
+# Keep package files needed for installation
+!package.json
+!README.md

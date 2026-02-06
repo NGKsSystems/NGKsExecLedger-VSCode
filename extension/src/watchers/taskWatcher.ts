@@ -1,76 +1,132 @@
 // File: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\watchers\taskWatcher.ts
 import * as vscode from "vscode";
+import { v4 as uuidv4 } from "uuid";
 import { SessionManager } from "../core/sessionManager";
 
+interface ActiveTaskExecution {
+  task: vscode.Task;
+  startTime: Date;
+  execution_id: string;
+  taskStartLogged: boolean; // De-dupe flag
+}
+
 export class TaskWatcher {
-  private disposables: vscode.Disposable[] = [];
+  // Use task execution hash for better uniqueness than just task.name
+  private activeTasks = new Map<string, ActiveTaskExecution>();
 
-  constructor(private readonly sessions: SessionManager) {}
+  constructor(
+    private sessionManager: SessionManager,
+  ) {
+    this.registerListeners();
+  }
 
-  public activate(): void {
-    // Hook task start events
-    const onTaskStart = vscode.tasks.onDidStartTaskProcess((event) => {
-      this.handleTaskStart(event);
+  private registerListeners() {
+    // Listen for task starts
+    vscode.tasks.onDidStartTaskProcess((event) => {
+      this.onTaskStart(event);
     });
 
-    // Hook task end events  
-    const onTaskEnd = vscode.tasks.onDidEndTaskProcess((event) => {
-      this.handleTaskEnd(event);
+    // Listen for task ends
+    vscode.tasks.onDidEndTaskProcess((event) => {
+      this.onTaskEnd(event);
     });
-
-    this.disposables.push(onTaskStart, onTaskEnd);
   }
 
-  private handleTaskStart(event: vscode.TaskProcessStartEvent): void {
-    try {
-      const task = event.execution.task;
-      const taskName = this.extractTaskName(task);
-
-      this.sessions.log("TASK_START", {
-        task_name: taskName,
-        task_source: task.source,
-        execution_id: event.execution.task.name || undefined
-      });
-
-    } catch (error) {
-      // Log errors but don't fail
-      console.warn("Failed to log task start:", error);
-    }
-  }
-
-  private handleTaskEnd(event: vscode.TaskProcessEndEvent): void {
-    try {
-      const task = event.execution.task;
-      const taskName = this.extractTaskName(task);
-
-      this.sessions.log("TASK_END", {
-        task_name: taskName,
-        task_source: task.source,
-        execution_id: event.execution.task.name || undefined,
-        exit_code: event.exitCode
-      });
-
-    } catch (error) {
-      // Log errors but don't fail
-      console.warn("Failed to log task end:", error);
-    }
-  }
-
-  private extractTaskName(task: vscode.Task): string {
-    // Try to get a meaningful task name
-    if (task.name) {
-      return task.name;
+  private onTaskStart(event: vscode.TaskProcessStartEvent) {
+    const task = event.execution.task;
+    const taskKey = this.getTaskKey(task, event.execution);
+    
+    // Check for duplicate start events
+    const existingExecution = this.activeTasks.get(taskKey);
+    if (existingExecution && existingExecution.taskStartLogged) {
+      // Duplicate start event - do not log again
+      console.warn(`Duplicate TASK_START for task: ${task.name}, key: ${taskKey}`);
+      return;
     }
     
-    if (task.definition?.type) {
-      return `${task.definition.type}`;
-    }
+    const execution_id = existingExecution?.execution_id || uuidv4();
+    const startTime = existingExecution?.startTime || new Date();
 
-    return "unknown";
+    // Store/update execution mapping
+    this.activeTasks.set(taskKey, {
+      task,
+      startTime,
+      execution_id,
+      taskStartLogged: true
+    });
+
+    // Log TASK_START event
+    this.sessionManager.log("TASK_START", {
+      task_name: task.name,
+      source: task.source,
+      scope: (task.scope as vscode.WorkspaceFolder)?.name || "unknown",
+      execution_id,
+      ts_start: startTime.toISOString(),
+    });
   }
 
-  public dispose(): void {
-    this.disposables.forEach(d => d.dispose());
-    this.disposables = [];
+  private onTaskEnd(event: vscode.TaskProcessEndEvent) {
+    const task = event.execution.task;
+    const taskKey = this.getTaskKey(task, event.execution);
+    const mapping = this.activeTasks.get(taskKey);
+    
+    let execution_id: string;
+    let duration_ms: number;
+    let endReason: string | undefined = undefined;
+    
+    if (!mapping) {
+      // TASK_END without corresponding TASK_START
+      execution_id = uuidv4();
+      duration_ms = 0; // Unknown duration
+      endReason = "end_without_start";
+      console.warn(`TASK_END without start for task: ${task.name}, key: ${taskKey}`);
+    } else {
+      // Normal case: matching start found
+      execution_id = mapping.execution_id;
+      duration_ms = Date.now() - mapping.startTime.getTime();
+      
+      // Remove from active tracking
+      this.activeTasks.delete(taskKey);
+    }
+
+    // Determine exit code and end reason
+    let exit_code: number | null = event.exitCode ?? null;
+    if (exit_code === undefined || exit_code === null) {
+      if (!endReason) {
+        endReason = "unknown_or_cancelled";
+      }
+    }
+
+    // Log TASK_END event
+    const logPayload: any = {
+      execution_id,
+      exit_code,
+      duration_ms
+    };
+
+    if (endReason) {
+      logPayload.end_reason = endReason;
+    }
+
+    this.sessionManager.log("TASK_END", logPayload);
+  }
+
+  /**
+   * Generate a unique key for task execution correlation.
+   * Uses combination of task properties and execution info for better uniqueness.
+   */
+  private getTaskKey(task: vscode.Task, execution: vscode.TaskExecution): string {
+    const taskName = task.name || "unnamed";
+    const taskSource = task.source || "unknown";
+    const scopeName = (task.scope as vscode.WorkspaceFolder)?.name || "global";
+    
+    // Include execution timestamp or process ID if available for uniqueness
+    const executionId = (execution as any).id || Date.now();
+    
+    return `${taskSource}:${scopeName}:${taskName}:${executionId}`;
+  }
+
+  dispose() {
+    this.activeTasks.clear();
   }
 }

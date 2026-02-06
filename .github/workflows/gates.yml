@@ -1,0 +1,49 @@
+name: Release Gates
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  release-gates:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm -C extension install
+      
+    - name: Run TypeScript compilation
+      run: pnpm -C extension run compile
+      
+    - name: Run release gates
+      run: |
+        pwsh -ExecutionPolicy Bypass -File ./tools/run_gates.ps1
+        
+    - name: Upload gate audit files
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: release-gate-audit-files
+        path: .ngkssys/audit/p9_gate_*.txt
+        
+    - name: Upload gate summary
+      uses: actions/upload-artifact@v3  
+      if: always()
+      with:
+        name: release-gate-summary
+        path: .ngkssys/audit/p9_gate_summary.txt
