@@ -1,24 +1,23 @@
 {
   "name": "ngks-autologger",
-  "displayName": "NGKs Autonomous Logger",
-  "description": "Autonomous VS Code operation logger (Phase 1: session + JSONL writer + autosave proof copy).",
-  "version": "0.1.0",
+  "displayName": "NGKs ExecLedger (VERY BETA)",
+  "description": "VERY BETA — Enterprise-grade audit ledger for VS Code. Do not rely on this build for production or legal audit use.",
+  "version": "0.0.1-beta",
   "publisher": "ngks-systems",
-  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGKsSystems/ngks-vscode-autologger"
+  },
+  "icon": "assets/NGKsExecLedger 2.png",
+  "preview": true,
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onCommand:ngksAutologger.startSession",
-    "onCommand:ngksAutologger.stopSession", 
-    "onCommand:ngksAutologger.toggle",
-    "onCommand:ngksAutologger.openAgentBridge",
-    "onCommand:ngksAutologger.runWithAudit",
-    "onCommand:ngksAutologger.verifyIntegrity"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -46,6 +45,34 @@
       {
         "command": "ngksAutologger.verifyIntegrity",
         "title": "NGKs: Verify Log Integrity"
+      },
+      {
+        "command": "ngksAutologger.renderAuditLatest",
+        "title": "NGKs: Render Audit (Latest Session)"
+      },
+      {
+        "command": "ngksAutologger.renderAuditPick",
+        "title": "NGKs: Render Audit (Pick Session File...)"
+      },
+      {
+        "command": "ngksExecLedger.openTask",
+        "title": "NGKsExecLedger: Open Task"
+      },
+      {
+        "command": "ngksExecLedger.addGuidance",
+        "title": "NGKsExecLedger: Add Guidance"
+      },
+      {
+        "command": "ngksExecLedger.closeTask",
+        "title": "NGKsExecLedger: Close Task"
+      },
+      {
+        "command": "ngksAutologger.showSessionSummary",
+        "title": "NGKs: Session Summary (Latest)"
+      },
+      {
+        "command": "ngksAutologger.showChangedFiles",
+        "title": "NGKs: Changed Files (Latest)"
       }
     ],
     "views": {
@@ -72,7 +99,12 @@
             "global"
           ],
           "default": "workspace",
-          "description": "Where to store logs. 'workspace' writes under .ngkssys/logs. 'global' writes under the user's AppData."
+          "description": "Where to store logs when outputRoot is blank. 'workspace' writes under .ngkssys/logs. 'global' writes under the user's AppData."
+        },
+        "ngksAutologger.outputRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute folder path for all logs. If set, logs are written under <outputRoot>\\<workspaceName>\\ngks-vscode-autologger\\. Leave blank to use logRootMode (workspace/global)."
         },
         "ngksAutologger.autosaveToDownloads": {
           "type": "boolean",
@@ -83,21 +115,39 @@
           "type": "string",
           "default": "VSCodeAutoLogger",
           "description": "Folder name used under Downloads\\NGKsLogs\\<appName> for proof copies."
+        },
+        "ngksAutologger.renderer.includeHtml": {
+          "type": "boolean",
+          "default": false,
+          "description": "Generate HTML audit report in addition to Markdown."
+        },
+        "ngksAutologger.renderer.maxPayloadChars": {
+          "type": "number",
+          "default": 4000,
+          "description": "Maximum characters to display in event payload rendering."
+        },
+        "ngksAutologger.renderer.maxDiffLinesInReport": {
+          "type": "number",
+          "default": 200,
+          "description": "Maximum diff lines to include in audit report."
+        },
+        "ngksAutologger.renderer.agentPreviewChars": {
+          "type": "number",
+          "default": 200,
+          "description": "Maximum characters to preview for agent input/output events."
         }
       }
     }
   },
   "scripts": {
     "compile": "tsc -p .",
-    "watch": "tsc -watch -p ."
+    "watch": "tsc -watch -p .",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
-    "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.109.0",
+    "@vscode/vsce": "^3.7.1",
     "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "uuid": "^10.0.0"
   }
 }

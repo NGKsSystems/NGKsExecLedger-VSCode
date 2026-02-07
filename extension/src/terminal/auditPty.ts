@@ -1,7 +1,7 @@
 // File: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\terminal\auditPty.ts
 import * as vscode from "vscode";
 import * as child_process from "child_process";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { SessionManager } from "../core/sessionManager";
 import { nowIso } from "../util/time";
 import { redactText } from "../core/redactor";
@@ -33,7 +33,8 @@ export class AuditPty implements vscode.Pseudoterminal {
     private readonly sessions: SessionManager,
     private readonly workspaceRoot: string = process.cwd()
   ) {
-    this.terminalId = uuidv4();
+    this.terminalId = randomUUID();
+
   }
 
   open(): void {
@@ -63,7 +64,7 @@ export class AuditPty implements vscode.Pseudoterminal {
       return;
     }
 
-    const requestId = uuidv4();
+    const requestId = randomUUID();
     const effectiveCwd = cwd || this.workspaceRoot;
     const startTime = Date.now();
 

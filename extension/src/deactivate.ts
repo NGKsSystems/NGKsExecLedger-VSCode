@@ -4,4 +4,5 @@ import { SessionManager } from "./core/sessionManager";
 
 export function deactivateExtension(sessions: SessionManager): void {
   sessions.stop("normal_exit");
+  sessions.dispose();
 }
