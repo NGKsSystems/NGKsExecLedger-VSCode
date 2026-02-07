@@ -1,149 +1,183 @@
-// File: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\core\sessionManager.ts
-import * as path from "path";
+// File: src/core/sessionManager.ts
+
 import * as vscode from "vscode";
-import { v4 as uuidv4 } from "uuid";
-
-import { ensureDirSync } from "../util/fs";
-import { nowIso, safeFileTimestamp } from "../util/time";
+import * as path from "path";
+import * as fs from "fs";
 import { JsonlWriter } from "./jsonlWriter";
-import { autosaveProofCopy } from "./autosave";
-import { SessionInfo, SessionEndReason } from "../types/session";
-import { SessionStartEvent, SessionEndEvent } from "../types/events";
+import { AnyEvent } from "../types/events";
+import { FilesystemAuthority } from "./filesystemAuthority";
 
-type LogRootMode = "workspace" | "global";
+const APP_ID = "ngks-vscode-autologger";
+
+export interface SessionContext {
+  sessionId: string;
+  workspaceName: string;
+  workspacePath?: string;
+
+  // final session directory:
+  // <outputRoot>\<APP_ID>\<workspaceName>\<sessionId>\
+  logDir: string;
+
+  // BACKCOMPAT: older callers expect logDirPath
+  logDirPath: string;
+
+  // full JSONL path within logDir
+  jsonlPath: string;
+}
+
+function safeFolderName(name: string): string {
+  const cleaned = name.replace(/[<>:"/\\|?*\x00-\x1F]/g, "_").trim();
+  return cleaned.length ? cleaned : "workspace";
+}
+
+function resolveOutputRoot(): string {
+  const cfg = vscode.workspace.getConfiguration("ngksAutologger");
+  const root = (cfg.get<string>("outputRoot") ?? "").trim();
+
+  if (!root) {
+    throw new Error(
+      "ngksAutologger.outputRoot is required. Set it to an absolute folder path (e.g. D:\\NGKsLogs)."
+    );
+  }
+  if (!path.isAbsolute(root)) {
+    throw new Error(`ngksAutologger.outputRoot must be an absolute path. Got: ${root}`);
+  }
+  return root;
+}
+
+function makeJsonlName(sessionId: string): string {
+  const ts = new Date()
+    .toISOString()
+    .replace(/[:]/g, "")
+    .replace(/\./g, "")
+    .replace("T", "_")
+    .replace("Z", "");
+  return `${ts}_${sessionId}.jsonl`;
+}
 
 export class SessionManager {
-  private session: SessionInfo | null = null;
-  private writer: JsonlWriter | null = null;
+  private ctx: SessionContext | undefined;
+  private writer: JsonlWriter | undefined;
+  private filesystemAuthority: FilesystemAuthority;
+
+  constructor() {
+    this.filesystemAuthority = new FilesystemAuthority();
+  }
+
+  public getSession(): SessionContext | undefined {
+    return this.ctx;
+  }
 
   public isActive(): boolean {
-    return this.session !== null && this.writer !== null;
+    return !!this.ctx && !!this.writer;
   }
 
-  public getSession(): SessionInfo | null {
-    return this.session;
-  }
+  public start(context: vscode.ExtensionContext): SessionContext {
+    if (this.ctx && this.writer) return this.ctx;
 
-  public start(context: vscode.ExtensionContext): SessionInfo {
-    if (this.isActive()) return this.session!;
+    const sessionId = cryptoRandomUuid();
+    const baseRoot = resolveOutputRoot();
 
-    const cfg = vscode.workspace.getConfiguration("ngksAutologger");
-    const logRootMode = (cfg.get<string>("logRootMode") ?? "workspace") as LogRootMode;
+    const ws = vscode.workspace.workspaceFolders?.[0];
+    const workspaceName = safeFolderName(ws?.name ?? "no-workspace");
+    const workspacePath = ws?.uri.fsPath;
 
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    const workspacePath = workspaceFolder?.uri.fsPath;
-    const workspaceName = workspaceFolder?.name;
+    const logDir = path.join(baseRoot, APP_ID, workspaceName, sessionId);
+    fs.mkdirSync(logDir, { recursive: true });
 
-    const sessionId = uuidv4();
-    const logDirPath = this.resolveLogDir(context, logRootMode, workspacePath, sessionId);
-    ensureDirSync(logDirPath);
+    const jsonlPath = path.join(logDir, makeJsonlName(sessionId));
 
-    const logFilePath = path.join(logDirPath, `${safeFileTimestamp()}_${sessionId}.jsonl`);
-
-    const session: SessionInfo = {
+    this.ctx = {
       sessionId,
-      startedAtIso: nowIso(),
       workspaceName,
       workspacePath,
+      logDir,
+      logDirPath: logDir, // alias
+      jsonlPath
+    };
+
+    this.writer = new JsonlWriter(jsonlPath);
+
+    this.log("SESSION_START", {
+      workspaceName,
+      workspacePath: workspacePath ?? "",
       vscodeVersion: vscode.version,
       platform: process.platform,
       arch: process.arch,
-      logFilePath,
-      logDirPath
-    };
-
-    this.session = session;
-    this.writer = new JsonlWriter(logFilePath);
-
-    const startEvent: Omit<SessionStartEvent, "seq" | "prev_hash" | "hash"> = {
-      ts: nowIso(),
-      level: "INFO",
-      type: "SESSION_START",
-      session_id: sessionId,
-      payload: {
-        workspaceName,
-        workspacePath,
-        vscodeVersion: vscode.version,
-        platform: process.platform,
-        arch: process.arch,
-        logDirMode: logRootMode
-      }
-    };
-    this.writer.write(startEvent);
-
-    return session;
-  }
-
-  public stop(reason: SessionEndReason, err?: unknown): { ended: boolean; autosavePath?: string } {
-    if (!this.isActive()) return { ended: false };
-
-    const session = this.session!;
-    const writer = this.writer!;
-
-    const cfg = vscode.workspace.getConfiguration("ngksAutologger");
-    const autosaveEnabled = !!cfg.get<boolean>("autosaveToDownloads");
-    const appName = cfg.get<string>("appName") ?? "VSCodeAutoLogger";
-
-    const errorPayload = this.normalizeError(err);
-
-    const autosave = autosaveEnabled
-      ? autosaveProofCopy({ logFilePath: session.logFilePath, appName, sessionId: session.sessionId, reason })
-      : { autosaved: false as const };
-
-    const endEvent: Omit<SessionEndEvent, "seq" | "prev_hash" | "hash"> = {
-      ts: nowIso(),
-      level: reason === "error_exit" ? "ERROR" : "INFO",
-      type: "SESSION_END",
-      session_id: session.sessionId,
-      payload: {
-        reason,
-        error: errorPayload,
-        autosaved: autosave.autosaved,
-        autosavePath: autosave.autosavePath
-      }
-    };
-
-    writer.write(endEvent);
-
-    // teardown
-    this.session = null;
-    this.writer = null;
-
-    return { ended: true, autosavePath: autosave.autosavePath };
-  }
-
-  public log(type: string, payload?: unknown, level: "INFO" | "WARN" | "ERROR" = "INFO"): void {
-    if (!this.isActive()) return;
-    this.writer!.write({
-      ts: nowIso(),
-      level,
-      type,
-      session_id: this.session!.sessionId,
-      payload
+      outputRoot: baseRoot,
+      appId: APP_ID
     });
+
+    // TASK 1: Create baseline snapshot
+    if (workspacePath) {
+      this.filesystemAuthority.createBaseline(workspacePath, logDir)
+        .then(() => {
+          // TASK 2: Start tracking filesystem changes
+          this.filesystemAuthority.startTracking();
+        })
+        .catch((error) => {
+          console.error("Failed to create baseline snapshot:", error);
+        });
+    }
+
+    void context;
+    return this.ctx;
   }
 
-  private resolveLogDir(
-    context: vscode.ExtensionContext,
-    mode: LogRootMode,
-    workspacePath: string | undefined,
-    sessionId: string
-  ): string {
-    if (mode === "workspace" && workspacePath) {
-      // <workspace>/.ngkssys/logs/ngks-vscode-autologger/<sessionId>/
-      return path.join(workspacePath, ".ngkssys", "logs", "ngks-vscode-autologger", sessionId);
-    }
-    // Global: <globalStorage>/logs/<sessionId>/
-    return path.join(context.globalStorageUri.fsPath, "logs", sessionId);
+  public stop(reason?: string): void {
+    if (!this.ctx) return;
+
+    this.log("SESSION_END", { reason: reason ?? "stop" });
+
+    // TASK 3: Generate session summary
+    this.filesystemAuthority.generateSessionSummary()
+      .then((summary) => {
+        this.log("FILESYSTEM_SUMMARY", summary);
+      })
+      .catch((error) => {
+        console.error("Failed to generate session summary:", error);
+      })
+      .finally(() => {
+        // Stop tracking after summary is generated
+        this.filesystemAuthority.stopTracking();
+      });
+
+    this.writer = undefined;
+    this.ctx = undefined;
   }
 
-  private normalizeError(err: unknown): { name?: string; message?: string; stack?: string } | undefined {
-    if (!err) return undefined;
-    if (err instanceof Error) return { name: err.name, message: err.message, stack: err.stack };
-    try {
-      return { message: typeof err === "string" ? err : JSON.stringify(err) };
-    } catch {
-      return { message: String(err) };
-    }
+  public log(type: string, payload: any): AnyEvent | undefined {
+    if (!this.ctx || !this.writer) return undefined;
+
+    const base = {
+      ts: new Date().toISOString(),
+      level: "INFO",
+      type,
+      session_id: this.ctx.sessionId,
+      payload
+    };
+
+    return this.writer.write(base as any);
   }
+
+  public getWriter(): JsonlWriter {
+    if (!this.writer) throw new Error("Session not started");
+    return this.writer;
+  }
+
+  public dispose(): void {
+    this.filesystemAuthority.dispose();
+  }
+}
+
+function cryptoRandomUuid(): string {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const crypto = require("crypto") as typeof import("crypto");
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+
+  const buf = crypto.randomBytes(16);
+  buf[6] = (buf[6] & 0x0f) | 0x40;
+  buf[8] = (buf[8] & 0x3f) | 0x80;
+  const hex = buf.toString("hex");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
