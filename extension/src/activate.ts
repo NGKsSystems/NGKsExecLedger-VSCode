@@ -5,8 +5,7 @@ import { StatusBarToggle } from "./ui/statusBarToggle";
 import { AgentBridgePanel } from "./bridge/agentBridgePanel";
 import { registerAgentBridgeCommands } from "./bridge/agentBridgeCommands";
 import { registerAuditCommands } from "./command/auditRunner";
-import { registerIntegrityCommand } from "./command/integrityCommand";
-import { TaskWatcher } from "./watchers/taskWatcher";
+import { registerIntegrityCommand } from "./command/integrityCommand";import { registerRenderCommands } from './command/renderAuditCommand';import { TaskWatcher } from "./watchers/taskWatcher";
 import { DebugWatcher } from "./watchers/debugWatcher";
 import { FileWatcher } from "./watchers/fileWatcher";
 
@@ -32,6 +31,9 @@ export async function activateExtension(context: vscode.ExtensionContext, sessio
 
   // Register integrity verification command
   registerIntegrityCommand(context, sessions);
+
+  // Register render audit commands
+  registerRenderCommands(context);
 
   // Setup task and debug watchers
   const taskWatcher = new TaskWatcher(sessions);

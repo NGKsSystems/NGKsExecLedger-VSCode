@@ -1,6 +1,7 @@
 // File: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\watchers\taskWatcher.ts
 import * as vscode from "vscode";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
+
 import { SessionManager } from "../core/sessionManager";
 
 interface ActiveTaskExecution {
@@ -44,7 +45,7 @@ export class TaskWatcher {
       return;
     }
     
-    const execution_id = existingExecution?.execution_id || uuidv4();
+    const execution_id = existingExecution?.execution_id || randomUUID();
     const startTime = existingExecution?.startTime || new Date();
 
     // Store/update execution mapping
@@ -76,7 +77,7 @@ export class TaskWatcher {
     
     if (!mapping) {
       // TASK_END without corresponding TASK_START
-      execution_id = uuidv4();
+      execution_id = randomUUID();
       duration_ms = 0; // Unknown duration
       endReason = "end_without_start";
       console.warn(`TASK_END without start for task: ${task.name}, key: ${taskKey}`);
