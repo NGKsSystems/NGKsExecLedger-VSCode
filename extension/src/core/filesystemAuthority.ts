@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as crypto from "crypto";
 import { shouldBlockTraversal, CORE_IGNORE_PATTERNS } from '../util/fsIgnore';
+import { SessionPaths } from './sessionPaths';
 
 export interface FileEntry {
   relativePath: string;
@@ -27,43 +28,31 @@ export interface SessionSummary {
   filesAdded: number;
   filesModified: number;
   filesDeleted: number;
+  changedPaths: string[];
 }
 
 export class FilesystemAuthority {
-  private workspacePath: string | undefined;
-  private sessionDir: string | undefined;
+  private sessionPaths: SessionPaths | undefined;
   private watcher: vscode.FileSystemWatcher | undefined;
-  private changesLogPath: string | undefined;
   private baseline: Map<string, FileEntry> = new Map();
   private isTracking = false;
 
   constructor() {}
 
-  public async createBaseline(workspacePath: string, sessionDir: string): Promise<void> {
-    this.workspacePath = workspacePath;
-    this.sessionDir = sessionDir;
-    this.changesLogPath = path.join(sessionDir, 'changes.log');
+  public async createBaseline(paths: SessionPaths): Promise<void> {
+    this.sessionPaths = paths;
 
-    // Ensure session directory exists
-    if (!fs.existsSync(sessionDir)) {
-      fs.mkdirSync(sessionDir, { recursive: true });
+    // Ensure directories exist
+    if (!fs.existsSync(path.dirname(paths.baselinePath))) {
+      fs.mkdirSync(path.dirname(paths.baselinePath), { recursive: true });
     }
-
-    // Create .ngkssys directory structure
-    const ngksSysDir = path.join(workspacePath, '.ngkssys');
-    const sessionSubDir = path.join(ngksSysDir, 'sessions', path.basename(sessionDir));
-    if (!fs.existsSync(sessionSubDir)) {
-      fs.mkdirSync(sessionSubDir, { recursive: true });
-    }
-
-    const baselineJsonPath = path.join(sessionSubDir, 'baseline.json');
     
     // Walk workspace and create baseline
-    const files = await this.walkWorkspace(workspacePath);
+    const files = await this.walkWorkspace(paths.workspaceRoot);
     const baselineData: FileEntry[] = [];
 
     for (const filePath of files) {
-      const entry = await this.createFileEntry(workspacePath, filePath);
+      const entry = await this.createFileEntry(paths.workspaceRoot, filePath);
       if (entry) {
         baselineData.push(entry);
         this.baseline.set(entry.relativePath, entry);
@@ -71,18 +60,18 @@ export class FilesystemAuthority {
     }
 
     // Write baseline.json
-    fs.writeFileSync(baselineJsonPath, JSON.stringify(baselineData, null, 2));
+    fs.writeFileSync(paths.baselinePath, JSON.stringify(baselineData, null, 2));
   }
 
-  public startTracking(): void {
-    if (!this.workspacePath || this.isTracking) {
+  public async startTracking(): Promise<void> {
+    if (!this.sessionPaths || this.isTracking) {
       return;
     }
 
     this.isTracking = true;
 
     // Create filesystem watcher covering the workspace
-    const workspaceUri = vscode.Uri.file(this.workspacePath);
+    const workspaceUri = vscode.Uri.file(this.sessionPaths.workspaceRoot);
     const pattern = new vscode.RelativePattern(workspaceUri, '**/*');
     
     this.watcher = vscode.workspace.createFileSystemWatcher(
@@ -108,7 +97,7 @@ export class FilesystemAuthority {
     });
   }
 
-  public stopTracking(): void {
+  public async stopTracking(): Promise<void> {
     if (this.watcher) {
       this.watcher.dispose();
       this.watcher = undefined;
@@ -117,27 +106,21 @@ export class FilesystemAuthority {
   }
 
   public async generateSessionSummary(): Promise<SessionSummary> {
-    if (!this.workspacePath || !this.sessionDir) {
-      return { filesChanged: false, filesAdded: 0, filesModified: 0, filesDeleted: 0 };
+    if (!this.sessionPaths) {
+      return { filesChanged: false, filesAdded: 0, filesModified: 0, filesDeleted: 0, changedPaths: [] };
     }
-
-    const ngksSysDir = path.join(this.workspacePath, '.ngkssys');
-    const sessionSubDir = path.join(ngksSysDir, 'sessions', path.basename(this.sessionDir));
-    const baselineJsonPath = path.join(sessionSubDir, 'baseline.json');
-    const changesLogPath = path.join(sessionSubDir, 'changes.log');
-    const summaryJsonPath = path.join(sessionSubDir, 'session_summary.json');
 
     // Read baseline
     let baseline: FileEntry[] = [];
-    if (fs.existsSync(baselineJsonPath)) {
-      const baselineContent = fs.readFileSync(baselineJsonPath, 'utf8');
+    if (fs.existsSync(this.sessionPaths.baselinePath)) {
+      const baselineContent = fs.readFileSync(this.sessionPaths.baselinePath, 'utf8');
       baseline = JSON.parse(baselineContent);
     }
 
     // Read changes log
     let changes: FileChangeEvent[] = [];
-    if (fs.existsSync(changesLogPath)) {
-      const changesContent = fs.readFileSync(changesLogPath, 'utf8');
+    if (fs.existsSync(this.sessionPaths.changesLogPath)) {
+      const changesContent = fs.readFileSync(this.sessionPaths.changesLogPath, 'utf8');
       const lines = changesContent.trim().split('\n').filter(line => line.trim());
       changes = lines.map(line => JSON.parse(line));
     }
@@ -146,7 +129,7 @@ export class FilesystemAuthority {
     const summary = this.calculateSummary(baseline, changes);
 
     // Write session summary
-    fs.writeFileSync(summaryJsonPath, JSON.stringify(summary, null, 2));
+    fs.writeFileSync(this.sessionPaths.summaryPath, JSON.stringify(summary, null, 2));
 
     return summary;
   }
@@ -243,12 +226,12 @@ export class FilesystemAuthority {
   }
 
   private async handleFileEvent(eventType: FileChangeEvent['eventType'], uri: vscode.Uri): Promise<void> {
-    if (!this.workspacePath || !this.changesLogPath) {
+    if (!this.sessionPaths) {
       return;
     }
 
     const filePath = uri.fsPath;
-    const relativePath = path.relative(this.workspacePath, filePath).replace(/\\/g, '/');
+    const relativePath = path.relative(this.sessionPaths.workspaceRoot, filePath).replace(/\\/g, '/');
 
     // Skip .ngkssys directory changes
     if (relativePath.startsWith('.ngkssys/')) {
@@ -283,28 +266,28 @@ export class FilesystemAuthority {
       newHash
     };
 
-    // Append to changes log
-    const ngksSysDir = path.join(this.workspacePath, '.ngkssys');
-    const sessionSubDir = path.join(ngksSysDir, 'sessions', path.basename(this.sessionDir!));
-    const changesLogPath = path.join(sessionSubDir, 'changes.log');
-    
     // Ensure directory exists
-    if (!fs.existsSync(sessionSubDir)) {
-      fs.mkdirSync(sessionSubDir, { recursive: true });
+    const changesDir = path.dirname(this.sessionPaths.changesLogPath);
+    if (!fs.existsSync(changesDir)) {
+      fs.mkdirSync(changesDir, { recursive: true });
     }
 
-    fs.appendFileSync(changesLogPath, JSON.stringify(changeEvent) + '\n');
+    // Append to changes log
+    fs.appendFileSync(this.sessionPaths.changesLogPath, JSON.stringify(changeEvent) + '\n');
   }
 
   private calculateSummary(baseline: FileEntry[], changes: FileChangeEvent[]): SessionSummary {
     let filesAdded = 0;
     let filesModified = 0;
     let filesDeleted = 0;
+    const changedPathsSet = new Set<string>();
 
     const baselineMap = new Map<string, FileEntry>();
     baseline.forEach(entry => baselineMap.set(entry.relativePath, entry));
 
     for (const change of changes) {
+      changedPathsSet.add(change.path);
+      
       switch (change.eventType) {
         case 'create':
           if (!baselineMap.has(change.path)) {
@@ -325,12 +308,14 @@ export class FilesystemAuthority {
     }
 
     const filesChanged = filesAdded > 0 || filesModified > 0 || filesDeleted > 0;
+    const changedPaths = Array.from(changedPathsSet).sort();
 
     return {
       filesChanged,
       filesAdded,
       filesModified,
-      filesDeleted
+      filesDeleted,
+      changedPaths
     };
   }
 

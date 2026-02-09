@@ -7,7 +7,6 @@ import { registerAgentBridgeCommands } from "./bridge/agentBridgeCommands";
 import { registerAuditCommands } from "./command/auditRunner";
 import { registerIntegrityCommand } from "./command/integrityCommand";import { registerRenderCommands } from './command/renderAuditCommand';import { TaskWatcher } from "./watchers/taskWatcher";
 import { DebugWatcher } from "./watchers/debugWatcher";
-import { FileWatcher } from "./watchers/fileWatcher";
 
 export async function activateExtension(context: vscode.ExtensionContext, sessions: SessionManager): Promise<void> {
   const cfg = vscode.workspace.getConfiguration("ngksAutologger");
@@ -38,54 +37,21 @@ export async function activateExtension(context: vscode.ExtensionContext, sessio
   // Setup task and debug watchers
   const taskWatcher = new TaskWatcher(sessions);
   const debugWatcher = new DebugWatcher(sessions);
-  const fileWatcher = new FileWatcher(sessions);
   
   debugWatcher.activate();
-  fileWatcher.activate();
   
   // TaskWatcher auto-activates in constructor
   context.subscriptions.push(
     { dispose: () => taskWatcher.dispose() },
-    { dispose: () => debugWatcher.dispose() },
-    { dispose: () => fileWatcher.dispose() }
+    { dispose: () => debugWatcher.dispose() }
   );
   
   context.subscriptions.push(taskWatcher);
   context.subscriptions.push(debugWatcher);
-  context.subscriptions.push(fileWatcher);
 
-  // Commands (manual control)
-  context.subscriptions.push(
-    vscode.commands.registerCommand("ngksAutologger.startSession", () => {
-      sessions.start(context);
-      statusBarToggle.render();
-      vscode.window.setStatusBarMessage("NGKs Log: ACTIVE", 2500);
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("ngksAutologger.stopSession", () => {
-      sessions.stop("manual_stop");
-      statusBarToggle.render();
-      vscode.window.setStatusBarMessage("NGKs Log: STOPPED", 2500);
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("ngksAutologger.toggle", () => {
-      if (sessions.isActive()) {
-        sessions.stop("manual_stop");
-        vscode.window.setStatusBarMessage("NGKs Log: STOPPED", 2500);
-      } else {
-        sessions.start(context);
-        vscode.window.setStatusBarMessage("NGKs Log: ACTIVE", 2500);
-      }
-      statusBarToggle.render();
-    })
-  );
-
+  // Auto-start if configured
   if (enabled) {
-    sessions.start(context);
+    await sessions.start(context);
     statusBarToggle.render();
     vscode.window.setStatusBarMessage("NGKs Log: ACTIVE", 2500);
   }

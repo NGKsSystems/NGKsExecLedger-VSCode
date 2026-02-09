@@ -8,8 +8,6 @@ import { openTaskCommand } from "./commands/execLedgerOpenTask";
 import { addGuidanceCommand } from "./commands/execLedgerAddGuidance";
 import { closeTaskCommand } from "./commands/execLedgerCloseTask";
 import { initStatusBar } from "./core/execLedgerStatusBar";
-import { startSessionCommand } from "./commands/startSession";
-import { stopSessionCommand } from "./commands/stopSession";
 import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
 
@@ -25,11 +23,41 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Register session lifecycle commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('ngksAutologger.startSession', () => startSessionCommand())
+    vscode.commands.registerCommand('ngksAutologger.startSession', async () => {
+      try {
+        await sessions.start(context);
+        vscode.window.showInformationMessage('NGKs Session: STARTED');
+      } catch (error) {
+        vscode.window.showErrorMessage(`Failed to start session: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('ngksAutologger.stopSession', () => stopSessionCommand())
+    vscode.commands.registerCommand('ngksAutologger.stopSession', async () => {
+      try {
+        await sessions.stop('manual_stop');
+        vscode.window.showInformationMessage('NGKs Session: STOPPED'); 
+      } catch (error) {
+        vscode.window.showErrorMessage(`Failed to stop session: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('ngksAutologger.toggle', async () => {
+      try {
+        if (sessions.isActive()) {
+          await sessions.stop('manual_toggle');
+          vscode.window.showInformationMessage('NGKs Session: STOPPED');
+        } else {
+          await sessions.start(context);
+          vscode.window.showInformationMessage('NGKs Session: STARTED');
+        }
+      } catch (error) {
+        vscode.window.showErrorMessage(`Failed to toggle session: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    })
   );
 
   // Register result viewing commands
@@ -76,10 +104,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   sessions.log("EXTENSION_READY", { vscodeVersion: vscode.version });
 }
 
-export function deactivate(): void {
+export async function deactivate(): Promise<void> {
   if (crashGuard) {
     crashGuard.dispose();
     crashGuard = null;
   }
-  deactivateExtension(sessions);
+  await deactivateExtension(sessions);
 }
