@@ -1,0 +1,14 @@
+# local history / backups
+.history/
+.history/**
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# node
+node_modules/
+dist/
+out/
