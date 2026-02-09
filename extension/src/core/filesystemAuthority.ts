@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as crypto from "crypto";
+import { shouldBlockTraversal, CORE_IGNORE_PATTERNS } from '../util/fsIgnore';
 
 export interface FileEntry {
   relativePath: string;
@@ -164,8 +165,9 @@ export class FilesystemAuthority {
         .filter(line => line && !line.startsWith('#'));
     }
 
-    // Default ignore patterns
-    const defaultIgnores = ['.ngkssys/**', 'node_modules/**', '.git/**'];
+    // Phase 3.5: Use central ignore contract + additional patterns
+    const corePatterns = CORE_IGNORE_PATTERNS.map(pattern => `${pattern}/**`);
+    const defaultIgnores = ['.ngkssys/**', ...corePatterns];
     ignorePatterns.push(...defaultIgnores);
 
     await this.walkDirectory(workspacePath, workspacePath, files, ignorePatterns);
@@ -192,6 +194,10 @@ export class FilesystemAuthority {
       if (entry.isFile()) {
         files.push(fullPath);
       } else if (entry.isDirectory()) {
+        // Phase 3.5: Enforce filesystem self-defense
+        if (shouldBlockTraversal(fullPath)) {
+          continue; // Skip this directory and all subdirectories
+        }
         await this.walkDirectory(basePath, fullPath, files, ignorePatterns);
       }
     }
