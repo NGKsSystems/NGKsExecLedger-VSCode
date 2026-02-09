@@ -1,85 +1,58 @@
-########################################
-# LOCAL HISTORY / BACKUPS
-########################################
+# =========================
+# Local history / backups
+# =========================
 .history/
 **/.history/
 .vscode/.history/
 
-########################################
-# OS / EDITOR NOISE
-########################################
-.DS_Store
-Thumbs.db
-desktop.ini
-*.swp
-*.swo
-*.tmp
-*.bak
-*.orig
-
-########################################
-# PYTHON
-########################################
+# =========================
+# Python
+# =========================
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 .venv/
 venv/
+.env
+.env.*
 
-########################################
-# NODE / TYPESCRIPT
-########################################
+# =========================
+# Node / TypeScript  
+# =========================
 node_modules/
 dist/
 out/
-*.tsbuildinfo
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-########################################
-# LOGS / RUNTIME OUTPUT
-########################################
-*.log
-binary-test-output.log
-
-########################################
-# VS CODE EXTENSION BUILD ARTIFACTS
-########################################
-extension/*.vsix
-
-########################################
-# NGKs / EXECLEDGER RUNTIME DATA
-########################################
-extension/.ngkssys/
-.execledger/
-**/.execledger/
-
-########################################
-# TEST / PROOF / SCRATCH (LOCAL ONLY)
-########################################
-_proof/
-test-results/
-playwright-report/
 coverage/
+*.tsbuildinfo
 
-########################################
-# VS CODE / IDE STATE (OPTIONAL BUT SAFE)
-########################################
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.temp
+
+# VS Code workspace noise (keep repo settings if you use them)
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 
-########################################
-# TEMP / MISC
-########################################
-*.cache
-*.pid
-*.seed
-*.lock
+# =========================
+# ExecLedger / Extension artifacts
+# =========================
+extension/.ngkssys/
+extension/*.vsix
+*.log
 
-# local docs
+# Proof / scratch output (keep if you want these committed; otherwise ignore)
+_proof/
+
+# Universal Agent Ruleset docs (local only)
 Universal Agent Ruleset*.txt
 
