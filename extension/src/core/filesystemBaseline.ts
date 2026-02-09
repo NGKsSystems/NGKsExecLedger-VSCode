@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { createHash } from 'crypto';
+import { shouldBlockTraversal, CORE_IGNORE_PATTERNS } from '../util/fsIgnore';
 
 export interface FileEntry {
   relativePath: string;
@@ -14,13 +15,11 @@ export interface Baseline {
   files: FileEntry[];
 }
 
-const DEFAULT_IGNORE = [
-  'node_modules',
-  '.git',
+// Core ignore patterns now managed by central contract
+const ADDITIONAL_IGNORE = [
   '.ngkssys',
   'dist',
-  '.vscode',
-  '.history'
+  '.vscode'
 ];
 
 function shouldIgnore(relativePath: string, ignorePatterns: string[]): boolean {
@@ -50,6 +49,10 @@ function walkDirectory(dir: string, baseDir: string, ignorePatterns: string[]): 
       }
       
       if (item.isDirectory()) {
+        // Phase 3.5: Enforce filesystem self-defense
+        if (shouldBlockTraversal(fullPath)) {
+          continue; // Skip this directory and all subdirectories
+        }
         entries.push(...walkDirectory(fullPath, baseDir, ignorePatterns));
       } else if (item.isFile()) {
         try {
@@ -75,7 +78,7 @@ function walkDirectory(dir: string, baseDir: string, ignorePatterns: string[]): 
 }
 
 export function createBaseline(workspaceRoot: string): Baseline {
-  const ignorePatterns = [...DEFAULT_IGNORE];
+  const ignorePatterns = [...CORE_IGNORE_PATTERNS, ...ADDITIONAL_IGNORE];
   
   // Check for .ngkssysignore
   const ignorePath = path.join(workspaceRoot, '.ngkssysignore');

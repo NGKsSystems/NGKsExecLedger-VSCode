@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { createHash } from 'crypto';
+import { CORE_IGNORE_PATTERNS, hasSentinel } from '../util/fsIgnore';
 const CHAIN_GENESIS = 'GENESIS';
 
 function stableStringify(value: unknown): string {
@@ -156,12 +157,12 @@ export class FilesystemChangeTracker {
   }
 
   private loadIgnorePatterns(): void {
-    // Hard enforced ignore patterns (Phase 2.3)
+    // Phase 3.5: Use central ignore contract + additional patterns
+    const corePatterns = CORE_IGNORE_PATTERNS.map(pattern => `${pattern}/**`);
     this.ignorePatterns = [
+      ...corePatterns,
       '.ngkssys/**',
-      '.execledger/**', 
-      'node_modules/**',
-      '.git/**',
+      '.execledger/**',
       '.vscode/**',
       'dist/**'
     ];
@@ -220,8 +221,12 @@ export class FilesystemChangeTracker {
 
   private shouldIgnore(filePath: string): boolean {
     const relativePath = path.relative(this.workspaceRoot, filePath).replace(/\\/g, '/');
-    
-    return this.ignorePatterns.some(pattern => {
+        // Phase 3.5: Check for .ngksignore sentinel in parent directories
+    const dirPath = path.dirname(filePath);
+    if (hasSentinel(dirPath)) {
+      return true;
+    }
+        return this.ignorePatterns.some(pattern => {
       // Convert glob pattern to regex (escape regex metacharacters first)
       const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
       const regexPattern = escaped
