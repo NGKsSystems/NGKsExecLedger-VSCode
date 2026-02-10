@@ -10,6 +10,7 @@ import { closeTaskCommand } from "./commands/execLedgerCloseTask";
 import { initStatusBar } from "./core/execLedgerStatusBar";
 import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
+import { registerExportProofBundleCommand } from "./command/exportProofBundle";
 
 const sessions = new SessionManager();
 let crashGuard: CrashGuard | null = null;
@@ -81,6 +82,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push(
     vscode.commands.registerCommand('ngksExecLedger.closeTask', () => closeTaskCommand())
   );
+
+  // Register proof bundle export command
+  registerExportProofBundleCommand(context);
 
   // IMPORTANT: this is what was missing
   await activateExtension(context, sessions);

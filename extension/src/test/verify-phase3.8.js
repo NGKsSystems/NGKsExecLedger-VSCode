@@ -46,6 +46,10 @@ function testFileScopeValidation() {
     'extension/src/test/verify-phase4.js',
     'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase5.js',
+    'extension/package.json',
+    'extension/src/extension.ts',
+    'extension/src/command/exportProofBundle.ts',
+    'extension/src/test/verify-phase6.js',
     '.gitignore'
   ];
   
@@ -166,6 +170,10 @@ PROOF_END`;
     'extension/src/test/verify-phase4.js',
     'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase5.js',
+    'extension/package.json',
+    'extension/src/extension.ts',
+    'extension/src/command/exportProofBundle.ts',
+    'extension/src/test/verify-phase6.js',
     '.gitignore'
   ];
   

@@ -73,6 +73,10 @@
       {
         "command": "ngksAutologger.showChangedFiles",
         "title": "NGKs: Changed Files (Latest)"
+      },
+      {
+        "command": "ngksExecLedger.exportProofBundle",
+        "title": "ExecLedger: Export Proof Bundle"
       }
     ],
     "views": {

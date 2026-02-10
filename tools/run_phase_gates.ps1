@@ -225,13 +225,23 @@ if ($ExportBundle -eq "YES") {
   WriteLine "-> $verify5Out"
   WriteProofHeader $verify5Out $execId $sessionId
 
-  # Update summary with Phase 5 results
+  WriteLine ""
+  WriteLine "=== VERIFY_6 ==="
+  $verify6Out = Join-Path $proofDir "verify_6.txt"
+  $g6Code = RunNodeProof "extension/src/test/verify-phase6.js" $verify6Out
+  $g6Ok = ($g6Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase6.js"
+  WriteLine "-> $verify6Out"
+  WriteProofHeader $verify6Out $execId $sessionId
+
+  # Update summary with Phase 5 and 6 results
   $summaryContent = Get-Content $summary
   $updatedSummary = @()
   foreach ($line in $summaryContent) {
     $updatedSummary += $line
     if ($line -match "^VERIFY_3_9_OK=") {
       $updatedSummary += "VERIFY_5_OK=$g5Ok"
+      $updatedSummary += "VERIFY_6_OK=$g6Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -241,11 +251,19 @@ if ($ExportBundle -eq "YES") {
           $updatedSummary[-1] = $line -replace "FAIL_REASONS=", "FAIL_REASONS=" -replace "$", ",VERIFY_5_FAILED"
         }
       }
+      if (-not $g6Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_6_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_6_FAILED"
+        }
+      }
     }
   }
   $updatedSummary | Set-Content -Encoding UTF8 $summary
 
   if (-not $g5Ok) { $failReasons += "VERIFY_5_FAILED" }
+  if (-not $g6Ok) { $failReasons += "VERIFY_6_FAILED" }
 }
 
 # Exit code policy:
