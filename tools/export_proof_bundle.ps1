@@ -205,8 +205,13 @@ foreach ($f in $files) {
 if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
 Compress-Archive -Path (Join-Path $snapshotDir "*") -DestinationPath $zipPath -Force
 
-# Create/update latest bundle pointer
+# Create/update latest bundle pointer with Phase 15 pointer paths
 $latestPointerPath = Join-Path $bundlesDir "latest.json"
+$summaryPath = Join-Path $proofDirFinal "summary.txt"
+$reportPath = Join-Path $proofDirFinal "report.txt"
+$diffNameOnlyPath = Join-Path $proofDirFinal "diff_name_only.txt"
+$statusPath = Join-Path $proofDirFinal "status.txt"
+$compileLogPath = Join-Path $proofDirFinal "compile.txt"
 $latestPointer = [ordered]@{
   exec_id      = $execIdFinal
   session_id   = $sessionIdFinal
@@ -214,6 +219,12 @@ $latestPointer = [ordered]@{
   zip_path     = ($zipPath -replace "\\","/")
   manifest_path = ($manifestPath -replace "\\","/")
   created_at   = $utcNow
+  proof_dir    = ($proofDirFinal -replace "\\","/")
+  summary_path = ($summaryPath -replace "\\","/")
+  report_path  = ($reportPath -replace "\\","/")
+  diff_name_only_path = ($diffNameOnlyPath -replace "\\","/")
+  status_path  = ($statusPath -replace "\\","/")
+  compile_log_path = ($compileLogPath -replace "\\","/")
 }
 $latestPointerJson = ($latestPointer | ConvertTo-Json -Depth 2)
 [System.IO.File]::WriteAllText($latestPointerPath, $latestPointerJson)

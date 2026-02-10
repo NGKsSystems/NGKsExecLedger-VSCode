@@ -9,6 +9,10 @@ interface LatestProofData {
   zip_path: string;
   manifest_path: string;
   created_at: string;
+  // Phase 15: Optional pointer paths
+  proof_dir?: string;
+  summary_path?: string;
+  report_path?: string;
 }
 
 /**
@@ -76,7 +80,12 @@ function getLatestSummaryPath(): string | null {
     const content = fs.readFileSync(latestJsonPath, "utf8");
     const latestData = JSON.parse(content) as LatestProofData;
 
-    // Construct the proof directory path
+    // Phase 15: Prefer summary_path from latest.json when present
+    if (latestData.summary_path && fs.existsSync(latestData.summary_path)) {
+      return latestData.summary_path;
+    }
+
+    // Fallback: Construct the proof directory path from components
     let proofRootDir: string;
     if (outputRoot.trim()) {
       proofRootDir = outputRoot.trim();

@@ -9,6 +9,13 @@ interface LatestProofData {
   zip_path: string;
   manifest_path: string;
   created_at: string;
+  // Phase 15: Optional pointer paths
+  proof_dir?: string;
+  summary_path?: string;
+  report_path?: string;
+  diff_name_only_path?: string;
+  status_path?: string;
+  compile_log_path?: string;
 }
 
 interface ProofSummaryData {
@@ -203,16 +210,24 @@ function getProofSummaryData(latestData: LatestProofData): ProofSummaryData | nu
     const config = vscode.workspace.getConfiguration("execLedger");
     const outputRoot = config.get<string>("proof.outputRoot", "");
     
-    let proofRootDir: string;
-    if (outputRoot.trim()) {
-      proofRootDir = outputRoot.trim();
+    // Phase 15: Prefer summary_path from latest.json when present
+    let summaryPath: string;
+    let proofDir: string;
+    
+    if (latestData.summary_path && fs.existsSync(latestData.summary_path)) {
+      summaryPath = latestData.summary_path;
+      proofDir = latestData.proof_dir || path.dirname(summaryPath);
     } else {
-      proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
+      // Fallback: Compute path from exec_id/mode/session_id
+      let proofRootDir: string;
+      if (outputRoot.trim()) {
+        proofRootDir = outputRoot.trim();
+      } else {
+        proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
+      }
+      proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+      summaryPath = path.join(proofDir, "summary.txt");
     }
-
-    // Construct the expected proof directory path: _proof/exec_{exec_id}/{mode}/{session_id}
-    const proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
-    const summaryPath = path.join(proofDir, "summary.txt");
     
     if (!fs.existsSync(summaryPath)) {
       return null;

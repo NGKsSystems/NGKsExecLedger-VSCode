@@ -332,6 +332,15 @@ if ($shouldExport) {
   WriteLine "-> $verify14Out"
   WriteProofHeader $verify14Out $execId $sessionId
 
+  WriteLine ""
+  WriteLine "=== VERIFY_15 ==="
+  $verify15Out = Join-Path $proofDir "verify_15.txt"
+  $g15Code = RunNodeProof "extension/src/test/verify-phase15.js" $verify15Out
+  $g15Ok = ($g15Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase15.js"
+  WriteLine "-> $verify15Out"
+  WriteProofHeader $verify15Out $execId $sessionId
+
   # Generate human-readable report.txt
   $utcTimestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
   $report = Join-Path $proofDir "report.txt"
@@ -384,6 +393,7 @@ if ($shouldExport) {
     "  VERIFY_12: $g12Ok",
     "  VERIFY_13: $g13Ok",
     "  VERIFY_14: $g14Ok",
+    "  VERIFY_15: $g15Ok",
     "  FAIL_REASONS: " + ($(if ($failReasons.Count -eq 0) { "None" } else { $failReasons -join "," })),
     "",
     "CHANGED_FILES:"
@@ -407,6 +417,7 @@ if ($shouldExport) {
       $updatedSummary += "VERIFY_12_OK=$g12Ok"
       $updatedSummary += "VERIFY_13_OK=$g13Ok"
       $updatedSummary += "VERIFY_14_OK=$g14Ok"
+      $updatedSummary += "VERIFY_15_OK=$g15Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -479,6 +490,13 @@ if ($shouldExport) {
           $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_14_FAILED"
         }
       }
+      if (-not $g15Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_15_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_15_FAILED"
+        }
+      }
     }
   }
   WriteFileWithRetry -Path $summary -Lines $updatedSummary
@@ -493,6 +511,7 @@ if ($shouldExport) {
   if (-not $g12Ok) { $failReasons += "VERIFY_12_FAILED" }
   if (-not $g13Ok) { $failReasons += "VERIFY_13_FAILED" }
   if (-not $g14Ok) { $failReasons += "VERIFY_14_FAILED" }
+  if (-not $g15Ok) { $failReasons += "VERIFY_15_FAILED" }
   
   # Now export bundle after all phases and report generation
   Start-Sleep -Milliseconds 250

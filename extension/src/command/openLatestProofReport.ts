@@ -74,12 +74,17 @@ async function executeOpenLatestProofReport(): Promise<void> {
       return;
     }
 
-    // Try to find report.txt path from manifest first, then compute fallback
+    // Try to find report.txt path from multiple sources
     let reportPath = "";
     const manifestPath = latestData.manifest_path;
     
+    // Method 0 (Phase 15): Prefer report_path from latest.json when present
+    if (latestData.report_path && fs.existsSync(latestData.report_path)) {
+      reportPath = latestData.report_path;
+    }
+    
     // Method 1: Check manifest for report.txt entry
-    if (fs.existsSync(manifestPath)) {
+    if (!reportPath && fs.existsSync(manifestPath)) {
       try {
         const manifestContent = fs.readFileSync(manifestPath, "utf8");
         const manifest = JSON.parse(manifestContent);

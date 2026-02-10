@@ -53,6 +53,7 @@ function testFileScopeValidation() {
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
     'extension/src/command/openLatestProofBundle.ts',
+    'extension/src/command/openLatestProofReport.ts',
     'extension/src/command/runMilestoneGates.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
@@ -63,6 +64,7 @@ function testFileScopeValidation() {
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase13.js',
     'extension/src/test/verify-phase14.js',
+    'extension/src/test/verify-phase15.js',
     '.gitignore'
   ];
   
@@ -190,6 +192,7 @@ PROOF_END`;
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
     'extension/src/command/openLatestProofBundle.ts',
+    'extension/src/command/openLatestProofReport.ts',
     'extension/src/command/runMilestoneGates.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
@@ -200,6 +203,7 @@ PROOF_END`;
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase13.js',
     'extension/src/test/verify-phase14.js',
+    'extension/src/test/verify-phase15.js',
     '.gitignore'
   ];
   

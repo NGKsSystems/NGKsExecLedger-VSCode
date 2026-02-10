@@ -42,6 +42,7 @@ function verifyFileScope() {
     'extension/package.json',
     'extension/src/extension.ts', 
     'extension/src/command/openLatestProofBundle.ts',
+    'extension/src/command/openLatestProofReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/command/runMilestoneGates.ts',
@@ -59,7 +60,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase11.js',
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase13.js',
-    'extension/src/test/verify-phase14.js'
+    'extension/src/test/verify-phase14.js',
+    'extension/src/test/verify-phase15.js'
   ];
 
   try {
