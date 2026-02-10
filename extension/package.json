@@ -77,6 +77,10 @@
       {
         "command": "ngksExecLedger.exportProofBundle",
         "title": "ExecLedger: Export Proof Bundle"
+      },
+      {
+        "command": "ngksExecLedger.openLatestProofBundle",
+        "title": "ExecLedger: Open Latest Proof Bundle"
       }
     ],
     "views": {

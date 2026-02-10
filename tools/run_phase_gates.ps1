@@ -285,7 +285,16 @@ if ($shouldExport) {
   WriteLine "-> $verify8Out"
   WriteProofHeader $verify8Out $execId $sessionId
 
-  # Update summary with Phase 5, 6, 7, and 8 results
+  WriteLine ""
+  WriteLine "=== VERIFY_9 ==="
+  $verify9Out = Join-Path $proofDir "verify_9.txt"
+  $g9Code = RunNodeProof "extension/src/test/verify-phase9.js" $verify9Out
+  $g9Ok = ($g9Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase9.js"
+  WriteLine "-> $verify9Out"
+  WriteProofHeader $verify9Out $execId $sessionId
+
+  # Update summary with Phase 5, 6, 7, 8, and 9 results
   $summaryContent = Get-Content $summary
   $updatedSummary = @()
   foreach ($line in $summaryContent) {
@@ -295,6 +304,7 @@ if ($shouldExport) {
       $updatedSummary += "VERIFY_6_OK=$g6Ok"
       $updatedSummary += "VERIFY_7_OK=$g7Ok"
       $updatedSummary += "VERIFY_8_OK=$g8Ok"
+      $updatedSummary += "VERIFY_9_OK=$g9Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -325,6 +335,13 @@ if ($shouldExport) {
           $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_8_FAILED"
         }
       }
+      if (-not $g9Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_9_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_9_FAILED"
+        }
+      }
     }
   }
   WriteFileWithRetry -Path $summary -Lines $updatedSummary
@@ -333,6 +350,7 @@ if ($shouldExport) {
   if (-not $g6Ok) { $failReasons += "VERIFY_6_FAILED" }
   if (-not $g7Ok) { $failReasons += "VERIFY_7_FAILED" }
   if (-not $g8Ok) { $failReasons += "VERIFY_8_FAILED" }
+  if (-not $g9Ok) { $failReasons += "VERIFY_9_FAILED" }
 }
 
 # Exit code policy:
