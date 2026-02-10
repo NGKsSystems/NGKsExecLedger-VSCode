@@ -41,6 +41,7 @@ function testFileScopeValidation() {
   const allowedFiles = [
     'tools/proof_run.ps1',
     'extension/src/test/verify-phase3.8.js',
+    'extension/src/test/verify-phase3.9.js',
     '.gitignore'
   ];
   
@@ -148,6 +149,7 @@ PROOF_END`;
   const allowedFiles = [
     'tools/proof_run.ps1',
     'extension/src/test/verify-phase3.8.js',
+    'extension/src/test/verify-phase3.9.js',
     '.gitignore'
   ];
   

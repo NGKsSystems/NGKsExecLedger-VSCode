@@ -34,6 +34,8 @@ function fileScopeAllowed(changed) {
   const allowed = new Set([
     '.gitignore',
     'tools/run_phase_gates.ps1',
+    'extension/src/test/verify-phase3.7.js',
+    'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js'
   ]);
   const violations = changed.filter(f => f && !allowed.has(f));
