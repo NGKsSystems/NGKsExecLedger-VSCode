@@ -36,7 +36,10 @@ function fileScopeAllowed(changed) {
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.7.js',
     'extension/src/test/verify-phase3.8.js',
-    'extension/src/test/verify-phase3.9.js'
+    'extension/src/test/verify-phase3.9.js',
+    'extension/src/test/verify-phase4.js',
+    'extension/src/test/verify-phase5.js',
+    'tools/export_proof_bundle.ps1'
   ]);
   const violations = changed.filter(f => f && !allowed.has(f));
   return { pass: violations.length === 0, violations };

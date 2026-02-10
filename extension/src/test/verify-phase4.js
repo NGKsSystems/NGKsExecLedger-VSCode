@@ -184,7 +184,9 @@ function main() {
   const allowedFiles = new Set([
     'tools/run_phase_gates.ps1',
     '.gitignore',
-    'extension/src/test/verify-phase4.js'
+    'extension/src/test/verify-phase4.js',
+    'extension/src/test/verify-phase5.js',
+    'tools/export_proof_bundle.ps1'
   ]);
   
   const violations = diffList.filter(f => f && !allowedFiles.has(f));

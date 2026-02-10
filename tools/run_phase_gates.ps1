@@ -1,6 +1,9 @@
 param(
   [ValidateSet("Build","Milestone")]
-  [string]$Mode = "Build"
+  [string]$Mode = "Build",
+
+  [ValidateSet("YES","NO")]
+  [string]$ExportBundle = "NO"
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +42,24 @@ function RunToFile([string]$label, [string]$cmd, [string]$outFile) {
     Write-Warning "Command generated warning: $($_.Exception.Message)"
     return 0
   }
+}
+
+function RunNodeProof([string]$scriptPath, [string]$outPath) {
+  $nodeExe = "node"
+  $errPath = ($outPath -replace "\.txt$", ".err.txt")
+
+  if (Test-Path $outPath) { Remove-Item -Force $outPath }
+  if (Test-Path $errPath) { Remove-Item -Force $errPath }
+
+  $p = Start-Process -FilePath $nodeExe `
+    -ArgumentList @($scriptPath) `
+    -NoNewWindow `
+    -Wait `
+    -PassThru `
+    -RedirectStandardOutput $outPath `
+    -RedirectStandardError  $errPath
+
+  return $p.ExitCode
 }
 
 function WriteProofHeader([string]$filePath, [string]$execId, [string]$sessionId) {
@@ -123,21 +144,34 @@ $g37File = Join-Path $proofDir "verify_3_7.txt"
 $g38File = Join-Path $proofDir "verify_3_8.txt"
 $g39File = Join-Path $proofDir "verify_3_9.txt"
 
-$g37Code = RunToFile "VERIFY_3_7" "node extension/src/test/verify-phase3.7.js" $g37File
-$g38Code = RunToFile "VERIFY_3_8" "node extension/src/test/verify-phase3.8.js" $g38File
-$g39Code = RunToFile "VERIFY_3_9" "node extension/src/test/verify-phase3.9.js" $g39File
-
+WriteLine ""
+WriteLine "=== VERIFY_3_7 ==="
+$g37Code = RunNodeProof "extension/src/test/verify-phase3.7.js" $g37File
+WriteLine "node extension/src/test/verify-phase3.7.js"
+WriteLine "-> $g37File"
 WriteProofHeader $g37File $execId $sessionId
+
+WriteLine ""
+WriteLine "=== VERIFY_3_8 ==="
+$g38Code = RunNodeProof "extension/src/test/verify-phase3.8.js" $g38File
+WriteLine "node extension/src/test/verify-phase3.8.js"
+WriteLine "-> $g38File"
 WriteProofHeader $g38File $execId $sessionId
+
+WriteLine ""
+WriteLine "=== VERIFY_3_9 ==="
+$g39Code = RunNodeProof "extension/src/test/verify-phase3.9.js" $g39File
+WriteLine "node extension/src/test/verify-phase3.9.js"
+WriteLine "-> $g39File"
 WriteProofHeader $g39File $execId $sessionId
 
 $g37Txt = ReadText $g37File
 $g38Txt = ReadText $g38File
 $g39Txt = ReadText $g39File
 
-$g37Ok = HasOverallPass $g37Txt
-$g38Ok = HasOverallPass $g38Txt
-$g39Ok = HasOverallPass $g39Txt
+$g37Ok = ($g37Code -eq 0)
+$g38Ok = ($g38Code -eq 0)
+$g39Ok = ($g39Code -eq 0)
 
 # Mode-aware interpretation
 $g38Advisory = $false
@@ -173,6 +207,46 @@ $summary = Join-Path $proofDir "summary.txt"
 WriteLine ""
 WriteLine "==== SUMMARY ===="
 Get-Content $summary | ForEach-Object { WriteLine $_ }
+
+if ($ExportBundle -eq "YES") {
+  Start-Sleep -Milliseconds 250
+  WriteLine "=== EXPORT_BUNDLE ==="
+  powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\export_proof_bundle.ps1") `
+    -ExecId $execId `
+    -SessionId $sessionId `
+    -Mode $Mode
+
+  WriteLine ""
+  WriteLine "=== VERIFY_5 ==="
+  $verify5Out = Join-Path $proofDir "verify_5.txt"
+  $g5Code = RunNodeProof "extension/src/test/verify-phase5.js" $verify5Out
+  $g5Ok = ($g5Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase5.js"
+  WriteLine "-> $verify5Out"
+  WriteProofHeader $verify5Out $execId $sessionId
+
+  # Update summary with Phase 5 results
+  $summaryContent = Get-Content $summary
+  $updatedSummary = @()
+  foreach ($line in $summaryContent) {
+    $updatedSummary += $line
+    if ($line -match "^VERIFY_3_9_OK=") {
+      $updatedSummary += "VERIFY_5_OK=$g5Ok"
+    }
+    if ($line -match "^FAIL_REASONS=") {
+      if (-not $g5Ok) {
+        if ($line -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_5_FAILED"
+        } else {
+          $updatedSummary[-1] = $line -replace "FAIL_REASONS=", "FAIL_REASONS=" -replace "$", ",VERIFY_5_FAILED"
+        }
+      }
+    }
+  }
+  $updatedSummary | Set-Content -Encoding UTF8 $summary
+
+  if (-not $g5Ok) { $failReasons += "VERIFY_5_FAILED" }
+}
 
 # Exit code policy:
 # - Build mode: fail only on real failures (compile or 3.7 or 3.9, or 3.8 non-advisory)

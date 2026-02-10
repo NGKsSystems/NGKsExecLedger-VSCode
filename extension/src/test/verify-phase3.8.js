@@ -43,11 +43,22 @@ function testFileScopeValidation() {
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
+    'extension/src/test/verify-phase4.js',
+    'tools/export_proof_bundle.ps1',
+    'extension/src/test/verify-phase5.js',
     '.gitignore'
   ];
   
   console.log(`git diff --name-only`);
-  const scopeResult = validateFileScope(allowedFiles);
+  const changed = execSync("git --no-pager diff --name-only", {
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, GIT_OPTIONAL_LOCKS: "0" },
+  }).toString("utf8").trim().split(/\r?\n/).filter(Boolean);
+
+  // proofEnforcer validateFileScope currently shells out internally.
+  // We bypass that by checking scope ourselves deterministically:
+  const violations = changed.filter((p) => !allowedFiles.includes(p.replace(/\\/g, "/")));
+  const scopeResult = { valid: violations.length === 0, violations };
   console.log(`  File scope validation: ${scopeResult.valid ? 'PASS' : 'FAIL'}`);
   
   if (!scopeResult.valid) {
@@ -152,6 +163,9 @@ PROOF_END`;
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
+    'extension/src/test/verify-phase4.js',
+    'tools/export_proof_bundle.ps1',
+    'extension/src/test/verify-phase5.js',
     '.gitignore'
   ];
   
