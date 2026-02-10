@@ -43,6 +43,9 @@ function verifyFileScope() {
     'extension/src/status/statusBarProof.ts',
     'extension/src/command/exportProofBundle.ts',
     'extension/src/test/verify-phase12.js',
+    'extension/src/command/openLatestSummary.ts',
+    'extension/src/command/copyLatestSummary.ts',
+    'extension/src/status/statusBarProof.ts',
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
@@ -53,7 +56,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
     'extension/src/test/verify-phase11.js',
-    'extension/src/test/verify-phase13.js'
+    'extension/src/test/verify-phase13.js',
+    'extension/src/test/verify-phase14.js'
   ];
 
   // Note: Skip file scope validation for now since this is being run 

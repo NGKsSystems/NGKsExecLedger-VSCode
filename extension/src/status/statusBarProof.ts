@@ -11,6 +11,16 @@ interface LatestProofData {
   created_at: string;
 }
 
+interface ProofSummaryData {
+  exec_id: string;
+  session_id: string;
+  mode: string;
+  compile_ok: boolean;
+  fail_reasons: string;
+  proof_dir: string;
+  [key: string]: any; // For other VERIFY_* fields
+}
+
 let statusBarItem: vscode.StatusBarItem | null = null;
 let latestJsonWatcher: vscode.FileSystemWatcher | null = null;
 let refreshTimeout: NodeJS.Timeout | null = null;
@@ -88,24 +98,55 @@ export function refreshProofStatus(): void {
     statusBarItem.text = "$(package) ExecLedger: No proof";
     statusBarItem.tooltip = "No proof artifacts found. Click to generate or open proof bundle.";
   } else {
-    // Show mode and short exec_id (first 8 chars)
+    const summaryData = getProofSummaryData(latestData);
+    const isPass = summaryData && summaryData.fail_reasons === "None";
+    const statusIcon = isPass ? "$(check)" : "$(x)";
+    const statusText = isPass ? "PASS" : "FAIL";
+    
+    // Show mode, pass/fail status, and short exec_id (first 8 chars)
     const shortExecId = latestData.exec_id.substring(0, 8);
-    statusBarItem.text = `$(package) ExecLedger: ${latestData.mode} ${shortExecId}`;
+    statusBarItem.text = `${statusIcon} ExecLedger: ${statusText} ${latestData.mode} ${shortExecId}`;
     
     // Create detailed tooltip
     const createdDate = new Date(latestData.created_at).toLocaleString();
-    statusBarItem.tooltip = new vscode.MarkdownString([
+    const tooltipLines = [
       `**ExecLedger Proof Status**`,
       ``,
       `📋 **Exec ID**: ${latestData.exec_id}`,
       `🆔 **Session ID**: ${latestData.session_id}`,
       `⚙️ **Mode**: ${latestData.mode}`,
+      `📅 **Created**: ${createdDate}`,
+      ``
+    ];
+
+    if (summaryData) {
+      tooltipLines.push(
+        `📊 **Status**: ${statusText}`,
+        `❌ **Fail Reasons**: ${summaryData.fail_reasons}`,
+        `📁 **Proof Dir**: ${summaryData.proof_dir}`,
+        ``
+      );
+    }
+
+    tooltipLines.push(
       `📦 **ZIP Path**: ${latestData.zip_path}`,
       `📄 **Manifest Path**: ${latestData.manifest_path}`,
-      `📅 **Created**: ${createdDate}`,
-      ``,
-      `_Click for quick actions_`
-    ].join('\n'));
+      ``
+    );
+
+    if (summaryData && summaryData.proof_dir) {
+      const summaryPath = path.join(summaryData.proof_dir, "summary.txt");
+      const reportPath = path.join(summaryData.proof_dir, "report.txt");
+      tooltipLines.push(
+        `📋 **Summary Path**: ${summaryPath}`,
+        `📝 **Report Path**: ${reportPath}`,
+        ``
+      );
+    }
+
+    tooltipLines.push(`_Click for quick actions_`);
+    
+    statusBarItem.tooltip = new vscode.MarkdownString(tooltipLines.join('\n'));
   }
 
   statusBarItem.show();
@@ -152,6 +193,70 @@ function getLatestProofData(): LatestProofData | null {
 }
 
 /**
+ * Get proof summary data from summary.txt in the latest proof directory
+ */
+function getProofSummaryData(latestData: LatestProofData): ProofSummaryData | null {
+  try {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) return null;
+
+    const config = vscode.workspace.getConfiguration("execLedger");
+    const outputRoot = config.get<string>("proof.outputRoot", "");
+    
+    let proofRootDir: string;
+    if (outputRoot.trim()) {
+      proofRootDir = outputRoot.trim();
+    } else {
+      proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
+    }
+
+    // Construct the expected proof directory path: _proof/exec_{exec_id}/{mode}/{session_id}
+    const proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+    const summaryPath = path.join(proofDir, "summary.txt");
+    
+    if (!fs.existsSync(summaryPath)) {
+      return null;
+    }
+
+    const content = fs.readFileSync(summaryPath, "utf8");
+    const lines = content.split('\n').filter(line => line.trim().length > 0);
+    
+    const summaryData: ProofSummaryData = {
+      exec_id: latestData.exec_id,
+      session_id: latestData.session_id,
+      mode: latestData.mode,
+      compile_ok: false,
+      fail_reasons: "Unknown",
+      proof_dir: proofDir
+    };
+
+    // Parse key=value pairs from summary.txt
+    for (const line of lines) {
+      const [key, value] = line.split('=', 2);
+      if (!key || !value) continue;
+
+      const cleanKey = key.trim().toLowerCase();
+      const cleanValue = value.trim();
+      
+      if (cleanKey === 'compile_ok') {
+        summaryData.compile_ok = cleanValue === 'True';
+      } else if (cleanKey === 'fail_reasons') {
+        summaryData.fail_reasons = cleanValue;
+      } else if (cleanKey === 'proof_dir') {
+        summaryData.proof_dir = cleanValue;
+      } else {
+        // Store other fields dynamically (VERIFY_* fields, etc.)
+        summaryData[cleanKey] = cleanValue;
+      }
+    }
+    
+    return summaryData;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
  * Show QuickPick with proof actions
  */
 async function showProofQuickPick(): Promise<void> {
@@ -177,6 +282,16 @@ async function showProofQuickPick(): Promise<void> {
         label: "$(file-text) Open Latest Proof Report", 
         description: "View proof report in VS Code editor",
         detail: "Opens report.txt from latest proof bundle"
+      },
+      {
+        label: "$(list-ordered) Open Latest Summary",
+        description: "View proof summary in VS Code editor",
+        detail: "Opens summary.txt from latest proof bundle"
+      },
+      {
+        label: "$(copy) Copy Latest Summary",
+        description: "Copy proof summary to clipboard",
+        detail: "Copies summary.txt content to clipboard"
       },
       {
         label: "$(file-directory) Reveal latest.json",
@@ -207,6 +322,10 @@ async function showProofQuickPick(): Promise<void> {
     await vscode.commands.executeCommand("ngksExecLedger.openLatestProofBundle");
   } else if (selected.label.includes("Open Latest Proof Report")) {
     await vscode.commands.executeCommand("ngksExecLedger.openLatestProofReport");
+  } else if (selected.label.includes("Open Latest Summary")) {
+    await vscode.commands.executeCommand("ngksExecLedger.openLatestSummary");
+  } else if (selected.label.includes("Copy Latest Summary")) {
+    await vscode.commands.executeCommand("ngksExecLedger.copyLatestSummary");
   } else if (selected.label.includes("Reveal latest.json")) {
     await revealLatestJson();
   }

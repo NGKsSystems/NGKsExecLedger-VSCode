@@ -12,6 +12,8 @@ import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
 import { registerExportProofBundleCommand } from "./command/exportProofBundle";
 import { registerOpenLatestProofBundleCommand } from "./command/openLatestProofBundle";
+import { registerOpenLatestSummaryCommand } from "./command/openLatestSummary";
+import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
 import { registerOpenLatestProofReportCommand } from "./command/openLatestProofReport";
 import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
 import { initProofStatusBar } from "./status/statusBarProof";
@@ -94,6 +96,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   registerExportProofBundleCommand(context);
   registerRunMilestoneGatesCommand(context);
   registerOpenLatestProofBundleCommand(context);
+  registerOpenLatestSummaryCommand(context);
+  registerCopyLatestSummaryCommand(context);
   registerOpenLatestProofReportCommand(context);
 
   // IMPORTANT: this is what was missing

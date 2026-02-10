@@ -87,6 +87,14 @@
         "title": "ExecLedger: Open Latest Proof Bundle"
       },
       {
+        "command": "ngksExecLedger.openLatestSummary",
+        "title": "ExecLedger: Open Latest Summary"
+      },
+      {
+        "command": "ngksExecLedger.copyLatestSummary",
+        "title": "ExecLedger: Copy Latest Summary to Clipboard"
+      },
+      {
         "command": "ngksExecLedger.openLatestProofReport",
         "title": "ExecLedger: Open Latest Proof Report"
       }
@@ -171,6 +179,11 @@
           "type": "boolean",
           "default": false,
           "description": "Copy the full report text to clipboard when opening the latest proof report."
+        },
+        "execLedger.proof.copySummaryToClipboard": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow copying the proof summary to clipboard when using the Copy Latest Summary command."
         }
       }
     }
