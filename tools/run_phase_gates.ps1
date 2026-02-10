@@ -58,7 +58,8 @@ $repoRoot = "C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger"
 Set-Location $repoRoot
 
 $ts = Stamp
-$proofDir = Join-Path $repoRoot "_proof\phase3.9_$ts"
+$modeSubdir = $Mode.ToLower()
+$proofDir = Join-Path $repoRoot "_proof\phase_3.7\$modeSubdir\$ts"
 New-Item -ItemType Directory -Force -Path $proofDir | Out-Null
 
 WriteLine "MODE=$Mode"
