@@ -56,3 +56,7 @@ _proof/
 # Universal Agent Ruleset docs (local only)
 Universal Agent Ruleset*.txt
 
+
+# local clean-clone workspace
+NGKsExecLedger-clean/
+
