@@ -233,6 +233,7 @@ WriteLine ""
 WriteLine "==== SUMMARY ===="
 Get-Content $summary | ForEach-Object { WriteLine $_ }
 
+# Conditional Phase 5-10 verification (only when exporting bundles)
 # Determine if we should export bundle
 $shouldExport = $false
 if ($ExportBundle -eq "YES") {
@@ -242,14 +243,6 @@ if ($ExportBundle -eq "YES") {
 }
 
 if ($shouldExport) {
-  Start-Sleep -Milliseconds 250
-  WriteLine "=== EXPORT_BUNDLE ==="
-  powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\export_proof_bundle.ps1") `
-    -ExecId $execId `
-    -SessionId $sessionId `
-    -Mode $Mode
-
-  WriteLine ""
   WriteLine "=== VERIFY_5 ==="
   $verify5Out = Join-Path $proofDir "verify_5.txt"
   $g5Code = RunNodeProof "extension/src/test/verify-phase5.js" $verify5Out
@@ -294,7 +287,71 @@ if ($shouldExport) {
   WriteLine "-> $verify9Out"
   WriteProofHeader $verify9Out $execId $sessionId
 
-  # Update summary with Phase 5, 6, 7, 8, and 9 results
+  WriteLine ""
+  WriteLine "=== VERIFY_10 ==="
+  $verify10Out = Join-Path $proofDir "verify_10.txt"
+  $g10Code = RunNodeProof "extension/src/test/verify-phase10.js" $verify10Out
+  $g10Ok = ($g10Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase10.js"
+  WriteLine "-> $verify10Out"
+  WriteProofHeader $verify10Out $execId $sessionId
+
+  # Generate human-readable report.txt
+  $utcTimestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
+  $report = Join-Path $proofDir "report.txt"
+  
+  # Read changed files from diff_name_only.txt
+  $diffFile = Join-Path $proofDir "diff_name_only.txt"
+  $changedFiles = @()
+  if (Test-Path $diffFile) {
+    $changedFiles = Get-Content $diffFile | Where-Object { $_.Trim() } | ForEach-Object { "  - $_" }
+  }
+  if ($changedFiles.Count -eq 0) {
+    $changedFiles = @("  none")
+  }
+  
+  # Determine bundle paths
+  $bundleZip = "N/A"
+  $bundleManifest = "N/A" 
+  $bundleLatest = "N/A"
+  if ($shouldExport) {
+    $bundleZip = Join-Path $repoRoot "_proof\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.zip"
+    $bundleManifest = Join-Path $repoRoot "_proof\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.manifest.json"
+    $bundleLatest = Join-Path $repoRoot "_proof\bundles\latest.json"
+  }
+  
+  @(
+    "ExecLedger Proof Report",
+    "",
+    "EXEC_ID: $execId",
+    "SESSION_ID: $sessionId",
+    "MODE: $Mode",
+    "UTC_TIMESTAMP: $utcTimestamp",
+    "",
+    "PROOF_DIR: $proofDir",
+    "BUNDLE_ZIP: $bundleZip", 
+    "BUNDLE_MANIFEST: $bundleManifest",
+    "BUNDLE_LATEST: $bundleLatest",
+    "",
+    "GATE_RESULTS:",
+    "  COMPILE: $compileOk",
+    "  VERIFY_3_7: $g37Ok",
+    "  VERIFY_3_8: $g38Ok",
+    "  VERIFY_3_9: $g39Ok",
+    "  VERIFY_5: $g5Ok",
+    "  VERIFY_6: $g6Ok", 
+    "  VERIFY_7: $g7Ok",
+    "  VERIFY_8: $g8Ok",
+    "  VERIFY_9: $g9Ok",
+    "  VERIFY_10: $g10Ok",
+    "  FAIL_REASONS: " + ($(if ($failReasons.Count -eq 0) { "None" } else { $failReasons -join "," })),
+    "",
+    "CHANGED_FILES:"
+  ) + $changedFiles | Set-Content -Encoding UTF8 $report
+  
+  WriteLine "Generated report: $report"
+
+  # Update summary with Phase 5, 6, 7, 8, 9, and 10 results
   $summaryContent = Get-Content $summary
   $updatedSummary = @()
   foreach ($line in $summaryContent) {
@@ -305,6 +362,7 @@ if ($shouldExport) {
       $updatedSummary += "VERIFY_7_OK=$g7Ok"
       $updatedSummary += "VERIFY_8_OK=$g8Ok"
       $updatedSummary += "VERIFY_9_OK=$g9Ok"
+      $updatedSummary += "VERIFY_10_OK=$g10Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -342,6 +400,13 @@ if ($shouldExport) {
           $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_9_FAILED"
         }
       }
+      if (-not $g10Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_10_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_10_FAILED"
+        }
+      }
     }
   }
   WriteFileWithRetry -Path $summary -Lines $updatedSummary
@@ -351,6 +416,16 @@ if ($shouldExport) {
   if (-not $g7Ok) { $failReasons += "VERIFY_7_FAILED" }
   if (-not $g8Ok) { $failReasons += "VERIFY_8_FAILED" }
   if (-not $g9Ok) { $failReasons += "VERIFY_9_FAILED" }
+  if (-not $g10Ok) { $failReasons += "VERIFY_10_FAILED" }
+  
+  # Now export bundle after all phases and report generation
+  Start-Sleep -Milliseconds 250
+  WriteLine "=== EXPORT_BUNDLE ==="
+  powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\export_proof_bundle.ps1") `
+    -ExecId $execId `
+    -SessionId $sessionId `
+    -Mode $Mode
+  WriteLine ""
 }
 
 # Exit code policy:

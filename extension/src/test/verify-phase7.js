@@ -150,6 +150,7 @@ function testFileScope() {
     "extension/src/test/verify-phase8.js",
     "extension/src/command/openLatestProofBundle.ts",
     "extension/src/test/verify-phase9.js",
+    "extension/src/test/verify-phase10.js",
     "tools/export_proof_bundle.ps1",
     "tools/run_phase_gates.ps1",
     ".gitignore"
