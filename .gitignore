@@ -60,3 +60,7 @@ Universal Agent Ruleset*.txt
 # local clean clone workspace
 NGKsExecLedger-clean/
 
+
+# local scratch
+NGKsExecLedger-clean/
+
