@@ -9,6 +9,19 @@ function Stamp() {
   return (Get-Date).ToString("yyyyMMdd_HHmmss")
 }
 
+function GenerateExecId([string]$repoHead, [string]$phases, [string]$mode) {
+  # TASK A: Deterministic EXEC_ID from repo HEAD + phases + mode + verifier set
+  $input = "$repoHead|$phases|$mode|3.7,3.8,3.9"
+  $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($input))
+  $hashStr = [BitConverter]::ToString($hash) -replace '-', ''
+  return $hashStr.Substring(0, 16).ToLower()  # Truncated SHA-256
+}
+
+function GenerateSessionId {
+  # TASK B: Runtime-unique SESSION_ID (UUIDv4)
+  return [System.Guid]::NewGuid().ToString()
+}
+
 function WriteLine($s) {
   Write-Host $s
 }
@@ -18,13 +31,30 @@ function RunToFile([string]$label, [string]$cmd, [string]$outFile) {
   WriteLine "=== $label ==="
   WriteLine $cmd
   WriteLine "-> $outFile"
+  
   try {
     powershell -NoProfile -ExecutionPolicy Bypass -Command $cmd *> $outFile
     return $LASTEXITCODE
   } catch {
-    # Handle non-fatal warnings (like git CRLF warnings) that don't affect functionality
     Write-Warning "Command generated warning: $($_.Exception.Message)"
-    return 0  # Treat warnings as non-fatal
+    return 0
+  }
+}
+
+function WriteProofHeader([string]$filePath, [string]$execId, [string]$sessionId) {
+  # TASK C: Lineage propagation - add IDs to all proof files
+  $header = @(
+    "EXEC_ID=$execId"
+    "SESSION_ID=$sessionId"
+    ""
+  )
+  
+  if (Test-Path $filePath) {
+    $content = Get-Content $filePath
+    $newContent = $header + $content
+    $newContent | Set-Content -Path $filePath -Encoding UTF8
+  } else {
+    $header | Set-Content -Path $filePath -Encoding UTF8
   }
 }
 
@@ -57,23 +87,36 @@ function IsOnlyFileScopeFailure([string]$txt) {
 $repoRoot = "C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger"
 Set-Location $repoRoot
 
-$ts = Stamp
+# Get current git HEAD for EXEC_ID generation
+$repoHead = git rev-parse HEAD
+$phaseSet = "3.7-3.9"
+$execId = GenerateExecId $repoHead $phaseSet $Mode
+$sessionId = GenerateSessionId
+
+# TASK D: New proof directory structure with EXEC_ID
 $modeSubdir = $Mode.ToLower()
-$proofDir = Join-Path $repoRoot "_proof\phase_3.7\$modeSubdir\$ts"
+$proofDir = Join-Path $repoRoot "_proof\exec_$execId\$modeSubdir\$sessionId"
 New-Item -ItemType Directory -Force -Path $proofDir | Out-Null
 
 WriteLine "MODE=$Mode"
+WriteLine "EXEC_ID=$execId"
+WriteLine "SESSION_ID=$sessionId"
 WriteLine "PROOF_DIR=$proofDir"
 
 # Always capture state up front
-RunToFile "GIT_STATUS" "git status --porcelain=v1" (Join-Path $proofDir "status.txt") | Out-Null
-RunToFile "GIT_DIFF_NAME_ONLY" "git diff --name-only" (Join-Path $proofDir "diff_name_only.txt") | Out-Null
+$statusFile = Join-Path $proofDir "status.txt"
+$diffFile = Join-Path $proofDir "diff_name_only.txt"
+RunToFile "GIT_STATUS" "git status --porcelain=v1" $statusFile | Out-Null
+RunToFile "GIT_DIFF_NAME_ONLY" "git diff --name-only" $diffFile | Out-Null
+WriteProofHeader $statusFile $execId $sessionId
+WriteProofHeader $diffFile $execId $sessionId
 
 # Compile gate
 $compileFile = Join-Path $proofDir "compile.txt"
 $compileCode = RunToFile "COMPILE" "pnpm --dir extension run compile" $compileFile
 $compileTxt = ReadText $compileFile
 $compileOk = ($compileCode -eq 0)
+WriteProofHeader $compileFile $execId $sessionId
 
 # Phase gates (existing)
 $g37File = Join-Path $proofDir "verify_3_7.txt"
@@ -82,9 +125,11 @@ $g39File = Join-Path $proofDir "verify_3_9.txt"
 
 $g37Code = RunToFile "VERIFY_3_7" "node extension/src/test/verify-phase3.7.js" $g37File
 $g38Code = RunToFile "VERIFY_3_8" "node extension/src/test/verify-phase3.8.js" $g38File
-
-# Phase 3.9 gate (new)
 $g39Code = RunToFile "VERIFY_3_9" "node extension/src/test/verify-phase3.9.js" $g39File
+
+WriteProofHeader $g37File $execId $sessionId
+WriteProofHeader $g38File $execId $sessionId
+WriteProofHeader $g39File $execId $sessionId
 
 $g37Txt = ReadText $g37File
 $g38Txt = ReadText $g38File
@@ -113,6 +158,8 @@ if (-not $g39Ok) { $failReasons += "VERIFY_3_9_FAILED" }
 
 $summary = Join-Path $proofDir "summary.txt"
 @(
+  "EXEC_ID=$execId"
+  "SESSION_ID=$sessionId"
   "MODE=$Mode"
   "COMPILE_OK=$compileOk"
   "VERIFY_3_7_OK=$g37Ok"
