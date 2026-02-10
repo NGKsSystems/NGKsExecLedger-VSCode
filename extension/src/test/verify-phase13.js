@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Phase 11 verification gate - open latest proof report command + optional clipboard copy
-// This verifies all Phase 11 deliverables are correctly implemented
+// Phase 13 verification gate - run milestone proof gates command
+// This verifies all Phase 13 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
@@ -36,14 +36,13 @@ function checkFileContains(filePath, searchString, description) {
   return true;
 }
 
-// Verify file scope - only allowed Phase 11 files should be modified
+// Verify file scope - only allowed Phase 13 files should be modified
 function verifyFileScope() {
   const allowedFiles = [
     'extension/package.json',
     'extension/src/extension.ts', 
-    'extension/src/command/openLatestProofReport.ts',
     'extension/src/command/runMilestoneGates.ts',
-    'extension/src/test/verify-phase11.js',
+    'extension/src/test/verify-phase13.js',
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
@@ -53,8 +52,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase8.js',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
-    'extension/src/test/verify-phase12.js',
-    'extension/src/test/verify-phase13.js'
+    'extension/src/test/verify-phase11.js',
+    'extension/src/test/verify-phase12.js'
   ];
 
   try {
@@ -66,7 +65,7 @@ function verifyFileScope() {
 
     const disallowedFiles = modifiedFiles.filter(file => !allowedFiles.includes(file));
     if (disallowedFiles.length > 0) {
-      fail(`Phase 11 scope violation: unexpected files modified: ${disallowedFiles.join(', ')}`);
+      fail(`Phase 13 scope violation: unexpected files modified: ${disallowedFiles.join(', ')}`);
     }
   } catch (error) {
     fail(`Failed to check git status: ${error.message}`);
@@ -76,106 +75,108 @@ function verifyFileScope() {
 // TASK_A: Command exists in package.json
 checkFileContains(
   'extension/package.json',
-  '"command": "ngksExecLedger.openLatestProofReport"',
+  '"command": "ngksExecLedger.runMilestoneGates"',
   'command definition in package.json'
 );
 
 checkFileContains(
   'extension/package.json', 
-  '"title": "ExecLedger: Open Latest Proof Report"',
+  '"title": "ExecLedger: Run Milestone Proof Gates"',
   'command title in package.json'
 );
 
-// TASK_A: Configuration setting exists in package.json
-checkFileContains(
-  'extension/package.json',
-  '"execLedger.proof.copyReportToClipboard"',
-  'copyReportToClipboard configuration in package.json'
-);
-
-checkFileContains(
-  'extension/package.json',
-  '"type": "boolean"',
-  'boolean type for copyReportToClipboard setting'
-);
-
-checkFileContains(
-  'extension/package.json',
-  '"default": false',
-  'default false for copyReportToClipboard setting'
-);
-
-// TASK_B: Command file exists with correct structure
+// TASK_B: Implementation file exists with correct structure
 checkFileExists(
-  'extension/src/command/openLatestProofReport.ts',
-  'openLatestProofReport.ts command file'
+  'extension/src/command/runMilestoneGates.ts',
+  'runMilestoneGates.ts command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'export function registerOpenLatestProofReportCommand',
+  'extension/src/command/runMilestoneGates.ts',
+  'export function registerRunMilestoneGatesCommand',
   'register function in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  '"ngksExecLedger.openLatestProofReport"',
+  'extension/src/command/runMilestoneGates.ts',
+  '"ngksExecLedger.runMilestoneGates"',
   'correct command id in command file'
 );
 
+// PowerShell runner invocation
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'latest.json',
-  'latest.json reading logic'
+  'extension/src/command/runMilestoneGates.ts',
+  'powershell -NoProfile -ExecutionPolicy Bypass -File',
+  'PowerShell runner invocation'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'report.txt',
-  'report.txt handling logic'
+  'extension/src/command/runMilestoneGates.ts',
+  'run_phase_gates.ps1',
+  'runner script path'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'copyReportToClipboard',
-  'clipboard copy configuration check'
+  'extension/src/command/runMilestoneGates.ts',
+  '-Mode Milestone -ExportBundle Auto',
+  'correct runner parameters'
+);
+
+// Summary reading logic
+checkFileContains(
+  'extension/src/command/runMilestoneGates.ts',
+  'summary.txt',
+  'summary reading logic'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'vscode.workspace.openTextDocument',
-  'VS Code editor opening logic'
+  'extension/src/command/runMilestoneGates.ts',
+  'findNewestMilestoneSummary',
+  'function to find newest summary'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'vscode.env.clipboard.writeText',
-  'clipboard writing logic'
+  'extension/src/command/runMilestoneGates.ts',
+  'parseSummaryResults',
+  'function to parse summary results'
+);
+
+// Phase 12 proof status bar refresh integration
+checkFileContains(
+  'extension/src/command/runMilestoneGates.ts',
+  'import { refreshProofStatus }',
+  'import of proof status bar refresh function'
+);
+
+checkFileContains(
+  'extension/src/command/runMilestoneGates.ts',
+  'refreshProofStatus()',
+  'call to refresh proof status bar'
 );
 
 // TASK_C: Extension.ts registers the command
 checkFileContains(
   'extension/src/extension.ts',
-  'import { registerOpenLatestProofReportCommand }',
-  'import statement in extension.ts'
+  'import { registerRunMilestoneGatesCommand }',
+  'import statement for run milestone gates command in extension.ts'
 );
 
 checkFileContains(
   'extension/src/extension.ts',
-  'registerOpenLatestProofReportCommand(context)',
+  'registerRunMilestoneGatesCommand(context)',
   'command registration in extension.ts'
 );
 
 // TASK_E: Runner integration check basic structure 
 checkFileContains(
   'tools/run_phase_gates.ps1',
-  'VERIFY_11',
-  'VERIFY_11 integration in runner'
+  'VERIFY_13',
+  'VERIFY_13 integration in runner'
 );
 
 // TASK_D: This file itself (verification gate)
 checkFileExists(
-  'extension/src/test/verify-phase11.js',
+  'extension/src/test/verify-phase13.js',
   'this verification file'
 );
 
@@ -183,16 +184,16 @@ checkFileExists(
 verifyFileScope();
 
 if (passed) {
-  console.log('✓ Phase 11 verification PASSED');
-  console.log('✓ Command ngksExecLedger.openLatestProofReport defined');
-  console.log('✓ Configuration execLedger.proof.copyReportToClipboard defined');
-  console.log('✓ Command implementation exists with report.txt opening logic');
-  console.log('✓ Optional clipboard copy functionality present');
+  console.log('✓ Phase 13 verification PASSED');
+  console.log('✓ Command ngksExecLedger.runMilestoneGates defined');
+  console.log('✓ Implementation file exists with PowerShell runner invocation');
+  console.log('✓ Summary reading and parsing logic implemented');
+  console.log('✓ Phase 12 proof status bar refresh integration present');
   console.log('✓ Extension registration completed');
   console.log('✓ Runner integration present');
   console.log('✓ File scope validation PASSED');
 } else {
-  console.log('✗ Phase 11 verification FAILED:');
+  console.log('✗ Phase 13 verification FAILED:');
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 

@@ -205,6 +205,7 @@ function testFileScope() {
     "extension/src/test/verify-phase10.js",
     "extension/src/test/verify-phase11.js",
     "extension/src/test/verify-phase12.js",
+    "extension/src/test/verify-phase13.js",
     ".gitignore",
   ];
   const scopeResult = validateFileScope(allowedFiles);

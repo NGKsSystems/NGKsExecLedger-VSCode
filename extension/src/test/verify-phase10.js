@@ -39,9 +39,12 @@ function checkFileContains(filePath, searchString, description) {
 // Verify file scope - only allowed Phase 10 files should be modified
 function verifyFileScope() {
   const allowedFiles = [
+    'extension/package.json',
+    'extension/src/extension.ts',
     'tools/run_phase_gates.ps1',
     'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase10.js',
+    'extension/src/command/runMilestoneGates.ts',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
     'extension/src/test/verify-phase5.js',
@@ -50,7 +53,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase8.js',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase11.js',
-    'extension/src/test/verify-phase12.js'
+    'extension/src/test/verify-phase12.js',
+    'extension/src/test/verify-phase13.js'
   ];
 
   try {

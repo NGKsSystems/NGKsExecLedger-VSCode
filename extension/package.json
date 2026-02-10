@@ -79,6 +79,10 @@
         "title": "ExecLedger: Export Proof Bundle"
       },
       {
+        "command": "ngksExecLedger.runMilestoneGates",
+        "title": "ExecLedger: Run Milestone Proof Gates"
+      },
+      {
         "command": "ngksExecLedger.openLatestProofBundle",
         "title": "ExecLedger: Open Latest Proof Bundle"
       },

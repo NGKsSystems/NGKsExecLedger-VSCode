@@ -13,6 +13,7 @@ import { showChangedFilesCommand } from "./commands/showChangedFiles";
 import { registerExportProofBundleCommand } from "./command/exportProofBundle";
 import { registerOpenLatestProofBundleCommand } from "./command/openLatestProofBundle";
 import { registerOpenLatestProofReportCommand } from "./command/openLatestProofReport";
+import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
 import { initProofStatusBar } from "./status/statusBarProof";
 
 const sessions = new SessionManager();
@@ -91,6 +92,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Register proof bundle export command
   registerExportProofBundleCommand(context);
+  registerRunMilestoneGatesCommand(context);
   registerOpenLatestProofBundleCommand(context);
   registerOpenLatestProofReportCommand(context);
 

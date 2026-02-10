@@ -52,7 +52,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase8.js',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
-    'extension/src/test/verify-phase11.js'
+    'extension/src/test/verify-phase11.js',
+    'extension/src/test/verify-phase13.js'
   ];
 
   // Note: Skip file scope validation for now since this is being run 
