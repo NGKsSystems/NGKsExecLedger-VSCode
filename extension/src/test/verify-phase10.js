@@ -48,7 +48,9 @@ function verifyFileScope() {
     'extension/src/test/verify-phase6.js',
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
-    'extension/src/test/verify-phase9.js'
+    'extension/src/test/verify-phase9.js',
+    'extension/src/test/verify-phase11.js',
+    'extension/src/test/verify-phase12.js'
   ];
 
   try {

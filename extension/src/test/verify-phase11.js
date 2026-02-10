@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Phase 9 verification gate - command to open latest proof bundle
-// This verifies all Phase 9 deliverables are correctly implemented
+// Phase 11 verification gate - open latest proof report command + optional clipboard copy
+// This verifies all Phase 11 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
@@ -36,23 +36,22 @@ function checkFileContains(filePath, searchString, description) {
   return true;
 }
 
-// Verify file scope - only allowed Phase 9 files should be modified
+// Verify file scope - only allowed Phase 11 files should be modified
 function verifyFileScope() {
   const allowedFiles = [
     'extension/package.json',
     'extension/src/extension.ts', 
-    'extension/src/command/openLatestProofBundle.ts',
-    'extension/src/test/verify-phase9.js',
+    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/test/verify-phase11.js',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
     'extension/src/test/verify-phase5.js',
     'extension/src/test/verify-phase6.js',
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
+    'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
-    'extension/src/test/verify-phase11.js',
     'extension/src/test/verify-phase12.js'
   ];
 
@@ -65,7 +64,7 @@ function verifyFileScope() {
 
     const disallowedFiles = modifiedFiles.filter(file => !allowedFiles.includes(file));
     if (disallowedFiles.length > 0) {
-      fail(`Phase 9 scope violation: unexpected files modified: ${disallowedFiles.join(', ')}`);
+      fail(`Phase 11 scope violation: unexpected files modified: ${disallowedFiles.join(', ')}`);
     }
   } catch (error) {
     fail(`Failed to check git status: ${error.message}`);
@@ -75,63 +74,106 @@ function verifyFileScope() {
 // TASK_A: Command exists in package.json
 checkFileContains(
   'extension/package.json',
-  '"command": "ngksExecLedger.openLatestProofBundle"',
+  '"command": "ngksExecLedger.openLatestProofReport"',
   'command definition in package.json'
 );
 
 checkFileContains(
   'extension/package.json', 
-  '"title": "ExecLedger: Open Latest Proof Bundle"',
+  '"title": "ExecLedger: Open Latest Proof Report"',
   'command title in package.json'
+);
+
+// TASK_A: Configuration setting exists in package.json
+checkFileContains(
+  'extension/package.json',
+  '"execLedger.proof.copyReportToClipboard"',
+  'copyReportToClipboard configuration in package.json'
+);
+
+checkFileContains(
+  'extension/package.json',
+  '"type": "boolean"',
+  'boolean type for copyReportToClipboard setting'
+);
+
+checkFileContains(
+  'extension/package.json',
+  '"default": false',
+  'default false for copyReportToClipboard setting'
 );
 
 // TASK_B: Command file exists with correct structure
 checkFileExists(
-  'extension/src/command/openLatestProofBundle.ts',
-  'openLatestProofBundle.ts command file'
+  'extension/src/command/openLatestProofReport.ts',
+  'openLatestProofReport.ts command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
-  'export function registerOpenLatestProofBundleCommand',
+  'extension/src/command/openLatestProofReport.ts',
+  'export function registerOpenLatestProofReportCommand',
   'register function in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
-  '"ngksExecLedger.openLatestProofBundle"',
+  'extension/src/command/openLatestProofReport.ts',
+  '"ngksExecLedger.openLatestProofReport"',
   'correct command id in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
+  'extension/src/command/openLatestProofReport.ts',
   'latest.json',
   'latest.json reading logic'
+);
+
+checkFileContains(
+  'extension/src/command/openLatestProofReport.ts',
+  'report.txt',
+  'report.txt handling logic'
+);
+
+checkFileContains(
+  'extension/src/command/openLatestProofReport.ts',
+  'copyReportToClipboard',
+  'clipboard copy configuration check'
+);
+
+checkFileContains(
+  'extension/src/command/openLatestProofReport.ts',
+  'vscode.workspace.openTextDocument',
+  'VS Code editor opening logic'
+);
+
+checkFileContains(
+  'extension/src/command/openLatestProofReport.ts',
+  'vscode.env.clipboard.writeText',
+  'clipboard writing logic'
 );
 
 // TASK_C: Extension.ts registers the command
 checkFileContains(
   'extension/src/extension.ts',
-  'import { registerOpenLatestProofBundleCommand }',
+  'import { registerOpenLatestProofReportCommand }',
   'import statement in extension.ts'
 );
 
 checkFileContains(
   'extension/src/extension.ts',
-  'registerOpenLatestProofBundleCommand(context)',
+  'registerOpenLatestProofReportCommand(context)',
   'command registration in extension.ts'
 );
 
 // TASK_E: Runner integration check basic structure 
 checkFileContains(
   'tools/run_phase_gates.ps1',
-  'VERIFY_9',
-  'VERIFY_9 integration in runner'
+  'VERIFY_11',
+  'VERIFY_11 integration in runner'
 );
 
 // TASK_D: This file itself (verification gate)
 checkFileExists(
-  'extension/src/test/verify-phase9.js',
+  'extension/src/test/verify-phase11.js',
   'this verification file'
 );
 
@@ -139,14 +181,16 @@ checkFileExists(
 verifyFileScope();
 
 if (passed) {
-  console.log('✓ Phase 9 verification PASSED');
-  console.log('✓ Command ngksExecLedger.openLatestProofBundle defined');
-  console.log('✓ Command implementation exists with latest.json logic');
+  console.log('✓ Phase 11 verification PASSED');
+  console.log('✓ Command ngksExecLedger.openLatestProofReport defined');
+  console.log('✓ Configuration execLedger.proof.copyReportToClipboard defined');
+  console.log('✓ Command implementation exists with report.txt opening logic');
+  console.log('✓ Optional clipboard copy functionality present');
   console.log('✓ Extension registration completed');
   console.log('✓ Runner integration present');
   console.log('✓ File scope validation PASSED');
 } else {
-  console.log('✗ Phase 9 verification FAILED:');
+  console.log('✗ Phase 11 verification FAILED:');
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 

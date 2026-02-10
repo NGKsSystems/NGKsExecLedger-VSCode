@@ -131,11 +131,9 @@ function testFileScope() {
     "extension/src/test/verify-phase3.9.js", 
     "extension/src/test/verify-phase5.js",
     "extension/src/test/verify-phase7.js",
-    "extension/src/test/verify-phase8.js",
-    "extension/src/command/openLatestProofBundle.ts",
+    "extension/src/test/verify-phase8.js",    "extension/src/test/verify-phase11.js",    "extension/src/command/openLatestProofBundle.ts",
     "extension/src/test/verify-phase9.js",
-    "extension/src/test/verify-phase10.js",
-    "tools/run_phase_gates.ps1",
+    "extension/src/test/verify-phase10.js",    "extension/src/test/verify-phase12.js",    "tools/run_phase_gates.ps1",
     "tools/export_proof_bundle.ps1",
     ".gitignore"
   ];

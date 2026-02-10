@@ -203,6 +203,8 @@ function testFileScope() {
     "extension/src/command/openLatestProofBundle.ts",
     "extension/src/test/verify-phase9.js",
     "extension/src/test/verify-phase10.js",
+    "extension/src/test/verify-phase11.js",
+    "extension/src/test/verify-phase12.js",
     ".gitignore",
   ];
   const scopeResult = validateFileScope(allowedFiles);

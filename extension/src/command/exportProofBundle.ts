@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { onExportComplete } from "../status/statusBarProof";
 
 const execAsync = promisify(exec);
 
@@ -80,6 +81,9 @@ async function executeProofBundleExport(): Promise<void> {
           if (outputRoot.trim()) {
             message += ` (custom location)`;
           }
+
+          // Refresh proof status bar after successful export
+          onExportComplete();
 
           if (revealBundle) {
             vscode.window.showInformationMessage(

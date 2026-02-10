@@ -12,6 +12,8 @@ import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
 import { registerExportProofBundleCommand } from "./command/exportProofBundle";
 import { registerOpenLatestProofBundleCommand } from "./command/openLatestProofBundle";
+import { registerOpenLatestProofReportCommand } from "./command/openLatestProofReport";
+import { initProofStatusBar } from "./status/statusBarProof";
 
 const sessions = new SessionManager();
 let crashGuard: CrashGuard | null = null;
@@ -22,6 +24,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Initialize ExecLedger status bar
   initStatusBar(context);
+
+  // Initialize proof status bar
+  initProofStatusBar(context);
 
   // Register session lifecycle commands
   context.subscriptions.push(
@@ -87,6 +92,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   // Register proof bundle export command
   registerExportProofBundleCommand(context);
   registerOpenLatestProofBundleCommand(context);
+  registerOpenLatestProofReportCommand(context);
 
   // IMPORTANT: this is what was missing
   await activateExtension(context, sessions);

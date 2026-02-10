@@ -296,6 +296,24 @@ if ($shouldExport) {
   WriteLine "-> $verify10Out"
   WriteProofHeader $verify10Out $execId $sessionId
 
+  WriteLine ""
+  WriteLine "=== VERIFY_11 ==="
+  $verify11Out = Join-Path $proofDir "verify_11.txt"
+  $g11Code = RunNodeProof "extension/src/test/verify-phase11.js" $verify11Out
+  $g11Ok = ($g11Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase11.js"
+  WriteLine "-> $verify11Out"
+  WriteProofHeader $verify11Out $execId $sessionId
+
+  WriteLine ""
+  WriteLine "=== VERIFY_12 ==="
+  $verify12Out = Join-Path $proofDir "verify_12.txt"
+  $g12Code = RunNodeProof "extension/src/test/verify-phase12.js" $verify12Out
+  $g12Ok = ($g12Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase12.js"
+  WriteLine "-> $verify12Out"
+  WriteProofHeader $verify12Out $execId $sessionId
+
   # Generate human-readable report.txt
   $utcTimestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
   $report = Join-Path $proofDir "report.txt"
@@ -344,6 +362,8 @@ if ($shouldExport) {
     "  VERIFY_8: $g8Ok",
     "  VERIFY_9: $g9Ok",
     "  VERIFY_10: $g10Ok",
+    "  VERIFY_11: $g11Ok",
+    "  VERIFY_12: $g12Ok",
     "  FAIL_REASONS: " + ($(if ($failReasons.Count -eq 0) { "None" } else { $failReasons -join "," })),
     "",
     "CHANGED_FILES:"
@@ -363,6 +383,8 @@ if ($shouldExport) {
       $updatedSummary += "VERIFY_8_OK=$g8Ok"
       $updatedSummary += "VERIFY_9_OK=$g9Ok"
       $updatedSummary += "VERIFY_10_OK=$g10Ok"
+      $updatedSummary += "VERIFY_11_OK=$g11Ok"
+      $updatedSummary += "VERIFY_12_OK=$g12Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -407,6 +429,20 @@ if ($shouldExport) {
           $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_10_FAILED"
         }
       }
+      if (-not $g11Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_11_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_11_FAILED"
+        }
+      }
+      if (-not $g12Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_12_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_12_FAILED"
+        }
+      }
     }
   }
   WriteFileWithRetry -Path $summary -Lines $updatedSummary
@@ -417,6 +453,8 @@ if ($shouldExport) {
   if (-not $g8Ok) { $failReasons += "VERIFY_8_FAILED" }
   if (-not $g9Ok) { $failReasons += "VERIFY_9_FAILED" }
   if (-not $g10Ok) { $failReasons += "VERIFY_10_FAILED" }
+  if (-not $g11Ok) { $failReasons += "VERIFY_11_FAILED" }
+  if (-not $g12Ok) { $failReasons += "VERIFY_12_FAILED" }
   
   # Now export bundle after all phases and report generation
   Start-Sleep -Milliseconds 250

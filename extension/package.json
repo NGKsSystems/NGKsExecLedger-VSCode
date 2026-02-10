@@ -81,6 +81,10 @@
       {
         "command": "ngksExecLedger.openLatestProofBundle",
         "title": "ExecLedger: Open Latest Proof Bundle"
+      },
+      {
+        "command": "ngksExecLedger.openLatestProofReport",
+        "title": "ExecLedger: Open Latest Proof Report"
       }
     ],
     "views": {
@@ -158,6 +162,11 @@
           "type": "boolean",
           "default": true,
           "description": "Reveal the exported proof bundle location in file explorer after successful export."
+        },
+        "execLedger.proof.copyReportToClipboard": {
+          "type": "boolean",
+          "default": false,
+          "description": "Copy the full report text to clipboard when opening the latest proof report."
         }
       }
     }
