@@ -130,7 +130,10 @@ function testFileScope() {
     "extension/src/test/verify-phase3.8.js",
     "extension/src/test/verify-phase3.9.js", 
     "extension/src/test/verify-phase5.js",
+    "extension/src/test/verify-phase7.js",
+    "extension/src/test/verify-phase8.js",
     "tools/run_phase_gates.ps1",
+    "tools/export_proof_bundle.ps1",
     ".gitignore"
   ];
   

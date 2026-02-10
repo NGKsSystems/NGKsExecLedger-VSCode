@@ -50,6 +50,8 @@ function testFileScopeValidation() {
     'extension/src/extension.ts',
     'extension/src/command/exportProofBundle.ts',
     'extension/src/test/verify-phase6.js',
+    'extension/src/test/verify-phase7.js',
+    'extension/src/test/verify-phase8.js',
     '.gitignore'
   ];
   
@@ -174,6 +176,8 @@ PROOF_END`;
     'extension/src/extension.ts',
     'extension/src/command/exportProofBundle.ts',
     'extension/src/test/verify-phase6.js',
+    'extension/src/test/verify-phase7.js',
+    'extension/src/test/verify-phase8.js',
     '.gitignore'
   ];
   

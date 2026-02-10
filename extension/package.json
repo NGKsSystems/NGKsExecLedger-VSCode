@@ -139,6 +139,21 @@
           "type": "number",
           "default": 200,
           "description": "Maximum characters to preview for agent input/output events."
+        },
+        "execLedger.proof.outputRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Custom root directory for proof bundle exports. If empty, uses default _proof directory in workspace."
+        },
+        "execLedger.proof.autoExportOnMilestone": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically export proof bundles when milestone phase gates complete successfully."
+        },
+        "execLedger.proof.revealBundleAfterExport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Reveal the exported proof bundle location in file explorer after successful export."
         }
       }
     }

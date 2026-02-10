@@ -4,7 +4,8 @@ param(
   [string]$ExecId,
   [string]$SessionId,
   [ValidateSet("Build","Milestone")]
-  [string]$Mode
+  [string]$Mode,
+  [string]$OutputRoot = ""
 )
 
 Set-StrictMode -Version Latest
@@ -107,7 +108,11 @@ $modeFinal = $proofSelection.Mode
 $proofDirFinal = $proofSelection.SessionDir
 
 # Bundle output paths
-$bundlesDir = Join-Path $repoRootWin "_proof\bundles"
+if ($OutputRoot -and $OutputRoot.Trim()) {
+  $bundlesDir = Join-Path $OutputRoot.Trim() "bundles"
+} else {
+  $bundlesDir = Join-Path $repoRootWin "_proof\bundles"
+}
 if (-not (Test-Path $bundlesDir)) { New-Item -ItemType Directory -Path $bundlesDir | Out-Null }
 
 $baseName = ("exec_{0}__{1}__{2}" -f $execIdFinal, $modeFinal, $sessionIdFinal)
@@ -200,6 +205,19 @@ foreach ($f in $files) {
 if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
 Compress-Archive -Path (Join-Path $snapshotDir "*") -DestinationPath $zipPath -Force
 
+# Create/update latest bundle pointer
+$latestPointerPath = Join-Path $bundlesDir "latest.json"
+$latestPointer = [ordered]@{
+  exec_id      = $execIdFinal
+  session_id   = $sessionIdFinal
+  mode         = $modeFinal
+  zip_path     = ($zipPath -replace "\\","/")
+  manifest_path = ($manifestPath -replace "\\","/")
+  created_at   = $utcNow
+}
+$latestPointerJson = ($latestPointer | ConvertTo-Json -Depth 2)
+[System.IO.File]::WriteAllText($latestPointerPath, $latestPointerJson)
+
 Write-Host "BUNDLE_OK=True"
 Write-Host ("EXEC_ID={0}" -f $execIdFinal)
 Write-Host ("SESSION_ID={0}" -f $sessionIdFinal)
@@ -207,3 +225,4 @@ Write-Host ("MODE={0}" -f $modeFinal)
 Write-Host ("PROOF_DIR={0}" -f ($proofDirFinal -replace "\\","/"))
 Write-Host ("ZIP={0}" -f ($zipPath -replace "\\","/"))
 Write-Host ("MANIFEST={0}" -f ($manifestPath -replace "\\","/"))
+Write-Host ("LATEST={0}" -f ($latestPointerPath -replace "\\","/"))

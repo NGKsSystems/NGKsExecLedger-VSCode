@@ -198,6 +198,8 @@ function testFileScope() {
     "extension/src/extension.ts",
     "extension/src/command/exportProofBundle.ts",
     "extension/src/test/verify-phase6.js",
+    "extension/src/test/verify-phase7.js",
+    "extension/src/test/verify-phase8.js",
     ".gitignore",
   ];
   const scopeResult = validateFileScope(allowedFiles);

@@ -2,8 +2,8 @@ param(
   [ValidateSet("Build","Milestone")]
   [string]$Mode = "Build",
 
-  [ValidateSet("YES","NO")]
-  [string]$ExportBundle = "NO"
+  [ValidateSet("Auto","YES","NO")]
+  [string]$ExportBundle = "Auto"
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,6 +27,31 @@ function GenerateSessionId {
 
 function WriteLine($s) {
   Write-Host $s
+}
+
+function WriteFileWithRetry {
+  param(
+    [Parameter(Mandatory=$true)][string]$Path,
+    [Parameter(Mandatory=$true)][string[]]$Lines,
+    [int]$Retries = 20,
+    [int]$DelayMs = 75
+  )
+
+  $tmp = "$Path.tmp"
+
+  for ($i=0; $i -lt $Retries; $i++) {
+    try {
+      # write to temp first
+      $Lines | Set-Content -Encoding UTF8 -NoNewline:$false $tmp
+      # atomic-ish replace
+      Move-Item -Force $tmp $Path
+      return $true
+    } catch {
+      Start-Sleep -Milliseconds $DelayMs
+    }
+  }
+
+  throw "Failed to write $Path after $Retries retries (file may be locked)."
 }
 
 function RunToFile([string]$label, [string]$cmd, [string]$outFile) {
@@ -208,7 +233,15 @@ WriteLine ""
 WriteLine "==== SUMMARY ===="
 Get-Content $summary | ForEach-Object { WriteLine $_ }
 
+# Determine if we should export bundle
+$shouldExport = $false
 if ($ExportBundle -eq "YES") {
+  $shouldExport = $true
+} elseif ($ExportBundle -eq "Auto" -and $Mode -eq "Milestone") {
+  $shouldExport = $true
+}
+
+if ($shouldExport) {
   Start-Sleep -Milliseconds 250
   WriteLine "=== EXPORT_BUNDLE ==="
   powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot "tools\export_proof_bundle.ps1") `
@@ -234,7 +267,25 @@ if ($ExportBundle -eq "YES") {
   WriteLine "-> $verify6Out"
   WriteProofHeader $verify6Out $execId $sessionId
 
-  # Update summary with Phase 5 and 6 results
+  WriteLine ""
+  WriteLine "=== VERIFY_7 ==="
+  $verify7Out = Join-Path $proofDir "verify_7.txt"
+  $g7Code = RunNodeProof "extension/src/test/verify-phase7.js" $verify7Out
+  $g7Ok = ($g7Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase7.js"
+  WriteLine "-> $verify7Out"
+  WriteProofHeader $verify7Out $execId $sessionId
+
+  WriteLine ""
+  WriteLine "=== VERIFY_8 ==="
+  $verify8Out = Join-Path $proofDir "verify_8.txt"
+  $g8Code = RunNodeProof "extension/src/test/verify-phase8.js" $verify8Out
+  $g8Ok = ($g8Code -eq 0)
+  WriteLine "node extension/src/test/verify-phase8.js"
+  WriteLine "-> $verify8Out"
+  WriteProofHeader $verify8Out $execId $sessionId
+
+  # Update summary with Phase 5, 6, 7, and 8 results
   $summaryContent = Get-Content $summary
   $updatedSummary = @()
   foreach ($line in $summaryContent) {
@@ -242,6 +293,8 @@ if ($ExportBundle -eq "YES") {
     if ($line -match "^VERIFY_3_9_OK=") {
       $updatedSummary += "VERIFY_5_OK=$g5Ok"
       $updatedSummary += "VERIFY_6_OK=$g6Ok"
+      $updatedSummary += "VERIFY_7_OK=$g7Ok"
+      $updatedSummary += "VERIFY_8_OK=$g8Ok"
     }
     if ($line -match "^FAIL_REASONS=") {
       if (-not $g5Ok) {
@@ -258,12 +311,28 @@ if ($ExportBundle -eq "YES") {
           $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_6_FAILED"
         }
       }
+      if (-not $g7Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_7_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_7_FAILED"
+        }
+      }
+      if (-not $g8Ok) {
+        if ($updatedSummary[-1] -eq "FAIL_REASONS=None") {
+          $updatedSummary[-1] = "FAIL_REASONS=VERIFY_8_FAILED"
+        } else {
+          $updatedSummary[-1] = $updatedSummary[-1] -replace "$", ",VERIFY_8_FAILED"
+        }
+      }
     }
   }
-  $updatedSummary | Set-Content -Encoding UTF8 $summary
+  WriteFileWithRetry -Path $summary -Lines $updatedSummary
 
   if (-not $g5Ok) { $failReasons += "VERIFY_5_FAILED" }
   if (-not $g6Ok) { $failReasons += "VERIFY_6_FAILED" }
+  if (-not $g7Ok) { $failReasons += "VERIFY_7_FAILED" }
+  if (-not $g8Ok) { $failReasons += "VERIFY_8_FAILED" }
 }
 
 # Exit code policy:

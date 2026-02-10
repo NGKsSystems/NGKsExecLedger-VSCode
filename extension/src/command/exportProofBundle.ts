@@ -22,6 +22,11 @@ export function registerExportProofBundleCommand(context: vscode.ExtensionContex
  */
 async function executeProofBundleExport(): Promise<void> {
   try {
+    // Read ExecLedger configuration
+    const config = vscode.workspace.getConfiguration("execLedger");
+    const outputRoot = config.get<string>("proof.outputRoot", "");
+    const revealBundle = config.get<boolean>("proof.revealBundleAfterExport", true);
+
     // Determine workspace/repo root
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (!workspaceFolder) {
@@ -47,8 +52,12 @@ async function executeProofBundleExport(): Promise<void> {
       cancellable: false
     }, async (progress) => {
       try {
-        // Execute the PowerShell export script
-        const command = `powershell -NoProfile -ExecutionPolicy Bypass -File "${exportScript}"`;
+        // Prepare command with optional output root parameter
+        let command = `powershell -NoProfile -ExecutionPolicy Bypass -File "${exportScript}"`;
+        if (outputRoot.trim()) {
+          command += ` -OutputRoot "${outputRoot.trim()}"`;
+        }
+        
         progress.report({ message: "Running export script..." });
         
         const { stdout, stderr } = await execAsync(command, { 
@@ -65,16 +74,26 @@ async function executeProofBundleExport(): Promise<void> {
         if (bundleOkMatch && bundleOkMatch[1] === "True" && zipMatch) {
           const zipPath = zipMatch[1].trim();
           const relativePath = path.relative(repoRoot, zipPath);
+          const resolvedPath = outputRoot.trim() ? zipPath : relativePath;
           
-          vscode.window.showInformationMessage(
-            `ExecLedger: Bundle created successfully! ${relativePath}`,
-            "Open Folder"
-          ).then(action => {
-            if (action === "Open Folder") {
-              const bundleDir = path.dirname(zipPath);
-              vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(bundleDir));
-            }
-          });
+          let message = `ExecLedger: Bundle exported successfully! ${resolvedPath}`;
+          if (outputRoot.trim()) {
+            message += ` (custom location)`;
+          }
+
+          if (revealBundle) {
+            vscode.window.showInformationMessage(
+              message,
+              "Open Folder"
+            ).then(action => {
+              if (action === "Open Folder") {
+                const bundleDir = path.dirname(zipPath);
+                vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(bundleDir));
+              }
+            });
+          } else {
+            vscode.window.showInformationMessage(message);
+          }
         } else {
           // Export failed
           vscode.window.showErrorMessage(
@@ -91,16 +110,29 @@ async function executeProofBundleExport(): Promise<void> {
         }
 
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        let errorMessage = "Unknown error occurred";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+          // Remove stack trace from user-facing message
+          const cleanMessage = errorMessage.split('\n')[0];
+          errorMessage = cleanMessage;
+        } else {
+          errorMessage = String(error);
+        }
+        
         vscode.window.showErrorMessage(`ExecLedger: Export failed: ${errorMessage}`);
         
-        // Log detailed error to output channel
+        // Log detailed error to output channel for debugging
         const outputChannel = vscode.window.createOutputChannel("ExecLedger Export");
         outputChannel.appendLine("=== EXPORT ERROR ===");
-        outputChannel.appendLine(errorMessage);
-        if (error instanceof Error && error.stack) {
-          outputChannel.appendLine("Stack trace:");
-          outputChannel.appendLine(error.stack);
+        if (error instanceof Error) {
+          outputChannel.appendLine(`Message: ${error.message}`);
+          if (error.stack) {
+            outputChannel.appendLine("Stack trace:");
+            outputChannel.appendLine(error.stack);
+          }
+        } else {
+          outputChannel.appendLine(String(error));
         }
         outputChannel.show();
       }
