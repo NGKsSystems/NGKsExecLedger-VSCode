@@ -64,3 +64,4 @@ NGKsExecLedger-clean/
 # local scratch
 NGKsExecLedger-clean/
 
+.ngkssys/

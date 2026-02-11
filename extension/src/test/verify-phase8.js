@@ -155,7 +155,13 @@ function testFileScope() {
     "extension/src/test/verify-phase10.js",
     "extension/src/test/verify-phase11.js",
     "extension/src/test/verify-phase12.js",
-    "extension/src/test/verify-phase13.js",    'extension/src/test/verify-phase14.js',    'extension/src/test/verify-phase15.js',    'extension/src/test/verify-phase16.js',    'extension/src/util/validation.ts',    ".gitignore"
+    "extension/src/test/verify-phase13.js",
+    'extension/src/test/verify-phase14.js',
+    'extension/src/test/verify-phase15.js',
+    'extension/src/test/verify-phase16.js',
+    'extension/src/test/verify-phase17.js',
+    'extension/src/util/validation.ts',
+    ".gitignore"
   ];
   
   return validateFileScope(allowedFiles);

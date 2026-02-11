@@ -320,45 +320,40 @@ async function showProofQuickPick(): Promise<void> {
 
   const items: vscode.QuickPickItem[] = [
     {
-      label: "$(export) Export Proof Bundle",
-      description: "Generate new proof bundle",
-      detail: "Creates a new proof bundle with current state"
+      label: "$(play) Run Milestone Proof Gates",
+      description: "Execute full milestone verification",
+      detail: "Runs all phase gates and generates proof bundle"
     }
   ];
 
   if (hasProof) {
     items.push(
       {
-        label: "$(package) Open Latest Proof Bundle",
-        description: "Open bundled proof artifacts in file explorer",
-        detail: `Opens: ${latestData.zip_path}`
-      },
-      {
-        label: "$(file-text) Open Latest Proof Report", 
-        description: "View proof report in VS Code editor",
-        detail: "Opens report.txt from latest proof bundle"
-      },
-      {
         label: "$(list-ordered) Open Latest Summary",
         description: "View proof summary in VS Code editor",
         detail: "Opens summary.txt from latest proof bundle"
       },
       {
-        label: "$(copy) Copy Latest Summary",
-        description: "Copy proof summary to clipboard",
-        detail: "Copies summary.txt content to clipboard"
+        label: "$(file-text) Open Latest Report", 
+        description: "View proof report in VS Code editor",
+        detail: "Opens report.txt from latest proof bundle"
       },
       {
-        label: "$(file-directory) Reveal latest.json",
-        description: "Show latest.json in file explorer",
-        detail: "Reveals the latest proof pointer file"
+        label: "$(file-directory) Open Latest Proof Folder",
+        description: "Reveal proof directory in file explorer",
+        detail: `Opens: ${latestData.proof_dir || 'proof directory'}`
+      },
+      {
+        label: "$(package) Open Latest Proof Bundle (zip)",
+        description: "Reveal proof bundle zip in file explorer",
+        detail: `Opens: ${latestData.zip_path}`
       }
     );
   } else {
     items.push({
-      label: "$(info) Generate first proof bundle",
-      description: "No proof artifacts found",
-      detail: "Run Export Proof Bundle to create your first proof"
+      label: "$(info) No proof found",
+      description: "Run milestone gates to generate proof",
+      detail: "Click 'Run Milestone Proof Gates' above to create your first proof"
     });
   }
 
@@ -371,54 +366,66 @@ async function showProofQuickPick(): Promise<void> {
   if (!selected) return;
 
   // Execute the selected action
-  if (selected.label.includes("Export Proof Bundle") || selected.label.includes("Generate first")) {
-    await vscode.commands.executeCommand("ngksExecLedger.exportProofBundle");
-  } else if (selected.label.includes("Open Latest Proof Bundle")) {
-    await vscode.commands.executeCommand("ngksExecLedger.openLatestProofBundle");
-  } else if (selected.label.includes("Open Latest Proof Report")) {
-    await vscode.commands.executeCommand("ngksExecLedger.openLatestProofReport");
+  if (selected.label.includes("Run Milestone Proof Gates")) {
+    await vscode.commands.executeCommand("ngksExecLedger.runMilestoneGates");
   } else if (selected.label.includes("Open Latest Summary")) {
     await vscode.commands.executeCommand("ngksExecLedger.openLatestSummary");
-  } else if (selected.label.includes("Copy Latest Summary")) {
-    await vscode.commands.executeCommand("ngksExecLedger.copyLatestSummary");
-  } else if (selected.label.includes("Reveal latest.json")) {
-    await revealLatestJson();
+  } else if (selected.label.includes("Open Latest Report")) {
+    await vscode.commands.executeCommand("ngksExecLedger.openLatestProofReport");
+  } else if (selected.label.includes("Open Latest Proof Folder")) {
+    await revealProofFolder();
+  } else if (selected.label.includes("Open Latest Proof Bundle")) {
+    await vscode.commands.executeCommand("ngksExecLedger.openLatestProofBundle");
   }
 }
 
 /**
- * Reveal latest.json in file explorer
+ * Reveal proof folder in file explorer
  */
-async function revealLatestJson(): Promise<void> {
+async function revealProofFolder(): Promise<void> {
   try {
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) {
-      vscode.window.showErrorMessage("ExecLedger: No workspace folder found.");
+    const latestData = getLatestProofData();
+    if (!latestData) {
+      vscode.window.showErrorMessage("ExecLedger: No proof data found. Generate a proof bundle first.");
       return;
     }
 
-    const config = vscode.workspace.getConfiguration("execLedger");
-    const outputRoot = config.get<string>("proof.outputRoot", "");
+    let proofDir: string;
     
-    let bundlesDir: string;
-    if (outputRoot.trim()) {
-      bundlesDir = path.join(outputRoot.trim(), "bundles");
+    // Prefer proof_dir from latest.json when present
+    if (latestData.proof_dir && fs.existsSync(latestData.proof_dir)) {
+      proofDir = latestData.proof_dir;
     } else {
-      bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
-    }
+      // Fallback: construct proof directory path
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage("ExecLedger: No workspace folder found.");
+        return;
+      }
 
-    const latestJsonPath = path.join(bundlesDir, "latest.json");
+      const config = vscode.workspace.getConfiguration("execLedger");
+      const outputRoot = config.get<string>("proof.outputRoot", "");
+      
+      let proofRootDir: string;
+      if (outputRoot.trim()) {
+        proofRootDir = outputRoot.trim();
+      } else {
+        proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
+      }
+
+      proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+    }
     
-    if (!fs.existsSync(latestJsonPath)) {
-      vscode.window.showErrorMessage("ExecLedger: latest.json not found. Generate a proof bundle first.");
+    if (!fs.existsSync(proofDir)) {
+      vscode.window.showErrorMessage(`ExecLedger: Proof directory not found: ${proofDir}`);
       return;
     }
 
-    const uri = vscode.Uri.file(latestJsonPath);
+    const uri = vscode.Uri.file(proofDir);
     await vscode.commands.executeCommand("revealFileInOS", uri);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    vscode.window.showErrorMessage(`ExecLedger: Failed to reveal latest.json: ${errorMessage}`);
+    vscode.window.showErrorMessage(`ExecLedger: Failed to reveal proof folder: ${errorMessage}`);
   }
 }
 

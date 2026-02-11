@@ -66,6 +66,7 @@ function testFileScopeValidation() {
     'extension/src/test/verify-phase14.js',
     'extension/src/test/verify-phase15.js',
     'extension/src/test/verify-phase16.js',
+    'extension/src/test/verify-phase17.js',
     'extension/src/util/validation.ts',
     '.gitignore'
   ];
@@ -207,6 +208,7 @@ PROOF_END`;
     'extension/src/test/verify-phase14.js',
     'extension/src/test/verify-phase15.js',
     'extension/src/test/verify-phase16.js',
+    'extension/src/test/verify-phase17.js',
     'extension/src/util/validation.ts',
     '.gitignore'
   ];
