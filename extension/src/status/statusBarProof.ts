@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { validateLatestJson, validateIntegrityJson, detectDrift, type ValidationResult } from "../util/validation";
 
 interface LatestProofData {
   exec_id: string;
@@ -16,6 +17,8 @@ interface LatestProofData {
   diff_name_only_path?: string;
   status_path?: string;
   compile_log_path?: string;
+  // Phase 16: Optional integrity path
+  integrity_path?: string;
 }
 
 interface ProofSummaryData {
@@ -107,10 +110,33 @@ export function refreshProofStatus(): void {
   } else {
     const summaryData = getProofSummaryData(latestData);
     const isPass = summaryData && summaryData.fail_reasons === "None";
-    const statusIcon = isPass ? "$(check)" : "$(x)";
-    const statusText = isPass ? "PASS" : "FAIL";
     
-    // Show mode, pass/fail status, and short exec_id (first 8 chars)
+    // Phase 16: Drift detection for WARN state
+    let driftResult: ValidationResult | null = null;
+    let isDrifted = false;
+    if (isPass && latestData.integrity_path) {
+      const filePaths: { summary?: string, report?: string, manifest?: string } = {};
+      if (latestData.summary_path) filePaths.summary = latestData.summary_path;
+      if (latestData.report_path) filePaths.report = latestData.report_path;
+      if (latestData.manifest_path) filePaths.manifest = latestData.manifest_path;
+      driftResult = detectDrift(latestData.integrity_path, filePaths);
+      isDrifted = !driftResult.valid;
+    }
+    
+    let statusIcon: string;
+    let statusText: string;
+    if (!isPass) {
+      statusIcon = "$(x)";
+      statusText = "FAIL";
+    } else if (isDrifted) {
+      statusIcon = "$(warning)";
+      statusText = "WARN";
+    } else {
+      statusIcon = "$(check)";
+      statusText = "PASS";
+    }
+    
+    // Show mode, pass/warn/fail status, and short exec_id (first 8 chars)
     const shortExecId = latestData.exec_id.substring(0, 8);
     statusBarItem.text = `${statusIcon} ExecLedger: ${statusText} ${latestData.mode} ${shortExecId}`;
     
@@ -147,6 +173,20 @@ export function refreshProofStatus(): void {
       tooltipLines.push(
         `📋 **Summary Path**: ${summaryPath}`,
         `📝 **Report Path**: ${reportPath}`,
+        ``
+      );
+    }
+
+    // Phase 16: Show integrity/drift info in tooltip
+    if (driftResult && isDrifted) {
+      tooltipLines.push(
+        `⚠️ **Integrity Drift Detected**:`,
+        ...driftResult.errors.map(e => `  - ${e}`),
+        ``
+      );
+    } else if (latestData.integrity_path) {
+      tooltipLines.push(
+        `🔒 **Integrity**: Verified (no drift)`,
         ``
       );
     }

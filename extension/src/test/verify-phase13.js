@@ -60,7 +60,9 @@ function verifyFileScope() {
     'extension/src/test/verify-phase11.js',
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase14.js',
-    'extension/src/test/verify-phase15.js'
+    'extension/src/test/verify-phase15.js',
+    'extension/src/test/verify-phase16.js',
+    'extension/src/util/validation.ts'
   ];
 
   try {

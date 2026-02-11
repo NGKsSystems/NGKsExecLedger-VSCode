@@ -46,6 +46,7 @@ function verifyFileScope() {
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/test/verify-phase14.js',
     'extension/src/test/verify-phase15.js',
+    'extension/src/test/verify-phase16.js',
     'extension/src/status/statusBarProof.ts',
     'tools/run_phase_gates.ps1',    'tools/export_proof_bundle.ps1',    'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
@@ -57,7 +58,8 @@ function verifyFileScope() {
     'extension/src/test/verify-phase10.js',
     'extension/src/test/verify-phase11.js',
     'extension/src/test/verify-phase12.js',
-    'extension/src/test/verify-phase13.js'
+    'extension/src/test/verify-phase13.js',
+    'extension/src/util/validation.ts'
   ];
 
   try {
@@ -97,13 +99,13 @@ checkFileContains(
 
 checkFileContains(
   'extension/src/status/statusBarProof.ts',
-  'isPass ? "$(check)" : "$(x)"',
+  '"$(x)"',
   'PASS/FAIL icon logic in status bar'
 );
 
 checkFileContains(
   'extension/src/status/statusBarProof.ts',
-  'isPass ? "PASS" : "FAIL"',
+  '"FAIL"',
   'PASS/FAIL text in status bar'
 );
 

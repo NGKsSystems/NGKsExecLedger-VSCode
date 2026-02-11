@@ -46,6 +46,7 @@ function verifyFileScope() {
     'extension/src/command/openLatestProofReport.ts',
     'extension/src/status/statusBarProof.ts',
     'extension/src/test/verify-phase15.js',
+    'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase14.js',
     'extension/src/test/verify-phase3.7.js',
     'extension/src/test/verify-phase3.8.js',
@@ -59,6 +60,7 @@ function verifyFileScope() {
     'extension/src/test/verify-phase11.js',
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase13.js',
+    'extension/src/util/validation.ts',
     'tools/run_phase_gates.ps1',
     'tools/export_proof_bundle.ps1'
   ];

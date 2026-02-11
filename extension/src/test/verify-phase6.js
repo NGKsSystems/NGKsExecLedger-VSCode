@@ -136,7 +136,7 @@ function testFileScope() {
     "extension/src/command/copyLatestSummary.ts",
     "extension/src/status/statusBarProof.ts",
     "extension/src/test/verify-phase9.js",
-    "extension/src/test/verify-phase10.js",    "extension/src/test/verify-phase12.js",    "extension/src/test/verify-phase13.js",    "extension/src/test/verify-phase14.js",    "extension/src/test/verify-phase15.js",    "tools/run_phase_gates.ps1",
+    "extension/src/test/verify-phase10.js",    "extension/src/test/verify-phase12.js",    "extension/src/test/verify-phase13.js",    "extension/src/test/verify-phase14.js",    "extension/src/test/verify-phase15.js",    "extension/src/test/verify-phase16.js",    "extension/src/util/validation.ts",    "tools/run_phase_gates.ps1",
     "tools/export_proof_bundle.ps1",
     ".gitignore"
   ];

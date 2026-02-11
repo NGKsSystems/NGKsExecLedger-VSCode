@@ -205,10 +205,28 @@ foreach ($f in $files) {
 if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
 Compress-Archive -Path (Join-Path $snapshotDir "*") -DestinationPath $zipPath -Force
 
-# Create/update latest bundle pointer with Phase 15 pointer paths
+# Create path variables for pointer and integrity
 $latestPointerPath = Join-Path $bundlesDir "latest.json"
 $summaryPath = Join-Path $proofDirFinal "summary.txt"
 $reportPath = Join-Path $proofDirFinal "report.txt"
+
+# Phase 16: Generate integrity.json with SHA256 hashes
+$integrityPath = Join-Path $bundlesDir "integrity.json"
+$integrity = [ordered]@{
+  exec_id      = $execIdFinal
+  session_id   = $sessionIdFinal
+  mode         = $modeFinal
+  created_at   = $utcNow
+  hashes       = [ordered]@{
+    summary  = if (Test-Path $summaryPath) { Get-SHA256Hex -Path $summaryPath } else { $null }
+    report   = if (Test-Path $reportPath) { Get-SHA256Hex -Path $reportPath } else { $null }
+    manifest = if (Test-Path $manifestPath) { Get-SHA256Hex -Path $manifestPath } else { $null }
+  }
+}
+$integrityJson = ($integrity | ConvertTo-Json -Depth 3)
+[System.IO.File]::WriteAllText($integrityPath, $integrityJson)
+
+# Create/update latest bundle pointer with Phase 15 pointer paths
 $diffNameOnlyPath = Join-Path $proofDirFinal "diff_name_only.txt"
 $statusPath = Join-Path $proofDirFinal "status.txt"
 $compileLogPath = Join-Path $proofDirFinal "compile.txt"
@@ -225,6 +243,7 @@ $latestPointer = [ordered]@{
   diff_name_only_path = ($diffNameOnlyPath -replace "\\","/")
   status_path  = ($statusPath -replace "\\","/")
   compile_log_path = ($compileLogPath -replace "\\","/")
+  integrity_path = ($integrityPath -replace "\\","/")
 }
 $latestPointerJson = ($latestPointer | ConvertTo-Json -Depth 2)
 [System.IO.File]::WriteAllText($latestPointerPath, $latestPointerJson)
