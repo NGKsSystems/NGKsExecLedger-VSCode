@@ -15,7 +15,7 @@ import { registerOpenLatestSummaryCommand } from "./command/openLatestSummary";
 import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
 import { registerOpenLatestartifactsReportCommand } from "./command/openLatestartifactsReport";
 import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
-import { initartifactsStatusBar } from "./status/statusBarartifacts";
+import { initArtifactsStatusBar } from "./status/statusBarartifacts";
 import { isProOrHigher } from "./core/tierEngine";
 import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
 
@@ -27,12 +27,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   vscode.window.showInformationMessage("NGKs AutoLogger activated");
 
   // Initialize primary ExecLedger status bar (artifacts status)
-  initartifactsStatusBar(context);
+  initArtifactsStatusBar(context);
   
   // Initialize tier-gated QuickPick command (always register)
   registerExecLedgerQuickPickCommand(context);
   
-  // Status bar handled by initartifactsStatusBar() in statusBarartifacts.ts
+  // Status bar handled by initArtifactsStatusBar() in statusBarartifacts.ts
 
   // Register session lifecycle commands
   context.subscriptions.push(

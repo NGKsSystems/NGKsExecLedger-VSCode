@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { refreshartifactsStatus } from "../status/statusBarartifacts";
+import { onExportComplete } from "../status/statusBarartifacts";
 
 const execAsync = promisify(exec);
 
@@ -102,7 +102,7 @@ async function executeartifactsBundleExport(): Promise<void> {
         }
 
         // Refresh status bar
-        refreshartifactsStatus();
+        onExportComplete();
 
       } catch (error) {
         let errorMessage = "Unknown error occurred";

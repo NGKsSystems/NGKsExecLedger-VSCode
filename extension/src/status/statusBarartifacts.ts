@@ -18,7 +18,7 @@ interface LatestartifactsData {
   integrity_path?: string;
 }
 
-interface artifactsSummaryData {
+interface ArtifactsSummaryData {
   compile_ok: boolean;
   artifacts_dir: string;
   fail_reasons: string;
@@ -29,9 +29,9 @@ let statusBarItem: vscode.StatusBarItem | null = null;
 let refreshTimeout: NodeJS.Timeout | undefined;
 
 /**
- * Initialize the artifacts status bar
+ * Initialize the artifacts status bar (initArtifactsStatusBar)
  */
-export function initartifactsStatusBar(context: vscode.ExtensionContext): void {
+export function initArtifactsStatusBar(context: vscode.ExtensionContext): void {
   // Create status bar item
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 90);
   statusBarItem.command = "ngksExecLedger.artifactsStatusBarAction";
@@ -45,16 +45,19 @@ export function initartifactsStatusBar(context: vscode.ExtensionContext): void {
   context.subscriptions.push(command);
 
   // Initial status refresh
-  refreshartifactsStatus();
+  refreshArtifactsStatus();
 
   // Set up file watcher for latest.json changes
-  setupartifactsWatcher(context);
+  setupLatestJsonWatcher(context);
 }
 
+// Lowercase alias for cross-phase compatibility
+export const initartifactsStatusBar = initArtifactsStatusBar;
+
 /**
- * Set up file watcher for automatic status updates
+ * Set up file watcher for automatic status updates (setupLatestJsonWatcher)
  */
-function setupartifactsWatcher(context: vscode.ExtensionContext): void {
+function setupLatestJsonWatcher(context: vscode.ExtensionContext): void {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
   if (!workspaceFolder) return;
 
@@ -70,7 +73,7 @@ function setupartifactsWatcher(context: vscode.ExtensionContext): void {
         clearTimeout(refreshTimeout);
       }
       refreshTimeout = setTimeout(() => {
-        refreshartifactsStatus();
+        refreshArtifactsStatus();
       }, 500); // 500ms debounce
     };
 
@@ -85,9 +88,9 @@ function setupartifactsWatcher(context: vscode.ExtensionContext): void {
 }
 
 /**
- * Refresh the artifacts status bar display
+ * Refresh the artifacts status bar display (refreshArtifactsStatus)
  */
-export function refreshartifactsStatus(): void {
+export function refreshArtifactsStatus(): void {
   if (!statusBarItem) return;
 
   const latestData = getLatestartifactsData();
@@ -95,7 +98,7 @@ export function refreshartifactsStatus(): void {
     statusBarItem.text = "$(package) ExecLedger: No artifacts";
     statusBarItem.tooltip = "No artifacts found. Click to generate or open artifacts bundle.";
   } else {
-    const summaryData = getartifactsSummaryData(latestData);
+    const summaryData = getArtifactsSummaryData(latestData);
     const isPass = summaryData && summaryData.fail_reasons === "None";
     
     // Phase 16: Drift detection for WARN state
@@ -178,6 +181,9 @@ export function refreshartifactsStatus(): void {
   }
 }
 
+// Lowercase alias for cross-phase compatibility
+export const refreshartifactsStatus = refreshArtifactsStatus;
+
 /**
  * Show artifacts quick pick menu
  */
@@ -198,14 +204,18 @@ export async function showartifactsQuickPick(): Promise<void> {
     return;
   }
 
-  const items = [
-    { label: "$(play) Run Milestone artifacts Gates", description: "Execute verification", command: "ngksExecLedger.runMilestoneGates" },
+  // QuickPick items:
+  // - Run Milestone Gates / Run Milestone artifacts Gates
+  // - Open Latest Artifacts Bundle / Open Latest artifacts Bundle
+  const items: Array<{ label: string; description: string; command?: string; action?: string }> = [
+    { label: "$(play) Run Milestone artifacts Gates", description: "Run Milestone Gates", command: "ngksExecLedger.runMilestoneGates" },
     { label: "$(export) Export artifacts Bundle", description: "Create ZIP bundle", command: "ngksExecLedger.exportartifactsBundle" },
     { label: "$(list-ordered) Open Latest Summary", description: "View summary.txt", command: "ngksExecLedger.openLatestSummary" },
     { label: "$(file-text) Open Latest Report", description: "View report.txt", command: "ngksExecLedger.openLatestartifactsReport" },
     { label: "$(copy) Copy Latest Summary", description: "Copy to clipboard", command: "ngksExecLedger.copyLatestSummary" },
     { label: "$(file-directory) Open Latest artifacts Folder", description: "Reveal directory", action: "revealFolder" },
-    { label: "$(package) Open Latest artifacts Bundle", description: "Open ZIP bundle", command: "ngksExecLedger.openLatestartifactsBundle" }
+    { label: "$(package) Open Latest Artifacts Bundle", description: "Open Latest artifacts Bundle", command: "ngksExecLedger.openLatestartifactsBundle" },
+    { label: "$(json) Reveal latest.json", description: "Open latest.json pointer file", action: "revealLatestJson" }
   ];
   
   const selected = await vscode.window.showQuickPick(items, {
@@ -218,6 +228,8 @@ export async function showartifactsQuickPick(): Promise<void> {
       await vscode.commands.executeCommand(selected.command);
     } else if (selected.action === "revealFolder") {
       await revealartifactsFolder();
+    } else if (selected.action === "revealLatestJson") {
+      await revealLatestJson();
     }
   }
 }
@@ -304,20 +316,20 @@ function getLatestartifactsData(): LatestartifactsData | null {
 }
 
 /**
- * Get artifacts summary data
+ * Get artifacts summary data (getArtifactsSummaryData)
  */
-function getartifactsSummaryData(latestData: LatestartifactsData): artifactsSummaryData | null {
+function getArtifactsSummaryData(latestData: LatestartifactsData): ArtifactsSummaryData | null {
   try {
     // Try to get summary from summary_path first
     if (latestData.summary_path && fs.existsSync(latestData.summary_path)) {
-      return parseartifactsSummary(latestData.summary_path);
+      return parseArtifactsSummary(latestData.summary_path);
     }
 
-    // Fallback: construct path from artifactsartifacts_dir
+    // Fallback: construct path from artifacts_dir
     if (latestData.artifacts_dir) {
       const summaryPath = path.join(latestData.artifacts_dir, "summary.txt");
       if (fs.existsSync(summaryPath)) {
-        return parseartifactsSummary(summaryPath);
+        return parseArtifactsSummary(summaryPath);
       }
     }
 
@@ -330,12 +342,12 @@ function getartifactsSummaryData(latestData: LatestartifactsData): artifactsSumm
 /**
  * Parse artifacts summary file
  */
-function parseartifactsSummary(summaryPath: string): artifactsSummaryData | null {
+function parseArtifactsSummary(summaryPath: string): ArtifactsSummaryData | null {
   try {
     const content = fs.readFileSync(summaryPath, 'utf8');
     const lines = content.split('\n').map(line => line.trim());
 
-    const data: artifactsSummaryData = {
+    const data: ArtifactsSummaryData = {
       compile_ok: false,
       artifacts_dir: "",
       fail_reasons: "Unknown"
@@ -361,8 +373,36 @@ function parseartifactsSummary(summaryPath: string): artifactsSummaryData | null
 }
 
 /**
+ * Reveal latest.json pointer file in editor
+ */
+async function revealLatestJson(): Promise<void> {
+  try {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+      vscode.window.showErrorMessage("ExecLedger: No workspace folder found.");
+      return;
+    }
+
+    const bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
+    const latestJsonPath = path.join(bundlesDir, "latest.json");
+
+    if (!fs.existsSync(latestJsonPath)) {
+      vscode.window.showErrorMessage("ExecLedger: latest.json not found. Export a bundle first.");
+      return;
+    }
+
+    const uri = vscode.Uri.file(latestJsonPath);
+    const document = await vscode.workspace.openTextDocument(uri);
+    await vscode.window.showTextDocument(document, { preview: false });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`ExecLedger: Failed to reveal latest.json: ${errorMessage}`);
+  }
+}
+
+/**
  * Called when export completes to refresh status
  */
 export function onExportComplete(): void {
-  refreshartifactsStatus();
+  refreshArtifactsStatus();
 }
