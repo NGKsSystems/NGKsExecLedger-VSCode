@@ -87,6 +87,27 @@ function RunNodeartifacts([string]$scriptPath, [string]$outPath) {
   return $p.ExitCode
 }
 
+function Set-ContentRetry {
+  param(
+    [Parameter(Mandatory=$true)][string]$Path,
+    [Parameter(Mandatory=$true)][object]$Value,
+    [int]$Retries = 20,
+    [int]$DelayMs = 150
+  )
+
+  $tmp = "$Path.tmp"
+  for ($i=1; $i -le $Retries; $i++) {
+    try {
+      $Value | Set-Content -Path $tmp -Encoding UTF8 -Force
+      Move-Item -Path $tmp -Destination $Path -Force
+      return
+    } catch {
+      if ($i -eq $Retries) { throw }
+      Start-Sleep -Milliseconds $DelayMs
+    }
+  }
+}
+
 function WriteartifactsHeader([string]$filePath, [string]$execId, [string]$sessionId) {
   # TASK C: Lineage propagation - add IDs to all artifacts files
   $header = @(
@@ -98,9 +119,9 @@ function WriteartifactsHeader([string]$filePath, [string]$execId, [string]$sessi
   if (Test-Path $filePath) {
     $content = Get-Content $filePath
     $newContent = $header + $content
-    $newContent | Set-Content -Path $filePath -Encoding UTF8
+    Set-ContentRetry -Path $filePath -Value $newContent
   } else {
-    $header | Set-Content -Path $filePath -Encoding UTF8
+    Set-ContentRetry -Path $filePath -Value $header
   }
 }
 

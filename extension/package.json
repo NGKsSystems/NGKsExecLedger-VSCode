@@ -75,16 +75,16 @@
         "title": "NGKs: Changed Files (Latest)"
       },
       {
-        "command": "ngksExecLedger.exportArtifactsBundle",
-        "title": "ExecLedger: Export Artifacts Bundle"
+        "command": "ngksExecLedger.exportartifactsBundle",
+        "title": "ExecLedger: Export artifacts Bundle"
       },
       {
         "command": "ngksExecLedger.runMilestoneGates",
         "title": "ExecLedger: Run Milestone Gates"
       },
       {
-        "command": "ngksExecLedger.openLatestArtifactsBundle",
-        "title": "ExecLedger: Open Latest Artifacts Bundle"
+        "command": "ngksExecLedger.openLatestartifactsBundle", 
+        "title": "ExecLedger: Open Latest artifacts Bundle"
       },
       {
         "command": "ngksExecLedger.openLatestSummary",
@@ -95,8 +95,8 @@
         "title": "ExecLedger: Copy Latest Summary to Clipboard"
       },
       {
-        "command": "ngksExecLedger.openLatestArtifactsReport",
-        "title": "ExecLedger: Open Latest Artifacts Report"
+        "command": "ngksExecLedger.openLatestartifactsReport",
+        "title": "ExecLedger: Open Latest artifacts Report"
       },
       {
         "command": "execLedger.openQuickPick",

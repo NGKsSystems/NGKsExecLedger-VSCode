@@ -9,13 +9,13 @@ import { addGuidanceCommand } from "./commands/execLedgerAddGuidance";
 import { closeTaskCommand } from "./commands/execLedgerCloseTask";
 import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
-import { registerExportArtifactsBundleCommand } from "./command/exportArtifactsBundle";
-import { registerOpenLatestArtifactsBundleCommand } from "./command/openLatestArtifactsBundle";
+import { registerExportartifactsBundleCommand } from "./command/exportartifactsBundle";
+import { registerOpenLatestartifactsBundleCommand } from "./command/openLatestartifactsBundle";
 import { registerOpenLatestSummaryCommand } from "./command/openLatestSummary";
 import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
-import { registerOpenLatestArtifactsReportCommand } from "./command/openLatestArtifactsReport";
+import { registerOpenLatestartifactsReportCommand } from "./command/openLatestartifactsReport";
 import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
-import { initArtifactsStatusBar } from "./status/statusBarArtifacts";
+import { initartifactsStatusBar } from "./status/statusBarartifacts";
 import { isProOrHigher } from "./core/tierEngine";
 import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
 
@@ -27,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   vscode.window.showInformationMessage("NGKs AutoLogger activated");
 
   // Initialize primary ExecLedger status bar (artifacts status)
-  initArtifactsStatusBar(context);
+  initartifactsStatusBar(context);
   
   // Initialize tier-gated QuickPick command (always register)
   registerExecLedgerQuickPickCommand(context);
@@ -96,12 +96,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   );
 
   // Register artifacts bundle export command
-  registerExportArtifactsBundleCommand(context);
+  registerExportartifactsBundleCommand(context);
   registerRunMilestoneGatesCommand(context);
-  registerOpenLatestArtifactsBundleCommand(context);
+  registerOpenLatestartifactsBundleCommand(context);
   registerOpenLatestSummaryCommand(context);
   registerCopyLatestSummaryCommand(context);
-  registerOpenLatestArtifactsReportCommand(context);
+  registerOpenLatestartifactsReportCommand(context);
 
   // IMPORTANT: this is what was missing
   await activateExtension(context, sessions);

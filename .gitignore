@@ -56,6 +56,8 @@ _artifacts/
 # Universal Agent Ruleset docs (local only)
 Universal Agent Ruleset*.txt
 
+# gates result files
+*gates_result_*.txt
 
 # local clean clone workspace
 NGKsExecLedger-clean/
