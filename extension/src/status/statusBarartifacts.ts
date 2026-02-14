@@ -202,7 +202,7 @@ export async function showartifactsQuickPick(): Promise<void> {
     { label: "$(play) Run Milestone artifacts Gates", description: "Execute verification", command: "ngksExecLedger.runMilestoneGates" },
     { label: "$(export) Export artifacts Bundle", description: "Create ZIP bundle", command: "ngksExecLedger.exportartifactsBundle" },
     { label: "$(list-ordered) Open Latest Summary", description: "View summary.txt", command: "ngksExecLedger.openLatestSummary" },
-    { label: "$(file-text) Open Latest artifacts Report", description: "View report.txt", command: "ngksExecLedger.openLatestartifactsReport" },
+    { label: "$(file-text) Open Latest Report", description: "View report.txt", command: "ngksExecLedger.openLatestartifactsReport" },
     { label: "$(copy) Copy Latest Summary", description: "Copy to clipboard", command: "ngksExecLedger.copyLatestSummary" },
     { label: "$(file-directory) Open Latest artifacts Folder", description: "Reveal directory", action: "revealFolder" },
     { label: "$(package) Open Latest artifacts Bundle", description: "Open ZIP bundle", command: "ngksExecLedger.openLatestartifactsBundle" }

@@ -4,7 +4,6 @@ import * as fs from "fs";
 import { resolveArtifactRoot } from "../core/artifactPaths";
 import { exec } from "child_process";
 import { refreshartifactsStatus } from "../status/statusBarartifacts";
-import { refreshArtifactsStatus } from "../status/statusBarArtifacts";
 
 /**
  * Registers the run milestone gates command
