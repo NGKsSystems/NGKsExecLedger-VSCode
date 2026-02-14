@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { resolveArtifactRoot } from "../core/artifactPaths";
 import { exec } from "child_process";
+import { refreshartifactsStatus } from "../status/statusBarartifacts";
 import { refreshArtifactsStatus } from "../status/statusBarArtifacts";
 
 /**
@@ -233,7 +234,7 @@ async function handleResults(
 
   if (results.allPassed) {
     // Success - refresh status bar and show success message
-    refreshArtifactsStatus();
+    refreshartifactsStatus();
     
     vscode.window.showInformationMessage(
       `ExecLedger: ✅ Milestone gates passed! All ${verifyEntries.length} verification phases completed successfully.`,

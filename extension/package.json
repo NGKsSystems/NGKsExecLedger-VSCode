@@ -80,7 +80,7 @@
       },
       {
         "command": "ngksExecLedger.runMilestoneGates",
-        "title": "ExecLedger: Run Milestone Gates"
+        "title": "ExecLedger: Run Milestone artifacts Gates"
       },
       {
         "command": "ngksExecLedger.openLatestartifactsBundle", 
