@@ -1,0 +1,5 @@
+
+FullName
+--------
+C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\test\ve…
+

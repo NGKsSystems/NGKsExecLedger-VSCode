@@ -1,0 +1,21 @@
+=== NGKs ExecLedger Desktop UI Smoke Test ===
+Testing PySide6 import...
+[OK] PySide6 imports successful
+Testing module files...
+[OK] Found app.py
+[OK] Found config.py
+[OK] Found engine_client.py
+[OK] Found models.py
+[OK] Found widgets.py
+[OK] Found views_runs.py
+[OK] Found views_session.py
+[OK] Found views_exports.py
+[OK] Found views_diagnostics.py
+[OK] Found requirements.txt
+Testing engine path...
+[OK] Engine exists: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\desktop-companion\engine\src\index.js
+Testing PySide6 application...
+[OK] Window created and shown
+[OK] Auto-close timer set (1 second)
+[OK] Event loop completed
+ONE_UI_SMOKE_OK=YES

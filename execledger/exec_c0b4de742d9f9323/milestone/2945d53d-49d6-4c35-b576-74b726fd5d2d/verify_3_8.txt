@@ -1,0 +1,14 @@
+﻿EXEC_ID=c0b4de742d9f9323
+SESSION_ID=2945d53d-49d6-4c35-b576-74b726fd5d2d
+
+artifacts_BEGIN
+artifacts_END
+≡ƒöì PHASE 3.8 artifacts-FIRST RUNNER + MILESTONE DISCIPLINE GATE
+
+≡ƒº¬ Testing artifacts markers validation...
+echo "Testing artifacts markers with valid output"
+  artifacts markers detected: YES
+echo "Testing artifacts markers with invalid output"
+  artifacts markers missing (expected): YES
+≡ƒº¬ Testing file scope validation...
+git diff --name-only

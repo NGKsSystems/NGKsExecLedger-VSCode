@@ -1,0 +1,31 @@
+﻿ExecLedger artifacts Report
+
+EXEC_ID: dc53ebfca732ba96
+SESSION_ID: 149e85e4-834a-4e4c-9223-ca78877b19a3
+MODE: Milestone
+UTC_TIMESTAMP: 2026-02-10T19:27:05Z
+
+artifacts_DIR: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_dc53ebfca732ba96\milestone\149e85e4-834a-4e4c-9223-ca78877b19a3
+BUNDLE_ZIP: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_dc53ebfca732ba96____149e85e4-834a-4e4c-9223-ca78877b19a3.zip
+BUNDLE_MANIFEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_dc53ebfca732ba96____149e85e4-834a-4e4c-9223-ca78877b19a3.manifest.json
+BUNDLE_LATEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\latest.json
+
+GATE_RESULTS:
+  COMPILE: True
+  VERIFY_3_7: True
+  VERIFY_3_8: True
+  VERIFY_3_9: True
+  VERIFY_5: True
+  VERIFY_6: True
+  VERIFY_7: True
+  VERIFY_8: True
+  VERIFY_9: True
+  VERIFY_10: True
+  VERIFY_11: True
+  VERIFY_12: True
+  FAIL_REASONS: 
+None
+
+CHANGED_FILES:
+  - EXEC_ID=dc53ebfca732ba96
+  - SESSION_ID=149e85e4-834a-4e4c-9223-ca78877b19a3

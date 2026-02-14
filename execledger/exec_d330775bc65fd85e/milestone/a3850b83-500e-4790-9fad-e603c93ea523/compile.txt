@@ -1,0 +1,7 @@
+﻿EXEC_ID=d330775bc65fd85e
+SESSION_ID=a3850b83-500e-4790-9fad-e603c93ea523
+
+
+> ngks-autologger@0.0.1-beta compile C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension
+> tsc -p .
+

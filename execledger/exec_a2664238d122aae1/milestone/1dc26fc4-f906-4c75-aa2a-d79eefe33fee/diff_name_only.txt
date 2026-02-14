@@ -1,0 +1,11 @@
+﻿EXEC_ID=a2664238d122aae1
+SESSION_ID=1dc26fc4-f906-4c75-aa2a-d79eefe33fee
+
+extension/package.json
+extension/src/command/exportartifactsBundle.ts
+extension/src/test/verify-phase3.8.js
+extension/src/test/verify-phase3.9.js
+extension/src/test/verify-phase5.js
+extension/src/test/verify-phase6.js
+tools/export_artifacts_bundle.ps1
+tools/run_phase_gates.ps1

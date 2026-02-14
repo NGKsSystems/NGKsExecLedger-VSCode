@@ -6,7 +6,7 @@ import { safeFileTimestamp } from "../util/time";
 
 export type AutosaveResult = { autosaved: boolean; autosavePath?: string };
 
-export function autosaveProofCopy(params: {
+export function autosaveartifactsCopy(params: {
   logFilePath: string;
   appName: string;
   sessionId: string;

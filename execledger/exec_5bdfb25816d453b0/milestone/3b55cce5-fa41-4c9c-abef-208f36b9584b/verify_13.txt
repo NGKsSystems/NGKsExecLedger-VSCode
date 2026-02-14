@@ -1,0 +1,7 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=3b55cce5-fa41-4c9c-abef-208f36b9584b
+
+artifacts_BEGIN
+✗ Phase 13 verification FAILED:
+  - Phase 13 scope violation: unexpected files modified: extension/pnpm-lock.yaml, .ngkssys/
+artifacts_END

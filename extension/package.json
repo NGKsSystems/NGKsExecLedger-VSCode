@@ -75,16 +75,16 @@
         "title": "NGKs: Changed Files (Latest)"
       },
       {
-        "command": "ngksExecLedger.exportProofBundle",
-        "title": "ExecLedger: Export Proof Bundle"
+        "command": "ngksExecLedger.exportArtifactsBundle",
+        "title": "ExecLedger: Export Artifacts Bundle"
       },
       {
         "command": "ngksExecLedger.runMilestoneGates",
-        "title": "ExecLedger: Run Milestone Proof Gates"
+        "title": "ExecLedger: Run Milestone Gates"
       },
       {
-        "command": "ngksExecLedger.openLatestProofBundle",
-        "title": "ExecLedger: Open Latest Proof Bundle"
+        "command": "ngksExecLedger.openLatestArtifactsBundle",
+        "title": "ExecLedger: Open Latest Artifacts Bundle"
       },
       {
         "command": "ngksExecLedger.openLatestSummary",
@@ -95,8 +95,12 @@
         "title": "ExecLedger: Copy Latest Summary to Clipboard"
       },
       {
-        "command": "ngksExecLedger.openLatestProofReport",
-        "title": "ExecLedger: Open Latest Proof Report"
+        "command": "ngksExecLedger.openLatestArtifactsReport",
+        "title": "ExecLedger: Open Latest Artifacts Report"
+      },
+      {
+        "command": "execLedger.openQuickPick",
+        "title": "ExecLedger: Open Actions Menu"
       }
     ],
     "views": {
@@ -133,12 +137,12 @@
         "ngksAutologger.autosaveToDownloads": {
           "type": "boolean",
           "default": true,
-          "description": "Copy a proof artifact to Downloads on session end."
+          "description": "Copy a artifacts artifact to Downloads on session end."
         },
         "ngksAutologger.appName": {
           "type": "string",
           "default": "VSCodeAutoLogger",
-          "description": "Folder name used under Downloads\\NGKsLogs\\<appName> for proof copies."
+          "description": "Folder name used under Downloads\\NGKsLogs\\<appName> for artifacts copies."
         },
         "ngksAutologger.renderer.includeHtml": {
           "type": "boolean",
@@ -160,30 +164,51 @@
           "default": 200,
           "description": "Maximum characters to preview for agent input/output events."
         },
-        "execLedger.proof.outputRoot": {
+        "execLedger.artifacts.outputRoot": {
           "type": "string",
           "default": "",
-          "description": "Custom root directory for proof bundle exports. If empty, uses default _proof directory in workspace."
+          "description": "Custom root directory for artifacts bundle exports. If empty, uses default _artifacts directory in workspace."
         },
-        "execLedger.proof.autoExportOnMilestone": {
+        "execLedger.artifacts.autoExportOnMilestone": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically export proof bundles when milestone phase gates complete successfully."
+          "description": "Automatically export artifacts bundles when milestone phase gates complete successfully."
         },
-        "execLedger.proof.revealBundleAfterExport": {
+        "execLedger.artifacts.revealBundleAfterExport": {
           "type": "boolean",
           "default": true,
-          "description": "Reveal the exported proof bundle location in file explorer after successful export."
+          "description": "Reveal the exported artifacts bundle location in file explorer after successful export."
         },
-        "execLedger.proof.copyReportToClipboard": {
+        "execLedger.tier": {
+          "type": "string",
+          "default": "FREE",
+          "enum": ["FREE", "PRO", "PREMIUM"],
+          "enumDescriptions": [
+            "FREE - Command Palette access only",
+            "PRO - Command Palette + Status Bar QuickPick menu", 
+            "PREMIUM - Full desktop companion app access"
+          ],
+          "description": "ExecLedger tier level. Controls which UI features are available."
+        },
+        "execLedger.outputRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Root folder containing ExecLedger artifacts outputs (exec_* folders)."
+        },
+        "execLedger.artifactsRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Override artifacts output root. If empty, uses <workspaceRoot>\\_artifacts"
+        },
+        "execLedger.artifacts.copyReportToClipboard": {
           "type": "boolean",
           "default": false,
-          "description": "Copy the full report text to clipboard when opening the latest proof report."
+          "description": "Copy the full report text to clipboard when opening the latest artifacts report."
         },
-        "execLedger.proof.copySummaryToClipboard": {
+        "execLedger.artifacts.copySummaryToClipboard": {
           "type": "boolean",
           "default": true,
-          "description": "Allow copying the proof summary to clipboard when using the Copy Latest Summary command."
+          "description": "Allow copying the artifacts summary to clipboard when using the Copy Latest Summary command."
         }
       }
     }

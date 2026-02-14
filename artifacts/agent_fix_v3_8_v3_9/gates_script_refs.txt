@@ -1,0 +1,32 @@
+
+> tools\run_phase_gates.ps1:169:$g38File = Join-Path $artifactsDir "verify_3_8.txt"
+> tools\run_phase_gates.ps1:170:$g39File = Join-Path $artifactsDir "verify_3_9.txt"
+  tools\run_phase_gates.ps1:171:
+  tools\run_phase_gates.ps1:172:WriteLine ""
+> tools\run_phase_gates.ps1:180:WriteLine "=== VERIFY_3_8 ==="
+> tools\run_phase_gates.ps1:181:$g38Code = RunNodeartifacts "extension/src/test/verify-phase3.8.js" $g38File
+> tools\run_phase_gates.ps1:182:WriteLine "node extension/src/test/verify-phase3.8.js"
+  tools\run_phase_gates.ps1:183:WriteLine "-> $g38File"
+  tools\run_phase_gates.ps1:184:WriteartifactsHeader $g38File $execId $sessionId
+> tools\run_phase_gates.ps1:187:WriteLine "=== VERIFY_3_9 ==="
+> tools\run_phase_gates.ps1:188:$g39Code = RunNodeartifacts "extension/src/test/verify-phase3.9.js" $g39File
+> tools\run_phase_gates.ps1:189:WriteLine "node extension/src/test/verify-phase3.9.js"
+  tools\run_phase_gates.ps1:190:WriteLine "-> $g39File"
+  tools\run_phase_gates.ps1:191:WriteartifactsHeader $g39File $execId $sessionId
+> tools\run_phase_gates.ps1:215:if (-not $g38Ok) { $failReasons += "VERIFY_3_8_FAILED" }
+> tools\run_phase_gates.ps1:216:if (-not $g39Ok) { $failReasons += "VERIFY_3_9_FAILED" }
+  tools\run_phase_gates.ps1:217:
+  tools\run_phase_gates.ps1:218:$summary = Join-Path $artifactsDir "summary.txt"
+> tools\run_phase_gates.ps1:225:  ("VERIFY_3_8_OK=" + ($g38Ok))
+> tools\run_phase_gates.ps1:226:  ("VERIFY_3_8_ADVISORY_SCOPE_ONLY=" + ($g38Advisory))
+> tools\run_phase_gates.ps1:227:  "VERIFY_3_9_OK=$g39Ok"
+  tools\run_phase_gates.ps1:228:  ("FAIL_REASONS=" + ($(if ($failReasons.Count -eq 0) { "None" } else { $failReasons -join "," })))
+  tools\run_phase_gates.ps1:229:  "artifacts_DIR=$artifactsDir"
+> tools\run_phase_gates.ps1:402:    "  VERIFY_3_8: $g38Ok",
+> tools\run_phase_gates.ps1:403:    "  VERIFY_3_9: $g39Ok",
+  tools\run_phase_gates.ps1:404:    "  VERIFY_5: $g5Ok",
+  tools\run_phase_gates.ps1:405:    "  VERIFY_6: $g6Ok", 
+> tools\run_phase_gates.ps1:429:    if ($line -match "^VERIFY_3_9_OK=") {
+  tools\run_phase_gates.ps1:430:      $updatedSummary += "VERIFY_5_OK=$g5Ok"
+  tools\run_phase_gates.ps1:431:      $updatedSummary += "VERIFY_6_OK=$g6Ok"
+

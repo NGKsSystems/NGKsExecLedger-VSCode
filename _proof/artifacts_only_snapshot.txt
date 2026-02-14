@@ -1,0 +1,105 @@
+ M .gitignore
+ M extension/README.md
+ M extension/package.json
+ M extension/src/command/copyLatestSummary.ts
+ D extension/src/command/exportProofBundle.ts
+ D extension/src/command/openLatestProofBundle.ts
+ D extension/src/command/openLatestProofReport.ts
+ M extension/src/command/openLatestSummary.ts
+ M extension/src/command/runMilestoneGates.ts
+ M extension/src/commands/execLedgerAddGuidance.ts
+ D extension/src/commands/exportProofBundle.ts
+ M extension/src/core/autosave.ts
+ M extension/src/core/execLedgerState.ts
+ M extension/src/core/execLedgerStatusBar.ts
+ M extension/src/extension.ts
+ D extension/src/status/statusBarProof.ts
+ M extension/src/test/verify-phase10.js
+ M extension/src/test/verify-phase11.js
+ M extension/src/test/verify-phase12.js
+ M extension/src/test/verify-phase13.js
+ M extension/src/test/verify-phase14.js
+ M extension/src/test/verify-phase15.js
+ M extension/src/test/verify-phase16.js
+ M extension/src/test/verify-phase17.js
+ M extension/src/test/verify-phase3.6.js
+ M extension/src/test/verify-phase3.7.js
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase4.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M extension/src/test/verify-phase9.js
+ D extension/src/util/proofEnforcer.ts
+ M extension/src/util/validation.ts
+ M tools/export_proof_bundle.ps1
+ M tools/gate-commit.ps1
+ M tools/proof_run.ps1
+ M tools/run_phase_gates.ps1
+?? LAUNCH_UI.md
+?? _proof/
+?? desktop-companion/
+?? execledger/
+?? extension/src/command/execLedgerQuickPick.ts
+?? extension/src/command/exportArtifactsBundle.ts
+?? extension/src/command/openLatestArtifactsBundle.ts
+?? extension/src/command/openLatestArtifactsReport.ts
+?? extension/src/commands/exportArtifactsBundle.ts
+?? extension/src/core/artifactPaths.ts
+?? extension/src/core/retrievalController.ts
+?? extension/src/core/tierEngine.ts
+?? extension/src/status/statusBarArtifacts.ts
+?? extension/src/test/verify-phaseArtifactsMigration.js
+?? extension/src/test/verify-phaseDesktopBoundary.js
+?? extension/src/test/verify-phaseRetrievalController.js
+?? extension/src/test/verify-phaseStatusBarGating.js
+?? extension/src/test/verify-phaseStatusBarTextArtifacts.js
+?? extension/src/test/verify-phaseTierEngine.js
+?? extension/src/util/artifactsEnforcer.ts
+?? extension/src/utils/
+?? launch_ui.bat
+?? launch_ui.py
+.gitignore
+extension/README.md
+extension/package.json
+extension/src/command/copyLatestSummary.ts
+extension/src/command/exportProofBundle.ts
+extension/src/command/openLatestProofBundle.ts
+extension/src/command/openLatestProofReport.ts
+extension/src/command/openLatestSummary.ts
+extension/src/command/runMilestoneGates.ts
+extension/src/commands/execLedgerAddGuidance.ts
+extension/src/commands/exportProofBundle.ts
+extension/src/core/autosave.ts
+extension/src/core/execLedgerState.ts
+extension/src/core/execLedgerStatusBar.ts
+extension/src/extension.ts
+extension/src/status/statusBarProof.ts
+extension/src/test/verify-phase10.js
+extension/src/test/verify-phase11.js
+extension/src/test/verify-phase12.js
+extension/src/test/verify-phase13.js
+extension/src/test/verify-phase14.js
+extension/src/test/verify-phase15.js
+extension/src/test/verify-phase16.js
+extension/src/test/verify-phase17.js
+extension/src/test/verify-phase3.6.js
+extension/src/test/verify-phase3.7.js
+extension/src/test/verify-phase3.8.js
+extension/src/test/verify-phase3.9.js
+extension/src/test/verify-phase4.js
+extension/src/test/verify-phase5.js
+extension/src/test/verify-phase6.js
+extension/src/test/verify-phase7.js
+extension/src/test/verify-phase8.js
+extension/src/test/verify-phase9.js
+extension/src/util/proofEnforcer.ts
+extension/src/util/validation.ts
+tools/export_proof_bundle.ps1
+tools/gate-commit.ps1
+tools/proof_run.ps1
+tools/run_phase_gates.ps1
+v25.4.0
+11.7.0

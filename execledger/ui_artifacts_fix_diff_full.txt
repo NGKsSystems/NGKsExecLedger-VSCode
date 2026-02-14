@@ -1,0 +1,71 @@
+diff --git a/extension/package.json b/extension/package.json
+index dc02d9f..2231df8 100644
+--- a/extension/package.json
++++ b/extension/package.json
+@@ -97,6 +97,10 @@
+       {
+         "command": "ngksExecLedger.openLatestartifactsReport",
+         "title": "ExecLedger: Open Latest artifacts Report"
++      },
++      {
++        "command": "execLedger.openQuickPick",
++        "title": "ExecLedger: Open Actions Menu"
+       }
+     ],
+     "views": {
+@@ -175,6 +179,22 @@
+           "default": true,
+           "description": "Reveal the exported artifacts bundle location in file explorer after successful export."
+         },
++        "execLedger.tier": {
++          "type": "string",
++          "default": "FREE",
++          "enum": ["FREE", "PRO", "PREMIUM"],
++          "enumDescriptions": [
++            "FREE - Command Palette access only",
++            "PRO - Command Palette + Status Bar QuickPick menu", 
++            "PREMIUM - Full desktop companion app access"
++          ],
++          "description": "ExecLedger tier level. Controls which UI features are available."
++        },
++        "execLedger.outputRoot": {
++          "type": "string",
++          "default": "",
++          "description": "Root folder containing ExecLedger artifacts outputs (exec_* folders)."
++        },
+         "execLedger.artifacts.copyReportToClipboard": {
+           "type": "boolean",
+           "default": false,
+diff --git a/extension/src/extension.ts b/extension/src/extension.ts
+index a693b03..181e118 100644
+--- a/extension/src/extension.ts
++++ b/extension/src/extension.ts
+@@ -17,6 +17,8 @@ import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
+ import { registerOpenLatestartifactsReportCommand } from "./command/openLatestartifactsReport";
+ import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
+ import { initartifactsStatusBar } from "./status/statusBarartifacts";
++import { isProOrHigher } from "./core/tierEngine";
++import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
+ 
+ const sessions = new SessionManager();
+ let crashGuard: CrashGuard | null = null;
+@@ -30,6 +32,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void>
+ 
+   // Initialize artifacts status bar
+   initartifactsStatusBar(context);
++  
++  // Initialize tier-gated QuickPick command (always register)
++  registerExecLedgerQuickPickCommand(context);
++  
++  // Create PRO tier status bar item if user is PRO or higher
++  if (isProOrHigher()) {
++    const tierStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
++    tierStatusBarItem.text = "ExecLedger";
++    tierStatusBarItem.command = "execLedger.openQuickPick";
++    tierStatusBarItem.tooltip = "ExecLedger - Click to open actions menu";
++    tierStatusBarItem.show();
++    context.subscriptions.push(tierStatusBarItem);
++  }
+ 
+   // Register session lifecycle commands
+   context.subscriptions.push(

@@ -1,0 +1,25 @@
+EXEC_ID=012983dea6dbc91c
+SESSION_ID=a26f61cd-e679-4c07-acb6-0708f346dbbd
+
+artifacts_BEGIN
+artifacts_END
+🔍 PHASE 6 COMMAND-LEVEL EXPORT GATE
+🧪 Testing artifacts markers validation...
+  artifacts markers detected: YES
+🧪 Testing command definition...
+  Command exists: YES
+  Command title correct: YES
+🧪 Testing command implementation...
+  Command file exists: YES
+  Register function exists: YES
+  Command ID correct: YES
+  Extension registers command: YES
+🧪 Testing file scope validation...
+  File scope validation: PASS
+
+📊 PHASE 6 BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+COMMAND_DEFINED: YES - Package.json command definition
+COMMAND_IMPLEMENTED: YES - Implementation and registration
+FILE_SCOPE_VALID: YES - Phase 6 scope validated
+OVERALL: PASS

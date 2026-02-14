@@ -1,4 +1,4 @@
-# tools/export_proof_bundle.ps1
+# tools/export_artifacts_bundle.ps1
 [CmdletBinding()]
 param(
   [string]$ExecId,
@@ -17,14 +17,14 @@ function Get-RepoRoot {
   return ($root.Trim() -replace "\\","/")
 }
 
-function Get-LatestProofDir {
+function Get-LatestartifactsDir {
   param([string]$RepoRoot)
 
-  $proofRoot = Join-Path $RepoRoot "_proof"
-  if (-not (Test-Path $proofRoot)) { throw "Missing _proof/ folder at: $proofRoot" }
+  $artifactsRoot = Join-Path $RepoRoot "_artifacts"
+  if (-not (Test-Path $artifactsRoot)) { throw "Missing _artifacts/ folder at: $artifactsRoot" }
 
-  $execDirs = Get-ChildItem -Path $proofRoot -Directory -Filter "exec_*" -ErrorAction Stop
-  if (-not $execDirs -or $execDirs.Count -eq 0) { throw "No exec_* proof dirs found under: $proofRoot" }
+  $execDirs = Get-ChildItem -Path $artifactsRoot -Directory -Filter "exec_*" -ErrorAction Stop
+  if (-not $execDirs -or $execDirs.Count -eq 0) { throw "No exec_* artifacts dirs found under: $artifactsRoot" }
 
   # Find newest session dir across build/milestone
   $candidates = @()
@@ -45,7 +45,7 @@ function Get-LatestProofDir {
       }
     }
   }
-  if ($candidates.Count -eq 0) { throw "No proof session dirs found under any exec_*/(build|milestone)." }
+  if ($candidates.Count -eq 0) { throw "No artifacts session dirs found under any exec_*/(build|milestone)." }
 
   $latest = $candidates | Sort-Object LastWrite -Descending | Select-Object -First 1
   return $latest
@@ -80,38 +80,38 @@ $repoRootWin = ($repoRoot -replace "/","\")
 $headCommit = (git rev-parse HEAD).Trim()
 $utcNow = (Get-Date).ToUniversalTime().ToString("o")
 
-# Resolve proof dir
-$proofSelection = $null
+# Resolve artifacts dir
+$artifactsSelection = $null
 if ($ExecId -and $SessionId -and $Mode) {
   $modeLower = $Mode.ToLowerInvariant()
-  $proofDir = Join-Path $repoRootWin ("_proof\exec_{0}\{1}\{2}" -f $ExecId, $modeLower, $SessionId)
-  if (-not (Test-Path $proofDir)) { throw "Proof dir not found: $proofDir" }
-  $proofSelection = [pscustomobject]@{ ExecName="exec_$ExecId"; ExecId=$ExecId; Mode=$modeLower; SessionId=$SessionId; SessionDir=$proofDir }
+  $artifactsDir = Join-Path $repoRootWin ("_artifacts\exec_{0}\{1}\{2}" -f $ExecId, $modeLower, $SessionId)
+  if (-not (Test-Path $artifactsDir)) { throw "artifacts dir not found: $artifactsDir" }
+  $artifactsSelection = [pscustomobject]@{ ExecName="exec_$ExecId"; ExecId=$ExecId; Mode=$modeLower; SessionId=$SessionId; SessionDir=$artifactsDir }
 }
 elseif ($ExecId -and $Mode -and -not $SessionId) {
   $modeLower = $Mode.ToLowerInvariant() 
-  $execDir = Join-Path $repoRootWin ("_proof\exec_{0}\{1}" -f $ExecId, $modeLower)
+  $execDir = Join-Path $repoRootWin ("_artifacts\exec_{0}\{1}" -f $ExecId, $modeLower)
   if (-not (Test-Path $execDir)) { throw "Exec/mode dir not found: $execDir" }
   $sessions = Get-ChildItem -Path $execDir -Directory | Sort-Object LastWriteTimeUtc -Descending
   if (-not $sessions -or $sessions.Count -eq 0) { throw "No sessions found under: $execDir" }
-  $proofSelection = [pscustomobject]@{ ExecName="exec_$ExecId"; ExecId=$ExecId; Mode=$modeLower; SessionId=$sessions[0].Name; SessionDir=$sessions[0].FullName }
+  $artifactsSelection = [pscustomobject]@{ ExecName="exec_$ExecId"; ExecId=$ExecId; Mode=$modeLower; SessionId=$sessions[0].Name; SessionDir=$sessions[0].FullName }
 }
 else {
-  $latest = Get-LatestProofDir -RepoRoot $repoRootWin
+  $latest = Get-LatestartifactsDir -RepoRoot $repoRootWin
   $execIdParsed = $latest.ExecName -replace "^exec_",""
-  $proofSelection = [pscustomobject]@{ ExecName=$latest.ExecName; ExecId=$execIdParsed; Mode=$latest.Mode; SessionId=$latest.SessionId; SessionDir=$latest.SessionDir }
+  $artifactsSelection = [pscustomobject]@{ ExecName=$latest.ExecName; ExecId=$execIdParsed; Mode=$latest.Mode; SessionId=$latest.SessionId; SessionDir=$latest.SessionDir }
 }
 
-$execIdFinal = $proofSelection.ExecId
-$sessionIdFinal = $proofSelection.SessionId
-$modeFinal = $proofSelection.Mode
-$proofDirFinal = $proofSelection.SessionDir
+$execIdFinal = $artifactsSelection.ExecId
+$sessionIdFinal = $artifactsSelection.SessionId
+$modeFinal = $artifactsSelection.Mode
+$artifactsDirFinal = $artifactsSelection.SessionDir
 
 # Bundle output paths
 if ($OutputRoot -and $OutputRoot.Trim()) {
   $bundlesDir = Join-Path $OutputRoot.Trim() "bundles"
 } else {
-  $bundlesDir = Join-Path $repoRootWin "_proof\bundles"
+  $bundlesDir = Join-Path $repoRootWin "_artifacts\bundles"
 }
 if (-not (Test-Path $bundlesDir)) { New-Item -ItemType Directory -Path $bundlesDir | Out-Null }
 
@@ -119,12 +119,12 @@ $baseName = ("exec_{0}__{1}__{2}" -f $execIdFinal, $modeFinal, $sessionIdFinal)
 $zipPath = Join-Path $bundlesDir ($baseName + ".zip")
 $manifestPath = Join-Path $bundlesDir ($baseName + ".manifest.json")
 
-# Enumerate files to include (all files under proof dir)
-$files = Get-ChildItem -Path $proofDirFinal -Recurse -File | Sort-Object FullName
+# Enumerate files to include (all files under artifacts dir)
+$files = Get-ChildItem -Path $artifactsDirFinal -Recurse -File | Sort-Object FullName
 
 $fileEntries = @()
 foreach ($f in $files) {
-  $rel = $f.FullName.Substring($proofDirFinal.Length).TrimStart("\")
+  $rel = $f.FullName.Substring($artifactsDirFinal.Length).TrimStart("\")
   $sha = Get-SHA256Hex -Path $f.FullName
   $fileEntries += [pscustomobject]@{
     path   = ($rel -replace "\\","/")
@@ -139,10 +139,10 @@ $failReasons = $null
 
 # If a verify_*.txt contains "==== SUMMARY ====" we can parse; otherwise leave minimal.
 $summaryCandidates = @()
-$summaryCandidates += Join-Path $proofDirFinal "verify_3_7.txt"
-$summaryCandidates += Join-Path $proofDirFinal "verify_3_8.txt"
-$summaryCandidates += Join-Path $proofDirFinal "verify_3_9.txt"
-$summaryCandidates += Join-Path $proofDirFinal "compile.txt"
+$summaryCandidates += Join-Path $artifactsDirFinal "verify_3_7.txt"
+$summaryCandidates += Join-Path $artifactsDirFinal "verify_3_8.txt"
+$summaryCandidates += Join-Path $artifactsDirFinal "verify_3_9.txt"
+$summaryCandidates += Join-Path $artifactsDirFinal "compile.txt"
 $summaryCandidates = $summaryCandidates | Where-Object { Test-Path $_ }
 
 foreach ($sc in $summaryCandidates) {
@@ -165,7 +165,7 @@ $manifest = [ordered]@{
   repo_root      = $repoRoot
   head_commit    = $headCommit
   created_at_utc = $utcNow
-  proof_dir      = ($proofDirFinal -replace "\\","/")
+  artifacts_dir      = ($artifactsDirFinal -replace "\\","/")
   fail_reasons   = $null
   gates          = $gatesOut
   files          = $fileEntries
@@ -183,7 +183,7 @@ New-Item -ItemType Directory -Path $snapshotDir | Out-Null
 
 # Copy files one-by-one with retry to tolerate brief locks
 foreach ($f in $files) {
-  $rel = $f.FullName.Substring($proofDirFinal.Length).TrimStart("\")
+  $rel = $f.FullName.Substring($artifactsDirFinal.Length).TrimStart("\")
   $dst = Join-Path $snapshotDir $rel
   $dstDir = Split-Path -Parent $dst
   if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
@@ -207,8 +207,8 @@ Compress-Archive -Path (Join-Path $snapshotDir "*") -DestinationPath $zipPath -F
 
 # Create path variables for pointer and integrity
 $latestPointerPath = Join-Path $bundlesDir "latest.json"
-$summaryPath = Join-Path $proofDirFinal "summary.txt"
-$reportPath = Join-Path $proofDirFinal "report.txt"
+$summaryPath = Join-Path $artifactsDirFinal "summary.txt"
+$reportPath = Join-Path $artifactsDirFinal "report.txt"
 
 # Phase 16: Generate integrity.json with SHA256 hashes
 $integrityPath = Join-Path $bundlesDir "integrity.json"
@@ -227,9 +227,9 @@ $integrityJson = ($integrity | ConvertTo-Json -Depth 3)
 [System.IO.File]::WriteAllText($integrityPath, $integrityJson)
 
 # Create/update latest bundle pointer with Phase 15 pointer paths
-$diffNameOnlyPath = Join-Path $proofDirFinal "diff_name_only.txt"
-$statusPath = Join-Path $proofDirFinal "status.txt"
-$compileLogPath = Join-Path $proofDirFinal "compile.txt"
+$diffNameOnlyPath = Join-Path $artifactsDirFinal "diff_name_only.txt"
+$statusPath = Join-Path $artifactsDirFinal "status.txt"
+$compileLogPath = Join-Path $artifactsDirFinal "compile.txt"
 $latestPointer = [ordered]@{
   exec_id      = $execIdFinal
   session_id   = $sessionIdFinal
@@ -237,7 +237,7 @@ $latestPointer = [ordered]@{
   zip_path     = ($zipPath -replace "\\","/")
   manifest_path = ($manifestPath -replace "\\","/")
   created_at   = $utcNow
-  proof_dir    = ($proofDirFinal -replace "\\","/")
+  artifacts_dir    = ($artifactsDirFinal -replace "\\","/")
   summary_path = ($summaryPath -replace "\\","/")
   report_path  = ($reportPath -replace "\\","/")
   diff_name_only_path = ($diffNameOnlyPath -replace "\\","/")
@@ -252,7 +252,7 @@ Write-Host "BUNDLE_OK=True"
 Write-Host ("EXEC_ID={0}" -f $execIdFinal)
 Write-Host ("SESSION_ID={0}" -f $sessionIdFinal)
 Write-Host ("MODE={0}" -f $modeFinal)
-Write-Host ("PROOF_DIR={0}" -f ($proofDirFinal -replace "\\","/"))
+Write-Host ("artifacts_DIR={0}" -f ($artifactsDirFinal -replace "\\","/"))
 Write-Host ("ZIP={0}" -f ($zipPath -replace "\\","/"))
 Write-Host ("MANIFEST={0}" -f ($manifestPath -replace "\\","/"))
 Write-Host ("LATEST={0}" -f ($latestPointerPath -replace "\\","/"))

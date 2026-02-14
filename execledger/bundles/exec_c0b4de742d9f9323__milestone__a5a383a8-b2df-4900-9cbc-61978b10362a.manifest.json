@@ -1,0 +1,50 @@
+{
+    "exec_id":  "c0b4de742d9f9323",
+    "session_id":  "a5a383a8-b2df-4900-9cbc-61978b10362a",
+    "mode":  "milestone",
+    "repo_root":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger",
+    "head_commit":  "82db7ef24aebcd99af0015e68d8f8400e4676046",
+    "created_at_utc":  "2026-02-10T10:23:28.0405139Z",
+    "artifacts_dir":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_c0b4de742d9f9323/milestone/a5a383a8-b2df-4900-9cbc-61978b10362a",
+    "fail_reasons":  null,
+    "gates":  [
+
+              ],
+    "files":  [
+                  {
+                      "path":  "compile.txt",
+                      "bytes":  202,
+                      "sha256":  "ab85247b45bb2e0c1deffb483a8a1e906fc36d865dafabca0165b708c2a85f67"
+                  },
+                  {
+                      "path":  "diff_name_only.txt",
+                      "bytes":  80,
+                      "sha256":  "c3e2bc2998bdb47bbb78f1ac33805d979546b0059e31341cecce363bf5f8c9ec"
+                  },
+                  {
+                      "path":  "status.txt",
+                      "bytes":  323,
+                      "sha256":  "204ac43528461ae608bf8b3f7eb405370521539edb5eaf98a1aa8fc1d1214c5d"
+                  },
+                  {
+                      "path":  "summary.txt",
+                      "bytes":  387,
+                      "sha256":  "f5abeda7f11c3ff51f9f74b945c3fe8988aef31d19fec105283ef89cc21bedce"
+                  },
+                  {
+                      "path":  "verify_3_7.txt",
+                      "bytes":  587,
+                      "sha256":  "be6880e00865113123da57062ef767248c0c73deff0bbe912d89e398db9ccea1"
+                  },
+                  {
+                      "path":  "verify_3_8.txt",
+                      "bytes":  954,
+                      "sha256":  "e2e1816b4952b216fee1195afa324297197b67a60955cb461eccd837a1e6dbfc"
+                  },
+                  {
+                      "path":  "verify_3_9.txt",
+                      "bytes":  895,
+                      "sha256":  "99ff8423bc72b6602b9a419bbba1db9cfd9f871f31d007fdcdf769fedbbb7558"
+                  }
+              ]
+}

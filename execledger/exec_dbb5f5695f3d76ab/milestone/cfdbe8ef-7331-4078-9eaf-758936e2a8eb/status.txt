@@ -1,0 +1,21 @@
+EXEC_ID=dbb5f5695f3d76ab
+SESSION_ID=cfdbe8ef-7331-4078-9eaf-758936e2a8eb
+
+ M extension/package.json
+ M extension/src/extension.ts
+ M extension/src/status/statusBarartifacts.ts
+ M extension/src/test/verify-phase10.js
+ M extension/src/test/verify-phase11.js
+ M extension/src/test/verify-phase12.js
+ M extension/src/test/verify-phase13.js
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M extension/src/test/verify-phase9.js
+ M tools/run_phase_gates.ps1
+?? extension/src/command/copyLatestSummary.ts
+?? extension/src/command/openLatestSummary.ts
+?? extension/src/test/verify-phase14.js

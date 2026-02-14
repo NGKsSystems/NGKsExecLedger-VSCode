@@ -1,18 +1,18 @@
 // BINARY ACCEPTANCE TEST - Run with: node extension/src/test/verify-phase5.js
-// Phase 5 Gate: Proof Bundle Export + Manifest
+// Phase 5 Gate: artifacts Bundle Export + Manifest
 
 /**
- * PHASE 5 — PROOF BUNDLE EXPORT + MANIFEST INTEGRITY GATE
+ * PHASE 5 — artifacts BUNDLE EXPORT + MANIFEST INTEGRITY GATE
  *
  * Goals:
- *  - Assert a proof bundle zip + manifest are created under _proof/bundles/
+ *  - Assert a artifacts bundle zip + manifest are created under _artifacts/bundles/
  *  - Assert manifest is valid JSON and contains required fields
  *  - Assert zip file exists and is non-empty
  *  - Assert manifest file entries exist and hashes look like SHA256 hex
- *  - Assert referenced files exist in the corresponding proof session dir
+ *  - Assert referenced files exist in the corresponding artifacts session dir
  *
  * Note:
- *  - This gate is designed to run AFTER export_proof_bundle.ps1 has run at least once.
+ *  - This gate is designed to run AFTER export_artifacts_bundle.ps1 has run at least once.
  *  - It does not attempt to recompute all hashes (heavy). It validates structure + existence.
  */
 
@@ -58,8 +58,8 @@ function requireField(obj, key) {
   return obj[key];
 }
 
-function validateProofMarkers(sample) {
-  return sample.includes('PROOF_BEGIN') && sample.includes('PROOF_END');
+function validateartifactsMarkers(sample) {
+  return sample.includes('artifacts_BEGIN') && sample.includes('artifacts_END');
 }
 
 function validateFileScope(allowedFiles) {
@@ -79,17 +79,17 @@ function validateFileScope(allowedFiles) {
   };
 }
 
-function testProofMarkers() {
-  console.log("🧪 Testing proof markers validation...");
-  const ok = validateProofMarkers("PROOF_BEGIN\nPROOF_END\n");
-  console.log(`  Proof markers detected: ${ok ? "YES" : "NO"}`);
+function testartifactsMarkers() {
+  console.log("🧪 Testing artifacts markers validation...");
+  const ok = validateartifactsMarkers("artifacts_BEGIN\nartifacts_END\n");
+  console.log(`  artifacts markers detected: ${ok ? "YES" : "NO"}`);
   return ok === true;
 }
 
 function testBundleAndManifest() {
   console.log("🧪 Testing bundle + manifest presence...");
   const root = repoRoot();
-  const bundlesDir = path.join(root, "_proof", "bundles");
+  const bundlesDir = path.join(root, "_artifacts", "bundles");
   if (!fs.existsSync(bundlesDir)) {
     console.log("  Bundles dir missing: NO");
     return { ok: false, reason: "BUNDLES_DIR_MISSING" };
@@ -129,7 +129,7 @@ function testBundleAndManifest() {
   const sessionId = requireField(manifest, "session_id");
   const mode = requireField(manifest, "mode");
   const headCommit = requireField(manifest, "head_commit");
-  const proofDir = requireField(manifest, "proof_dir");
+  const artifactsDir = requireField(manifest, "artifacts_dir");
   const files = requireField(manifest, "files");
 
   const fieldsOk =
@@ -137,7 +137,7 @@ function testBundleAndManifest() {
     typeof sessionId === "string" &&
     typeof mode === "string" &&
     typeof headCommit === "string" &&
-    typeof proofDir === "string" &&
+    typeof artifactsDir === "string" &&
     Array.isArray(files);
 
   console.log(`  Required fields valid: ${fieldsOk ? "YES" : "NO"}`);
@@ -146,7 +146,7 @@ function testBundleAndManifest() {
   // Validate file entries (lightweight)
   console.log("🧪 Validating manifest file entries...");
   const rootWin = repoRoot();
-  const proofDirAbs = path.resolve(rootWin, proofDir.replace(/\//g, path.sep));
+  const artifactsDirAbs = path.resolve(rootWin, artifactsDir.replace(/\//g, path.sep));
 
   let entriesOk = true;
   let missingCount = 0;
@@ -161,7 +161,7 @@ function testBundleAndManifest() {
       badHashCount++;
       entriesOk = false;
     }
-    const abs = path.join(proofDirAbs, f.path.replace(/\//g, path.sep));
+    const abs = path.join(artifactsDirAbs, f.path.replace(/\//g, path.sep));
     if (!fs.existsSync(abs)) {
       missingCount++;
       entriesOk = false;
@@ -188,7 +188,7 @@ function testFileScope() {
   console.log("🧪 Testing file scope validation...");
   // Phase 5 allowed files only
   const allowedFiles = [
-    "tools/export_proof_bundle.ps1",
+    "tools/export_artifacts_bundle.ps1",
     "tools/run_phase_gates.ps1",
     "extension/src/test/verify-phase5.js",
     "extension/src/test/verify-phase3.8.js",
@@ -196,15 +196,15 @@ function testFileScope() {
     "extension/src/test/verify-phase4.js",
     "extension/package.json",
     "extension/src/extension.ts",
-    "extension/src/command/exportProofBundle.ts",
+    "extension/src/command/exportartifactsBundle.ts",
     "extension/src/test/verify-phase6.js",
     "extension/src/test/verify-phase7.js",
     "extension/src/test/verify-phase8.js",
-    "extension/src/command/openLatestProofBundle.ts",
-    "extension/src/command/openLatestProofReport.ts",
+    "extension/src/command/openLatestartifactsBundle.ts",
+    "extension/src/command/openLatestartifactsReport.ts",
     "extension/src/command/openLatestSummary.ts",
     "extension/src/command/copyLatestSummary.ts",
-    "extension/src/status/statusBarProof.ts",    "extension/src/test/verify-phase9.js",
+    "extension/src/status/statusBarartifacts.ts",    "extension/src/test/verify-phase9.js",
     "extension/src/test/verify-phase10.js",
     "extension/src/test/verify-phase11.js",
     "extension/src/test/verify-phase12.js",
@@ -225,18 +225,18 @@ function testFileScope() {
 }
 
 (function main() {
-  console.log("PROOF_BEGIN");
-  console.log("PROOF_END");
-  console.log("🔍 PHASE 5 PROOF BUNDLE EXPORT + MANIFEST INTEGRITY GATE");
+  console.log("artifacts_BEGIN");
+  console.log("artifacts_END");
+  console.log("🔍 PHASE 5 artifacts BUNDLE EXPORT + MANIFEST INTEGRITY GATE");
 
-  const a = testProofMarkers();
+  const a = testartifactsMarkers();
   const b = testBundleAndManifest();
   const c = testFileScope();
 
   const overall = a && b.ok && c;
 
   console.log("\n📊 PHASE 5 BINARY ACCEPTANCE RESULTS:");
-  console.log(`PROOF_MARKERS: ${a ? "YES" : "NO"} - Enforcement working`);
+  console.log(`artifacts_MARKERS: ${a ? "YES" : "NO"} - Enforcement working`);
   console.log(`BUNDLE_PRESENT: ${b.ok ? "YES" : "NO"} - Zip + manifest present and valid`);
   console.log(`FILE_SCOPE_VALID: ${c ? "YES" : "NO"} - Phase 5 scope validated`);
   console.log(`OVERALL: ${overall ? "PASS" : "FAIL"}`);

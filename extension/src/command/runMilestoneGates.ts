@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { resolveArtifactRoot } from "../core/artifactPaths";
 import { exec } from "child_process";
-import { refreshProofStatus } from "../status/statusBarProof";
+import { refreshArtifactsStatus } from "../status/statusBarArtifacts";
 
 /**
  * Registers the run milestone gates command
@@ -16,7 +17,7 @@ export function registerRunMilestoneGatesCommand(context: vscode.ExtensionContex
 }
 
 /**
- * Executes the milestone proof gates workflow
+ * Executes the milestone artifacts gates workflow
  */
 async function executeRunMilestoneGates(): Promise<void> {
   try {
@@ -37,22 +38,22 @@ async function executeRunMilestoneGates(): Promise<void> {
     }
 
     // Create dedicated output channel
-    const outputChannel = vscode.window.createOutputChannel("ExecLedger Proof");
+    const outputChannel = vscode.window.createOutputChannel("ExecLedger Artifacts");
     outputChannel.clear();
     outputChannel.show(true);
 
     // Show progress while running
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
-      title: "ExecLedger: Running Milestone Proof Gates...",
+      title: "ExecLedger: Running Milestone Gates...",
       cancellable: false
     }, async (progress) => {
       try {
         // Prepare command
         const command = `powershell -NoProfile -ExecutionPolicy Bypass -File "${runnerScript}" -Mode Milestone -ExportBundle Auto`;
         
-        progress.report({ message: "Starting proof gates..." });
-        outputChannel.appendLine("=== ExecLedger Milestone Proof Gates ===");
+        progress.report({ message: "Starting milestone gates..." });
+        outputChannel.appendLine("=== ExecLedger Milestone Gates ===");
         outputChannel.appendLine(`Command: ${command}`);
         outputChannel.appendLine(`Working directory: ${repoRoot}`);
         outputChannel.appendLine("---");
@@ -125,15 +126,21 @@ async function executeRunMilestoneGates(): Promise<void> {
  */
 async function findNewestMilestoneSummary(repoRoot: string): Promise<string | null> {
   try {
-    const proofDir = path.join(repoRoot, "_proof");
-    if (!fs.existsSync(proofDir)) {
+    const artifactResolution = resolveArtifactRoot(repoRoot);
+    const artifactsDir = artifactResolution.root;
+    
+    // Log migration if it occurred
+    if (artifactResolution.migrated) {
+      console.log('[ExecLedger] ARTIFACT_ROOT_MIGRATED:', artifactResolution.notes.join(', '));
+    }
+    if (!fs.existsSync(artifactsDir)) {
       return null;
     }
 
     // Look for exec_* directories
-    const execDirs = fs.readdirSync(proofDir)
+    const execDirs = fs.readdirSync(artifactsDir)
       .filter(name => name.startsWith("exec_"))
-      .map(name => path.join(proofDir, name));
+      .map(name => path.join(artifactsDir, name));
 
     let newestSummary: { path: string; mtime: Date } | null = null;
 
@@ -169,7 +176,7 @@ async function parseSummaryResults(summaryPath: string): Promise<{
   compileOk: boolean;
   verifyResults: { [key: string]: boolean };
   failReasons: string;
-  proofDir: string;
+  artifactsDir: string;
   allPassed: boolean;
 }> {
   const content = fs.readFileSync(summaryPath, 'utf8');
@@ -179,7 +186,7 @@ async function parseSummaryResults(summaryPath: string): Promise<{
     compileOk: false,
     verifyResults: {} as { [key: string]: boolean },
     failReasons: "",
-    proofDir: "",
+    artifactsDir: "",
     allPassed: false
   };
 
@@ -191,8 +198,8 @@ async function parseSummaryResults(summaryPath: string): Promise<{
       results.verifyResults[key] = value === 'True';
     } else if (line.startsWith('FAIL_REASONS=')) {
       results.failReasons = line.split('=')[1] || "";
-    } else if (line.startsWith('PROOF_DIR=')) {
-      results.proofDir = line.split('=')[1] || "";
+    } else if (line.startsWith('artifacts_DIR=')) {
+      results.artifactsDir = line.split('=')[1] || "";
     }
   }
 
@@ -226,10 +233,10 @@ async function handleResults(
 
   if (results.allPassed) {
     // Success - refresh status bar and show success message
-    refreshProofStatus();
+    refreshArtifactsStatus();
     
     vscode.window.showInformationMessage(
-      `ExecLedger: ✅ Milestone proof gates passed! All ${verifyEntries.length} verification phases completed successfully.`,
+      `ExecLedger: ✅ Milestone gates passed! All ${verifyEntries.length} verification phases completed successfully.`,
       "View Output",
       "Open Report"
     ).then(action => {
@@ -251,7 +258,7 @@ async function handleResults(
       .filter(([key, value]) => !value)
       .map(([key]) => key);
     
-    let message = "ExecLedger: ❌ Milestone proof gates failed.";
+    let message = "ExecLedger: ❌ Milestone gates failed.";
     
     if (!results.compileOk) {
       message += " Compilation failed.";

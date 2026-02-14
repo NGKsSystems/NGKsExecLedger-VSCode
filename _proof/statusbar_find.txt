@@ -1,0 +1,21 @@
+
+extension\src\command\copyLatestSummary.ts:6:interface LatestProofData {
+extension\src\command\execLedgerQuickPick.ts:20:      detail: 'Opens summary.txt from latest proof session'
+extension\src\command\exportProofBundle.ts:1:// File: extension/src/command/exportProofBundle.ts
+extension\src\command\openLatestProofBundle.ts:1:// File: extension/src/command/openLatestProofBundle.ts
+extension\src\command\openLatestProofReport.ts:1:// File: extension/src/command/openLatestProofReport.ts
+extension\src\command\openLatestSummary.ts:6:interface LatestProofData {
+extension\src\command\runMilestoneGates.ts:6:import { refreshProofStatus } from "../status/statusBarProof";
+extension\src\commands\execLedgerAddGuidance.ts:70:  ensureDir(path.join(stepPath, 'proof'));
+extension\src\commands\exportProofBundle.ts:10:type ProofSourceType = 'active' | 'latest' | 'picked';
+extension\src\core\artifactPaths.ts:6: * from legacy "_proof" to canonical "execledger" artifact root.
+extension\src\core\autosave.ts:9:export function autosaveProofCopy(params: {
+extension\src\core\execLedgerState.ts:16:  AWAITING_PROOF = 'AWAITING_PROOF',
+extension\src\core\execLedgerStatusBar.ts:4:let statusBarItem: vscode.StatusBarItem | null = null;
+extension\src\core\retrievalController.ts:66:   * Get path to latest proof folder (session directory)
+extension\src\status\statusBarProof.ts:7:interface LatestProofData {
+extension\src\ui\statusBarToggle.ts:5:  private item: vscode.StatusBarItem;
+extension\src\util\proofEnforcer.ts:4: * Proof Enforcement & Anti-Lie Guards
+extension\src\util\validation.ts:15:  proof_dir?: string;
+extension\src\utils\artifactsRoot.ts:7: * Resolve artifacts root directory with auto-migration from _proof to _artifacts
+

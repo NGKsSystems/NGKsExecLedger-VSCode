@@ -1,0 +1,14 @@
+﻿EXEC_ID=d4090ab8699575bb
+SESSION_ID=10da9113-dae0-47fd-b22a-9e540fd48eb8
+
+extension/package.json
+extension/src/extension.ts
+extension/src/test/verify-phase10.js
+extension/src/test/verify-phase3.8.js
+extension/src/test/verify-phase3.9.js
+extension/src/test/verify-phase5.js
+extension/src/test/verify-phase6.js
+extension/src/test/verify-phase7.js
+extension/src/test/verify-phase8.js
+extension/src/test/verify-phase9.js
+tools/run_phase_gates.ps1

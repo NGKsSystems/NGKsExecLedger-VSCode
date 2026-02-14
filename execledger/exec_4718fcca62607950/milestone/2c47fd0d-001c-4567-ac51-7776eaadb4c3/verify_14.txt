@@ -1,0 +1,8 @@
+EXEC_ID=4718fcca62607950
+SESSION_ID=2c47fd0d-001c-4567-ac51-7776eaadb4c3
+
+artifacts_BEGIN
+✗ Phase 14 verification FAILED:
+  - Missing content: PASS/FAIL icon logic in status bar in extension/src/status/statusBarartifacts.ts
+  - Missing content: PASS/FAIL text in status bar in extension/src/status/statusBarartifacts.ts
+artifacts_END

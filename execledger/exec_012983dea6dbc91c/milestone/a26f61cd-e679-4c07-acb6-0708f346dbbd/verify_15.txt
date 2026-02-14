@@ -1,0 +1,36 @@
+EXEC_ID=012983dea6dbc91c
+SESSION_ID=a26f61cd-e679-4c07-acb6-0708f346dbbd
+
+artifacts_BEGIN
+--- TASK_A: Exporter latest.json pointer paths ---
+  artifacts_dir in exporter: YES
+  summary_path in exporter: YES
+  report_path in exporter: YES
+  diff_name_only_path in exporter: YES
+  status_path in exporter: YES
+  compile_log_path in exporter: YES
+--- TASK_B: Status bar uses pointer paths ---
+  Interface includes optional pointer fields: YES
+  Uses summary_path when present: YES
+--- TASK_C: Commands prefer pointer paths ---
+  openLatestSummary prefers summary_path: YES
+  copyLatestSummary prefers summary_path: YES
+  openLatestartifactsReport prefers report_path: YES
+--- TASK_D: Verification gate ---
+  verify-phase15.js exists: YES
+--- TASK_E: Runner integration ---
+  VERIFY_15 in runner: YES
+--- File Scope Validation ---
+  File scope: YES
+
+==== SUMMARY ====
+OVERALL: PASS
+✓ Phase 15 verification PASSED
+✓ latest.json now includes pointer paths (artifacts_dir, summary_path, report_path, etc.)
+✓ statusBarartifacts.ts uses pointer paths when present
+✓ openLatestSummary.ts prefers summary_path from latest.json
+✓ copyLatestSummary.ts prefers summary_path from latest.json
+✓ openLatestartifactsReport.ts prefers report_path from latest.json
+✓ Runner integration VERIFY_15 present
+✓ File scope validation PASSED
+artifacts_END

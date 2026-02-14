@@ -1,0 +1,30 @@
+{
+  "name": "ngks-execledger-desktop-engine",
+  "version": "0.0.1",
+  "description": "NGKs ExecLedger Premium Desktop Engine - CLI for artifacts session access",
+  "main": "src/index.js",
+  "bin": {
+    "ngks-engine": "src/index.js"
+  },
+  "scripts": {
+    "test": "node test/verify-premium-engine.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "ngks",
+    "execledger",
+    "audit",
+    "artifacts",
+    "desktop",
+    "cli"
+  ],
+  "author": "NGKs Systems",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGKsSystems/ngks-vscode-autologger"
+  }
+}

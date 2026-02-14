@@ -11,7 +11,7 @@ if (path.resolve(process.cwd()) !== expectedWorkingDirectory) {
   process.exit(1);
 }
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let allPassed = true;
 
@@ -52,53 +52,53 @@ console.log('--- QuickPick Menu Requirements ---');
 
 // Check status bar QuickPick integration
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'statusBarItem.command = "ngksExecLedger.proofStatusBarAction"',
+  'extension/src/status/statusBarartifacts.ts',
+  'statusBarItem.command = "ngksExecLedger.artifactsStatusBarAction"',
   'Status bar command wiring'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'showProofQuickPick()',
+  'extension/src/status/statusBarartifacts.ts',
+  'showartifactsQuickPick()',
   'QuickPick function integration'
 );
 
 // Check required QuickPick options
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Run Milestone Proof Gates',
-  'Run Milestone Proof Gates option'
+  'extension/src/status/statusBarartifacts.ts',
+  'Run Milestone artifacts Gates',
+  'Run Milestone artifacts Gates option'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'Open Latest Summary',
   'Open Latest Summary option'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'Open Latest Report',
   'Open Latest Report option'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Open Latest Proof Folder',
-  'Open Latest Proof Folder option'
+  'extension/src/status/statusBarartifacts.ts',
+  'Open Latest artifacts Folder',
+  'Open Latest artifacts Folder option'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Open Latest Proof Bundle',
-  'Open Latest Proof Bundle option'
+  'extension/src/status/statusBarartifacts.ts',
+  'Open Latest artifacts Bundle',
+  'Open Latest artifacts Bundle option'
 );
 
-// Check proof folder revelation function
+// Check artifacts folder revelation function
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'revealProofFolder',
-  'Proof folder reveal function'
+  'extension/src/status/statusBarartifacts.ts',
+  'revealartifactsFolder',
+  'artifacts folder reveal function'
 );
 
 console.log('--- Command Registration ---');
@@ -118,14 +118,14 @@ checkFileContains(
 
 checkFileContains(
   'extension/package.json',
-  'ngksExecLedger.openLatestProofReport',
-  'Open Latest Proof Report command registered'
+  'ngksExecLedger.openLatestartifactsReport',
+  'Open Latest artifacts Report command registered'
 );
 
 checkFileContains(
   'extension/package.json',
-  'ngksExecLedger.openLatestProofBundle',
-  'Open Latest Proof Bundle command registered'
+  'ngksExecLedger.openLatestartifactsBundle',
+  'Open Latest artifacts Bundle command registered'
 );
 
 console.log('--- Pointer Path Usage ---');
@@ -138,39 +138,39 @@ checkFileContains(
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'report_path',
   'Report uses pointer path'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'proof_dir',
-  'Proof folder uses pointer path'
+  'extension/src/status/statusBarartifacts.ts',
+  'artifacts_dir',
+  'artifacts folder uses pointer path'
 );
 
 // Check command handlers in QuickPick
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'ngksExecLedger.runMilestoneGates',
   'QuickPick calls milestone gates command'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'ngksExecLedger.openLatestSummary',
   'QuickPick calls open summary command'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'ngksExecLedger.openLatestProofReport',
+  'extension/src/status/statusBarartifacts.ts',
+  'ngksExecLedger.openLatestartifactsReport',
   'QuickPick calls open report command'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'ngksExecLedger.openLatestProofBundle',
+  'extension/src/status/statusBarartifacts.ts',
+  'ngksExecLedger.openLatestartifactsBundle',
   'QuickPick calls open bundle command'
 );
 
@@ -178,11 +178,11 @@ console.log('--- File Scope Validation ---');
 
 // File scope check - allowed files for Phase 17
 const allowedFiles = [
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'extension/src/command/runMilestoneGates.ts',
   'extension/src/command/openLatestSummary.ts',
-  'extension/src/command/openLatestProofReport.ts',
-  'extension/src/command/openLatestProofBundle.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
+  'extension/src/command/openLatestartifactsBundle.ts',
   'extension/src/util/validation.ts',
   'extension/src/test/verify-phase3.7.js',
   'extension/src/test/verify-phase3.8.js',
@@ -200,7 +200,7 @@ const allowedFiles = [
   'extension/src/test/verify-phase15.js',
   'extension/src/test/verify-phase16.js',
   'extension/src/test/verify-phase17.js',
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'tools/run_phase_gates.ps1'
 ];
 
@@ -250,4 +250,4 @@ if (allPassed) {
   process.exit(1);
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');

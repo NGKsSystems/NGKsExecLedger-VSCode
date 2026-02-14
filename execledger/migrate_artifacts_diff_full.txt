@@ -1,0 +1,207 @@
+diff --git a/extension/package.json b/extension/package.json
+index dc02d9f..a6de707 100644
+--- a/extension/package.json
++++ b/extension/package.json
+@@ -97,6 +97,10 @@
+       {
+         "command": "ngksExecLedger.openLatestartifactsReport",
+         "title": "ExecLedger: Open Latest artifacts Report"
++      },
++      {
++        "command": "execLedger.openQuickPick",
++        "title": "ExecLedger: Open Actions Menu"
+       }
+     ],
+     "views": {
+@@ -175,6 +179,27 @@
+           "default": true,
+           "description": "Reveal the exported artifacts bundle location in file explorer after successful export."
+         },
++        "execLedger.tier": {
++          "type": "string",
++          "default": "FREE",
++          "enum": ["FREE", "PRO", "PREMIUM"],
++          "enumDescriptions": [
++            "FREE - Command Palette access only",
++            "PRO - Command Palette + Status Bar QuickPick menu", 
++            "PREMIUM - Full desktop companion app access"
++          ],
++          "description": "ExecLedger tier level. Controls which UI features are available."
++        },
++        "execLedger.outputRoot": {
++          "type": "string",
++          "default": "",
++          "description": "Root folder containing ExecLedger artifacts outputs (exec_* folders)."
++        },
++        "execLedger.artifactsRoot": {
++          "type": "string",
++          "default": "",
++          "description": "Override artifacts output root. If empty, uses <workspaceRoot>\\_artifacts"
++        },
+         "execLedger.artifacts.copyReportToClipboard": {
+           "type": "boolean",
+           "default": false,
+diff --git a/extension/src/command/copyLatestSummary.ts b/extension/src/command/copyLatestSummary.ts
+index a4ec9b6..0684d9d 100644
+--- a/extension/src/command/copyLatestSummary.ts
++++ b/extension/src/command/copyLatestSummary.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactsRoot } from "../utils/artifactsRoot";
+ 
+ interface LatestartifactsData {
+   exec_id: string;
+diff --git a/extension/src/command/openLatestartifactsBundle.ts b/extension/src/command/openLatestartifactsBundle.ts
+index 97d7164..cdc8858 100644
+--- a/extension/src/command/openLatestartifactsBundle.ts
++++ b/extension/src/command/openLatestartifactsBundle.ts
+@@ -2,6 +2,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir } from "../utils/artifactsRoot";
+ 
+ /**
+  * Registers the open latest artifacts bundle command
+@@ -19,26 +20,8 @@ export function registerOpenLatestartifactsBundleCommand(context: vscode.ExtensionCo
+  */
+ async function executeOpenLatestartifactsBundle(): Promise<void> {
+   try {
+-    // Read ExecLedger configuration
+-    const config = vscode.workspace.getConfiguration("execLedger");
+-    const outputRoot = config.get<string>("artifacts.outputRoot", "");
+-
+-    // Determine workspace/repo root
+-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+-    if (!workspaceFolder) {
+-      vscode.window.showErrorMessage("ExecLedger: No workspace folder found. Open a folder or workspace first.");
+-      return;
+-    }
+-
+-    const repoRoot = workspaceFolder.uri.fsPath;
+-    
+-    // Determine bundles directory (respect Phase 7 outputRoot if set)
+-    let bundlesDir: string;
+-    if (outputRoot.trim()) {
+-      bundlesDir = path.join(outputRoot.trim(), "bundles");
+-    } else {
+-      bundlesDir = path.join(repoRoot, "_artifacts", "bundles");
+-    }
++    // Determine bundles directory with artifacts root migration
++    const bundlesDir = resolveBundlesDir();
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+ 
+diff --git a/extension/src/command/openLatestartifactsReport.ts b/extension/src/command/openLatestartifactsReport.ts
+index 6056fe0..874ad42 100644
+--- a/extension/src/command/openLatestartifactsReport.ts
++++ b/extension/src/command/openLatestartifactsReport.ts
+@@ -2,6 +2,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactsRoot } from "../utils/artifactsRoot";
+ 
+ /**
+  * Registers the open latest artifacts report command
+@@ -21,25 +22,10 @@ async function executeOpenLatestartifactsReport(): Promise<void> {
+   try {
+     // Read ExecLedger configuration
+     const config = vscode.workspace.getConfiguration("execLedger");
+-    const outputRoot = config.get<string>("artifacts.outputRoot", "");
+     const copyToClipboard = config.get<boolean>("artifacts.copyReportToClipboard", false);
+ 
+-    // Determine workspace/repo root
+-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+-    if (!workspaceFolder) {
+-      vscode.window.showErrorMessage("ExecLedger: No workspace folder found. Open a folder or workspace first.");
+-      return;
+-    }
+-
+-    const repoRoot = workspaceFolder.uri.fsPath;
+-    
+-    // Determine bundles directory (respect Phase 7 outputRoot if set)
+-    let bundlesDir: string;
+-    if (outputRoot.trim()) {
+-      bundlesDir = path.join(outputRoot.trim(), "bundles");
+-    } else {
+-      bundlesDir = path.join(repoRoot, "_artifacts", "bundles");
+-    }
++    // Determine bundles directory with artifacts root migration
++    const bundlesDir = resolveBundlesDir();
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+ 
+@@ -107,10 +93,10 @@ async function executeOpenLatestartifactsReport(): Promise<void> {
+       const mode = latestData.mode;
+       
+       let artifactsRoot: string;
+-      if (outputRoot.trim()) {
+-        artifactsRoot = outputRoot.trim();
++      if (false) { // outputRoot no longer used - always use artifacts root
++        artifactsRoot = resolveArtifactsRoot(); // Use new artifacts root
+       } else {
+-        artifactsRoot = path.join(repoRoot, "_artifacts");
++        artifactsRoot = resolveArtifactsRoot();
+       }
+       
+       const artifactsDir = path.join(artifactsRoot, `exec_${execId}`, mode, sessionId);
+diff --git a/extension/src/command/openLatestSummary.ts b/extension/src/command/openLatestSummary.ts
+index 53b522b..0610fc7 100644
+--- a/extension/src/command/openLatestSummary.ts
++++ b/extension/src/command/openLatestSummary.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactsRoot } from "../utils/artifactsRoot";
+ 
+ interface LatestartifactsData {
+   exec_id: string;
+diff --git a/extension/src/extension.ts b/extension/src/extension.ts
+index a693b03..181e118 100644
+--- a/extension/src/extension.ts
++++ b/extension/src/extension.ts
+@@ -17,6 +17,8 @@ import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
+ import { registerOpenLatestartifactsReportCommand } from "./command/openLatestartifactsReport";
+ import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
+ import { initartifactsStatusBar } from "./status/statusBarartifacts";
++import { isProOrHigher } from "./core/tierEngine";
++import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
+ 
+ const sessions = new SessionManager();
+ let crashGuard: CrashGuard | null = null;
+@@ -30,6 +32,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void>
+ 
+   // Initialize artifacts status bar
+   initartifactsStatusBar(context);
++  
++  // Initialize tier-gated QuickPick command (always register)
++  registerExecLedgerQuickPickCommand(context);
++  
++  // Create PRO tier status bar item if user is PRO or higher
++  if (isProOrHigher()) {
++    const tierStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
++    tierStatusBarItem.text = "ExecLedger";
++    tierStatusBarItem.command = "execLedger.openQuickPick";
++    tierStatusBarItem.tooltip = "ExecLedger - Click to open actions menu";
++    tierStatusBarItem.show();
++    context.subscriptions.push(tierStatusBarItem);
++  }
+ 
+   // Register session lifecycle commands
+   context.subscriptions.push(
+diff --git a/extension/src/status/statusBarartifacts.ts b/extension/src/status/statusBarartifacts.ts
+index 38ab4a2..ac11ee6 100644
+--- a/extension/src/status/statusBarartifacts.ts
++++ b/extension/src/status/statusBarartifacts.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactsRoot } from "../utils/artifactsRoot";
+ import { validateLatestJson, validateIntegrityJson, detectDrift, type ValidationResult } from "../util/validation";
+ 
+ interface LatestartifactsData {

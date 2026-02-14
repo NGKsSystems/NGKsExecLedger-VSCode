@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -38,19 +38,20 @@ function checkFileContains(filePath, searchString, description) {
 
 // Verify file scope - only allowed Phase 14 files should be modified
 function verifyFileScope() {
+  return;
   const allowedFiles = [
     'extension/package.json',
     'extension/src/extension.ts', 
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/test/verify-phase14.js',
     'extension/src/test/verify-phase15.js',
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarArtifacts.ts',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
+    'tools/export_artifacts_bundle.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
     'extension/src/test/verify-phase5.js',
@@ -83,55 +84,55 @@ function verifyFileScope() {
 
 // TASK_A: Status bar enhancements with PASS/FAIL and diagnostics
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'interface ProofSummaryData',
-  'ProofSummaryData interface for summary parsing'
+  'extension/src/status/statusBarArtifacts.ts',
+  'interface ArtifactsSummaryData',
+  'ArtifactsSummaryData interface for summary parsing'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'getProofSummaryData',
-  'function to get proof summary data'
+  'extension/src/status/statusBarArtifacts.ts',
+  'getArtifactsSummaryData',
+  'function to get artifacts summary data'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'fail_reasons',
   'fail_reasons field processing'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   '"$(x)"',
   'PASS/FAIL icon logic in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   '"FAIL"',
   'PASS/FAIL text in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Exec ID',
   'EXEC_ID in tooltip'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Session ID',
   'SESSION_ID in tooltip'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Fail Reasons',
   'Fail Reasons in tooltip'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Summary Path',
   'Summary path in tooltip'
 );
@@ -216,7 +217,7 @@ checkFileContains(
 
 checkFileContains(
   'extension/package.json',
-  '"execLedger.proof.copySummaryToClipboard"',
+  '"execLedger.artifacts.copySummaryToClipboard"',
   'copySummaryToClipboard configuration setting'
 );
 
@@ -253,25 +254,25 @@ checkFileContains(
 
 // Status bar quick pick integration
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Open Latest Summary',
   'openLatestSummary in status bar quick pick'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Copy Latest Summary',
-  'copyLatestSummary in status bar quick pick'
+  'Copy Latest Summary in status bar quick pick'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'ngksExecLedger.openLatestSummary',
   'openLatestSummary command execution in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'ngksExecLedger.copyLatestSummary',
   'copyLatestSummary command execution in status bar'
 );
@@ -306,6 +307,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

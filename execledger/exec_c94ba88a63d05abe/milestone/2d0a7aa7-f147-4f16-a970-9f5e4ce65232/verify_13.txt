@@ -1,0 +1,7 @@
+EXEC_ID=c94ba88a63d05abe
+SESSION_ID=2d0a7aa7-f147-4f16-a970-9f5e4ce65232
+
+artifacts_BEGIN
+✗ Phase 13 verification FAILED:
+  - Phase 13 scope violation: unexpected files modified: tools/export_artifacts_bundle.ps1
+artifacts_END

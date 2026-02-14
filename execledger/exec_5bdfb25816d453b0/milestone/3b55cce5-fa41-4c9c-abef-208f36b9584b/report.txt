@@ -1,0 +1,53 @@
+ExecLedger artifacts Report
+
+EXEC_ID: 5bdfb25816d453b0
+SESSION_ID: 3b55cce5-fa41-4c9c-abef-208f36b9584b
+MODE: Milestone
+UTC_TIMESTAMP: 2026-02-11T20:37:05Z
+
+artifacts_DIR: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_5bdfb25816d453b0\milestone\3b55cce5-fa41-4c9c-abef-208f36b9584b
+BUNDLE_ZIP: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_5bdfb25816d453b0____3b55cce5-fa41-4c9c-abef-208f36b9584b.zip
+BUNDLE_MANIFEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_5bdfb25816d453b0____3b55cce5-fa41-4c9c-abef-208f36b9584b.manifest.json
+BUNDLE_LATEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\latest.json
+
+GATE_RESULTS:
+  COMPILE: True
+  VERIFY_3_7: True
+  VERIFY_3_8: False
+  VERIFY_3_9: False
+  VERIFY_5: False
+  VERIFY_6: False
+  VERIFY_7: False
+  VERIFY_8: False
+  VERIFY_9: False
+  VERIFY_10: False
+  VERIFY_11: False
+  VERIFY_12: False
+  VERIFY_13: False
+  VERIFY_14: False
+  VERIFY_15: False
+  VERIFY_16: False
+  VERIFY_17: True
+  FAIL_REASONS: 
+VERIFY_3_8_FAILED,VERIFY_3_9_FAILED
+
+CHANGED_FILES:
+  - EXEC_ID=5bdfb25816d453b0
+  - SESSION_ID=3b55cce5-fa41-4c9c-abef-208f36b9584b
+  - extension/pnpm-lock.yaml
+  - extension/src/status/statusBarartifacts.ts
+  - extension/src/test/verify-phase10.js
+  - extension/src/test/verify-phase11.js
+  - extension/src/test/verify-phase12.js
+  - extension/src/test/verify-phase13.js
+  - extension/src/test/verify-phase14.js
+  - extension/src/test/verify-phase15.js
+  - extension/src/test/verify-phase16.js
+  - extension/src/test/verify-phase3.8.js
+  - extension/src/test/verify-phase3.9.js
+  - extension/src/test/verify-phase5.js
+  - extension/src/test/verify-phase6.js
+  - extension/src/test/verify-phase7.js
+  - extension/src/test/verify-phase8.js
+  - extension/src/test/verify-phase9.js
+  - tools/run_phase_gates.ps1

@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -43,8 +43,8 @@ function verifyFileScope() {
     'extension/src/extension.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/command/openLatestProofReport.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase15.js',
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
@@ -63,7 +63,7 @@ function verifyFileScope() {
     'extension/src/test/verify-phase13.js',
     'extension/src/util/validation.ts',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1'
+    'tools/export_artifacts_bundle.ps1'
   ];
 
   try {
@@ -86,79 +86,79 @@ function verifyFileScope() {
 console.log('--- TASK_A: Exporter latest.json pointer paths ---');
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
-  'proof_dir',
-  'proof_dir field in exporter latest.json output'
+  'tools/export_artifacts_bundle.ps1',
+  'artifacts_dir',
+  'artifacts_dir field in exporter latest.json output'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'summary_path',
   'summary_path field in exporter latest.json output'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'report_path',
   'report_path field in exporter latest.json output'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'diff_name_only_path',
   'diff_name_only_path field in exporter latest.json output'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'status_path',
   'status_path field in exporter latest.json output'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'compile_log_path',
   'compile_log_path field in exporter latest.json output'
 );
 
-console.log('  proof_dir in exporter: YES');
+console.log('  artifacts_dir in exporter: YES');
 console.log('  summary_path in exporter: YES');
 console.log('  report_path in exporter: YES');
 console.log('  diff_name_only_path in exporter: YES');
 console.log('  status_path in exporter: YES');
 console.log('  compile_log_path in exporter: YES');
 
-// TASK_B: statusBarProof.ts uses pointer paths when present
+// TASK_B: statusBarartifacts.ts uses pointer paths when present
 console.log('--- TASK_B: Status bar uses pointer paths ---');
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'summary_path?:',
-  'summary_path optional field in LatestProofData interface'
+  'summary_path optional field in LatestartifactsData interface'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'report_path?:',
-  'report_path optional field in LatestProofData interface'
+  'report_path optional field in LatestartifactsData interface'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'proof_dir?:',
-  'proof_dir optional field in LatestProofData interface'
+  'extension/src/status/statusBarartifacts.ts',
+  'artifacts_dir?:',
+  'artifacts_dir optional field in LatestartifactsData interface'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'latestData.summary_path',
   'status bar uses summary_path from latest.json'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'Phase 15',
-  'Phase 15 comment/reference in statusBarProof.ts'
+  'Phase 15 comment/reference in statusBarartifacts.ts'
 );
 
 console.log('  Interface includes optional pointer fields: YES');
@@ -209,26 +209,26 @@ checkFileContains(
 
 console.log('  copyLatestSummary prefers summary_path: YES');
 
-// openLatestProofReport.ts
+// openLatestartifactsReport.ts
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'report_path',
-  'report_path handling in openLatestProofReport'
+  'report_path handling in openLatestartifactsReport'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'latestData.report_path',
-  'openLatestProofReport uses report_path from latest.json'
+  'openLatestartifactsReport uses report_path from latest.json'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'Phase 15',
-  'Phase 15 comment in openLatestProofReport.ts'
+  'Phase 15 comment in openLatestartifactsReport.ts'
 );
 
-console.log('  openLatestProofReport prefers report_path: YES');
+console.log('  openLatestartifactsReport prefers report_path: YES');
 
 // TASK_D: This file itself (verification gate)
 console.log('--- TASK_D: Verification gate ---');
@@ -269,11 +269,11 @@ console.log('==== SUMMARY ====');
 if (passed) {
   console.log('OVERALL: PASS');
   console.log('✓ Phase 15 verification PASSED');
-  console.log('✓ latest.json now includes pointer paths (proof_dir, summary_path, report_path, etc.)');
-  console.log('✓ statusBarProof.ts uses pointer paths when present');
+  console.log('✓ latest.json now includes pointer paths (artifacts_dir, summary_path, report_path, etc.)');
+  console.log('✓ statusBarartifacts.ts uses pointer paths when present');
   console.log('✓ openLatestSummary.ts prefers summary_path from latest.json');
   console.log('✓ copyLatestSummary.ts prefers summary_path from latest.json');
-  console.log('✓ openLatestProofReport.ts prefers report_path from latest.json');
+  console.log('✓ openLatestartifactsReport.ts prefers report_path from latest.json');
   console.log('✓ Runner integration VERIFY_15 present');
   console.log('✓ File scope validation PASSED');
 } else {
@@ -282,6 +282,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

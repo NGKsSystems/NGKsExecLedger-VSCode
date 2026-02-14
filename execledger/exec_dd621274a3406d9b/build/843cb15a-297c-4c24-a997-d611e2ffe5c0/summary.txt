@@ -1,0 +1,10 @@
+﻿EXEC_ID=dd621274a3406d9b
+SESSION_ID=843cb15a-297c-4c24-a997-d611e2ffe5c0
+MODE=Build
+COMPILE_OK=True
+VERIFY_3_7_OK=True
+VERIFY_3_8_OK=True
+VERIFY_3_8_ADVISORY_SCOPE_ONLY=False
+VERIFY_3_9_OK=True
+FAIL_REASONS=None
+PROOF_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_proof\exec_dd621274a3406d9b\build\843cb15a-297c-4c24-a997-d611e2ffe5c0

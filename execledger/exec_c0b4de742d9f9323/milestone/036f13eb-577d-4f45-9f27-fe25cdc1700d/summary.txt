@@ -1,0 +1,11 @@
+﻿EXEC_ID=c0b4de742d9f9323
+SESSION_ID=036f13eb-577d-4f45-9f27-fe25cdc1700d
+MODE=Milestone
+COMPILE_OK=True
+VERIFY_3_7_OK=True
+VERIFY_3_8_OK=True
+VERIFY_3_8_ADVISORY_SCOPE_ONLY=False
+VERIFY_3_9_OK=True
+VERIFY_5_OK=True
+FAIL_REASONS=None
+artifacts_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_c0b4de742d9f9323\milestone\036f13eb-577d-4f45-9f27-fe25cdc1700d

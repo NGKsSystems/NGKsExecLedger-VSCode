@@ -1,0 +1,4 @@
+﻿EXEC_ID=c0b4de742d9f9323
+SESSION_ID=7d545b91-817f-46ec-bed2-415ba2d0685c
+
+tools/run_phase_gates.ps1

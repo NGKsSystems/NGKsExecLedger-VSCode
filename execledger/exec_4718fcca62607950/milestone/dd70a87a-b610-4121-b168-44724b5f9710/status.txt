@@ -1,0 +1,21 @@
+EXEC_ID=4718fcca62607950
+SESSION_ID=dd70a87a-b610-4121-b168-44724b5f9710
+
+ M extension/src/status/statusBarartifacts.ts
+ M extension/src/test/verify-phase10.js
+ M extension/src/test/verify-phase11.js
+ M extension/src/test/verify-phase12.js
+ M extension/src/test/verify-phase13.js
+ M extension/src/test/verify-phase14.js
+ M extension/src/test/verify-phase15.js
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M extension/src/test/verify-phase9.js
+ M tools/export_artifacts_bundle.ps1
+ M tools/run_phase_gates.ps1
+?? extension/src/test/verify-phase16.js
+?? extension/src/util/validation.ts

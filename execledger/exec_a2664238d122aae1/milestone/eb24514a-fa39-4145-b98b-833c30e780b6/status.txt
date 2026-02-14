@@ -1,0 +1,13 @@
+﻿EXEC_ID=a2664238d122aae1
+SESSION_ID=eb24514a-fa39-4145-b98b-833c30e780b6
+
+ M extension/package.json
+ M extension/src/command/exportartifactsBundle.ts
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M tools/export_artifacts_bundle.ps1
+ M tools/run_phase_gates.ps1
+?? extension/src/test/verify-phase7.js
+?? extension/src/test/verify-phase8.js

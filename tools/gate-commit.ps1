@@ -4,7 +4,7 @@ param(
     "extension/src/core/filesystemChangeTracker.ts",
     "extension/src/core/sessionSummary.ts",
     "extension/.gitignore",
-    "extension/src/commands/exportProofBundle.ts",
+    "extension/src/commands/exportartifactsBundle.ts",
     "extension/src/test/verify-phase3.4.js"
   ),
   [switch]$Push

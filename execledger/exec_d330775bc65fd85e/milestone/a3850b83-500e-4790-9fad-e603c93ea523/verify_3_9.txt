@@ -1,0 +1,27 @@
+﻿EXEC_ID=d330775bc65fd85e
+SESSION_ID=a3850b83-500e-4790-9fad-e603c93ea523
+
+artifacts_BEGIN
+artifacts_END
+ðŸ” PHASE 3.9 RUNNER + MODE DISCIPLINE GATE
+ðŸ§ª Testing artifacts markers validation...
+  artifacts markers detected: YES
+  artifacts markers missing (expected): YES
+ðŸ§ª Testing truncation detection...
+  Truncation detected: YES
+  No truncation (expected): YES
+ðŸ§ª Testing file scope validation...
+  File scope validation: FAIL
+  Violations: extension/package.json, extension/src/extension.ts
+ðŸ§ª Testing runner presence and contract...
+  Runner exists: YES
+  Runner contract: PASS
+
+ðŸ“Š BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+FILE_SCOPE_VALID: NO - Phase 3.9 scope validated
+TRUNCATION_GUARD: YES - Truncation detection working
+RUNNER_PRESENT: YES - Runner file present
+RUNNER_CONTRACT: YES - Runner contract validated
+artifacts_CONTRACT: NO - Complete contract working
+OVERALL: FAIL

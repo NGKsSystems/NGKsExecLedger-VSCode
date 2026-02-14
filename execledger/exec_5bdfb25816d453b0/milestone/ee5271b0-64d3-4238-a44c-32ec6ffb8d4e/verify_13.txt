@@ -1,0 +1,7 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=ee5271b0-64d3-4238-a44c-32ec6ffb8d4e
+
+artifacts_BEGIN
+✗ Phase 13 verification FAILED:
+  - Phase 13 scope violation: unexpected files modified: .ngkssys/
+artifacts_END

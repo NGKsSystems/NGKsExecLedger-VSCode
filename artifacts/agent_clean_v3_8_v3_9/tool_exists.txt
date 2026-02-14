@@ -1,0 +1,4 @@
+tools/export_artifacts_bundle.ps1 => False
+tools/artifacts_run.ps1 => False
+tools/export_proof_bundle.ps1 => True
+tools/proof_run.ps1 => True

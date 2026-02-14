@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Phase 11 verification gate - open latest proof report command + optional clipboard copy
+// Phase 11 verification gate - open latest artifacts report command + optional clipboard copy
 // This verifies all Phase 11 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -41,14 +41,14 @@ function verifyFileScope() {
   const allowedFiles = [
     'extension/package.json',
     'extension/src/extension.ts', 
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/command/runMilestoneGates.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase11.js',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
+    'tools/export_artifacts_bundle.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
     'extension/src/test/verify-phase5.js',
@@ -85,20 +85,20 @@ function verifyFileScope() {
 // TASK_A: Command exists in package.json
 checkFileContains(
   'extension/package.json',
-  '"command": "ngksExecLedger.openLatestProofReport"',
+  '"command": "ngksExecLedger.openLatestartifactsReport"',
   'command definition in package.json'
 );
 
 checkFileContains(
   'extension/package.json', 
-  '"title": "ExecLedger: Open Latest Proof Report"',
+  '"title": "ExecLedger: Open Latest artifacts Report"',
   'command title in package.json'
 );
 
 // TASK_A: Configuration setting exists in package.json
 checkFileContains(
   'extension/package.json',
-  '"execLedger.proof.copyReportToClipboard"',
+  '"execLedger.artifacts.copyReportToClipboard"',
   'copyReportToClipboard configuration in package.json'
 );
 
@@ -116,48 +116,48 @@ checkFileContains(
 
 // TASK_B: Command file exists with correct structure
 checkFileExists(
-  'extension/src/command/openLatestProofReport.ts',
-  'openLatestProofReport.ts command file'
+  'extension/src/command/openLatestartifactsReport.ts',
+  'openLatestartifactsReport.ts command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  'export function registerOpenLatestProofReportCommand',
+  'extension/src/command/openLatestartifactsReport.ts',
+  'export function registerOpenLatestartifactsReportCommand',
   'register function in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
-  '"ngksExecLedger.openLatestProofReport"',
+  'extension/src/command/openLatestartifactsReport.ts',
+  '"ngksExecLedger.openLatestartifactsReport"',
   'correct command id in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'latest.json',
   'latest.json reading logic'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'report.txt',
   'report.txt handling logic'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'copyReportToClipboard',
   'clipboard copy configuration check'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'vscode.workspace.openTextDocument',
   'VS Code editor opening logic'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofReport.ts',
+  'extension/src/command/openLatestartifactsReport.ts',
   'vscode.env.clipboard.writeText',
   'clipboard writing logic'
 );
@@ -165,13 +165,13 @@ checkFileContains(
 // TASK_C: Extension.ts registers the command
 checkFileContains(
   'extension/src/extension.ts',
-  'import { registerOpenLatestProofReportCommand }',
+  'import { registerOpenLatestartifactsReportCommand }',
   'import statement in extension.ts'
 );
 
 checkFileContains(
   'extension/src/extension.ts',
-  'registerOpenLatestProofReportCommand(context)',
+  'registerOpenLatestartifactsReportCommand(context)',
   'command registration in extension.ts'
 );
 
@@ -193,8 +193,8 @@ verifyFileScope();
 
 if (passed) {
   console.log('✓ Phase 11 verification PASSED');
-  console.log('✓ Command ngksExecLedger.openLatestProofReport defined');
-  console.log('✓ Configuration execLedger.proof.copyReportToClipboard defined');
+  console.log('✓ Command ngksExecLedger.openLatestartifactsReport defined');
+  console.log('✓ Configuration execLedger.artifacts.copyReportToClipboard defined');
   console.log('✓ Command implementation exists with report.txt opening logic');
   console.log('✓ Optional clipboard copy functionality present');
   console.log('✓ Extension registration completed');
@@ -205,6 +205,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

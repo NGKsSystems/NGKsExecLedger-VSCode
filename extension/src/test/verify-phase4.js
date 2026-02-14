@@ -4,7 +4,7 @@
 // Contract:
 // - EXEC_ID present and stable across retries
 // - SESSION_ID present and unique per run
-// - All proof files contain both IDs
+// - All artifacts files contain both IDs
 // - Directory structure matches EXEC_ID → SESSION_ID lineage
 // - Runner exports IDs consistently to child processes
 
@@ -33,7 +33,7 @@ function isValidUuid(str) {
   return uuidRegex.test(str);
 }
 
-function hasProofIdsInFile(filePath) {
+function hasartifactsIdsInFile(filePath) {
   if (!fs.existsSync(filePath)) return { execId: null, sessionId: null };
   
   const content = fs.readFileSync(filePath, 'utf8');
@@ -48,15 +48,15 @@ function hasProofIdsInFile(filePath) {
   };
 }
 
-function findProofDirectories() {
-  const proofRoot = path.join(process.cwd(), '_proof');
-  if (!fs.existsSync(proofRoot)) return [];
+function findartifactsDirectories() {
+  const artifactsRoot = path.join(process.cwd(), '_artifacts');
+  if (!fs.existsSync(artifactsRoot)) return [];
   
   const entries = [];
-  for (const entry of fs.readdirSync(proofRoot)) {
+  for (const entry of fs.readdirSync(artifactsRoot)) {
     if (entry.startsWith('exec_')) {
       const execId = entry.replace('exec_', '');
-      const execDir = path.join(proofRoot, entry);
+      const execDir = path.join(artifactsRoot, entry);
       
       // Check for build/milestone subdirs
       for (const modeDir of ['build', 'milestone']) {
@@ -81,8 +81,8 @@ function findProofDirectories() {
 }
 
 function main() {
-  console.log('PROOF_BEGIN');
-  console.log('PROOF_END');
+  console.log('artifacts_BEGIN');
+  console.log('artifacts_END');
   console.log('🔍 PHASE 4 EXECUTION IDENTITY + SESSION LINEAGE GATE');
 
   let allOk = true;
@@ -109,16 +109,16 @@ function main() {
   
   if (!execIdStable || !execIdsDifferent) allOk = false;
 
-  // 2) Test proof directory structure
-  console.log('🧪 Testing proof directory structure...');
-  const proofEntries = findProofDirectories();
-  const hasProofDirs = proofEntries.length > 0;
-  okLine('  Proof directories found', hasProofDirs ? 'YES' : 'NO');
+  // 2) Test artifacts directory structure
+  console.log('🧪 Testing artifacts directory structure...');
+  const artifactsEntries = findartifactsDirectories();
+  const hasartifactsDirs = artifactsEntries.length > 0;
+  okLine('  artifacts directories found', hasartifactsDirs ? 'YES' : 'NO');
   
   let structureOk = true;
   let idsConsistent = true;
   
-  for (const entry of proofEntries) {
+  for (const entry of artifactsEntries) {
     // Validate EXEC_ID format (16 char hex)
     const validExecIdFormat = /^[0-9a-f]{16}$/.test(entry.execId);
     if (!validExecIdFormat) {
@@ -133,10 +133,10 @@ function main() {
       console.log(`  Invalid SESSION_ID format: ${entry.sessionId}`);
     }
     
-    // Check for proof files with IDs
+    // Check for artifacts files with IDs
     const summaryPath = path.join(entry.path, 'summary.txt');
     if (fs.existsSync(summaryPath)) {
-      const ids = hasProofIdsInFile(summaryPath);
+      const ids = hasartifactsIdsInFile(summaryPath);
       if (ids.execId !== entry.execId || ids.sessionId !== entry.sessionId) {
         idsConsistent = false;
         console.log(`  ID mismatch in ${summaryPath}: dir=${entry.execId}|${entry.sessionId}, file=${ids.execId}|${ids.sessionId}`);
@@ -147,7 +147,7 @@ function main() {
   okLine('  Directory structure valid', structureOk ? 'YES' : 'NO');  
   okLine('  IDs consistent in files', idsConsistent ? 'YES' : 'NO');
   
-  if (!hasProofDirs || !structureOk || !idsConsistent) allOk = false;
+  if (!hasartifactsDirs || !structureOk || !idsConsistent) allOk = false;
 
   // 3) Test environment propagation (mock test)
   console.log('🧪 Testing environment propagation...');
@@ -160,10 +160,10 @@ function main() {
     const runnerContent = fs.readFileSync(runnerPath, 'utf8');
     const hasExecIdGen = runnerContent.includes('GenerateExecId');
     const hasSessionIdGen = runnerContent.includes('GenerateSessionId'); 
-    const hasProofHeader = runnerContent.includes('WriteProofHeader');
+    const hasartifactsHeader = runnerContent.includes('WriteartifactsHeader');
     const hasIdOutput = runnerContent.includes('EXEC_ID=$execId') && runnerContent.includes('SESSION_ID=$sessionId');
     
-    envPropagationOk = hasExecIdGen && hasSessionIdGen && hasProofHeader && hasIdOutput;
+    envPropagationOk = hasExecIdGen && hasSessionIdGen && hasartifactsHeader && hasIdOutput;
   }
   
   okLine('  Runner exists', runnerExists ? 'YES' : 'NO');
@@ -186,7 +186,7 @@ function main() {
     '.gitignore',
     'extension/src/test/verify-phase4.js',
     'extension/src/test/verify-phase5.js',
-    'tools/export_proof_bundle.ps1'
+    'tools/export_artifacts_bundle.ps1'
   ]);
   
   const violations = diffList.filter(f => f && !allowedFiles.has(f));
@@ -203,8 +203,8 @@ function main() {
   console.log('📊 PHASE 4 BINARY ACCEPTANCE RESULTS:');
   okLine('EXEC_ID_STABLE', execIdStable ? 'YES' : 'NO', 'Deterministic generation');
   okLine('EXEC_ID_MODE_DIFF', execIdsDifferent ? 'YES' : 'NO', 'Mode differentiation');
-  okLine('PROOF_STRUCTURE', (hasProofDirs && structureOk) ? 'YES' : 'NO', 'Directory structure valid');
-  okLine('IDS_CONSISTENT', idsConsistent ? 'YES' : 'NO', 'IDs consistent in proof files');
+  okLine('artifacts_STRUCTURE', (hasartifactsDirs && structureOk) ? 'YES' : 'NO', 'Directory structure valid');
+  okLine('IDS_CONSISTENT', idsConsistent ? 'YES' : 'NO', 'IDs consistent in artifacts files');
   okLine('ENV_PROPAGATION', envPropagationOk ? 'YES' : 'NO', 'Environment propagation working');
   okLine('FILE_SCOPE_VALID', scopeOk ? 'YES' : 'NO', 'Phase 4 scope validated');
   okLine('OVERALL', allOk ? 'PASS' : 'FAIL');

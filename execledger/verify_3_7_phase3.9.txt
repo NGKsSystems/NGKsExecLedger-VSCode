@@ -1,0 +1,34 @@
+artifacts_BEGIN
+artifacts_END
+≡ƒöì PHASE 3.7 INTEGRATION HARDENING GATE
+
+≡ƒº¬ Testing artifacts markers validation...
+echo "Testing artifacts markers with valid output"
+  artifacts markers detected: YES
+echo "Testing artifacts markers with invalid output"
+  artifacts markers missing (expected): YES
+≡ƒº¬ Testing file scope validation...
+git diff --name-only
+  File scope validation: PASS
+≡ƒº¬ Testing truncation detection...
+echo "Testing truncated paths"
+  Truncation detected: YES
+echo "Testing clean paths"
+  No truncation (expected): YES
+≡ƒº¬ Testing TypeScript compilation...
+pnpm --dir extension run compile
+  Compilation: PASS
+≡ƒº¬ Testing complete artifacts contract...
+echo "Testing complete artifacts contract"
+  artifacts contract validation: PASS
+    artifacts markers: YES
+    File scope: YES
+    No truncation: YES
+
+≡ƒôè BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+FILE_SCOPE_VALID: YES - Integration scope validated
+TRUNCATION_GUARD: YES - Truncation detection working
+COMPILATION: YES - TypeScript compilation working
+artifacts_CONTRACT: YES - Complete contract working
+OVERALL: PASS

@@ -67,7 +67,7 @@ export async function addGuidanceCommand(): Promise<void> {
   const currentStep = (contextData.currentStep || 0) + 1;
   const stepPath = getStepPath(contextData.taskPath, currentStep);
   ensureDir(stepPath);
-  ensureDir(path.join(stepPath, 'proof'));
+  ensureDir(path.join(stepPath, 'artifacts'));
 
   const guidancePath = path.join(stepPath, 'guidance.md');
   fs.writeFileSync(guidancePath, guidanceText, 'utf-8');
@@ -76,9 +76,9 @@ export async function addGuidanceCommand(): Promise<void> {
   const validatePath = path.join(stepPath, 'validate.json');
   fs.writeFileSync(validatePath, JSON.stringify({}, null, 2), 'utf-8');
 
-  // Update context: step now AWAITING_PROOF
+  // Update context: step now AWAITING_ARTIFACTS
   contextData.currentStep = currentStep;
-  contextData.stepState = StepState.AWAITING_PROOF;
+  contextData.stepState = StepState.AWAITING_ARTIFACTS;
   saveActiveContext(contextData);
 
   // Update task meta
@@ -99,11 +99,11 @@ export async function addGuidanceCommand(): Promise<void> {
 
   // Update status bar
   updateStatusBar(
-    getIndicatorFromState(TaskState.IN_PROGRESS, StepState.AWAITING_PROOF),
-    `Task: Awaiting Proof [S${String(currentStep).padStart(4, '0')}]`
+    getIndicatorFromState(TaskState.IN_PROGRESS, StepState.AWAITING_ARTIFACTS),
+    `Task: Awaiting Artifacts [S${String(currentStep).padStart(4, '0')}]`
   );
 
   vscode.window.showInformationMessage(
-    `✅ Guidance saved (Step ${currentStep}). Awaiting proof bundle.`
+    `✅ Guidance saved (Step ${currentStep}). Awaiting artifacts bundle.`
   );
 }

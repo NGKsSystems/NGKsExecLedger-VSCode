@@ -1,0 +1,9 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=ee5271b0-64d3-4238-a44c-32ec6ffb8d4e
+
+artifacts_BEGIN
+✗ Phase 14 verification FAILED:
+  - Missing content: copyLatestSummary in status bar quick pick in extension/src/status/statusBarartifacts.ts
+  - Missing content: copyLatestSummary command execution in status bar in extension/src/status/statusBarartifacts.ts
+  - Phase 14 scope violation: unexpected files modified: .ngkssys/
+artifacts_END

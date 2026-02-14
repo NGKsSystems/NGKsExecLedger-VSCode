@@ -12,7 +12,7 @@ export interface LatestJsonSchema {
   manifest_path: string;
   created_at: string;
   // Phase 15 fields
-  proof_dir?: string;
+  artifacts_dir?: string;
   summary_path?: string;
   report_path?: string;
   diff_name_only_path?: string;
@@ -60,7 +60,7 @@ export function validateLatestJson(data: any): ValidationResult {
   }
   
   // Optional fields from Phase 15/16 (if present, must be strings)
-  const optional = ['proof_dir', 'summary_path', 'report_path', 'diff_name_only_path', 
+  const optional = ['artifacts_dir', 'summary_path', 'report_path', 'diff_name_only_path', 
                    'status_path', 'compile_log_path', 'integrity_path'];
   for (const field of optional) {
     if (data[field] !== undefined && typeof data[field] !== 'string') {

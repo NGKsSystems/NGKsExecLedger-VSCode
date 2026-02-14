@@ -1,0 +1,11 @@
+[SUCCESS] PHASE 2 COMPLETION: Extension files updated to use canonical 'execledger' paths
+[SUCCESS] PHASE 4 COMPLETION: PySide6 UI core paths updated to 'execledger'
+=== GLOBAL MIGRATION COMPLETE: '_proof' -> 'execledger' ===
+GLOBAL PATH MIGRATION SUMMARY:
+- extension/src/core/artifactPaths.ts: NEW canonical path authority with 'execledger' 
+- All extension .ts files: Updated to use resolveArtifactRoot() and resolveBundlesDir()
+- desktop-companion/engine/src/index.js: Default path changed to cwd/execledger
+- desktop-companion/ui/config.py: Core methods updated for 'execledger' canonical paths
+- Package compilation: SUCCESSFUL (no TypeScript errors)
+- Migration logic: Automatic detection and migration from _proof -> execledger
+- Legacy support: Maintained through resolveArtifactRoot() fallback system

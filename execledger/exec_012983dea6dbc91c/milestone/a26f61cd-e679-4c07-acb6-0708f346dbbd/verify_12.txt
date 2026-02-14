@@ -1,0 +1,9 @@
+EXEC_ID=012983dea6dbc91c
+SESSION_ID=a26f61cd-e679-4c07-acb6-0708f346dbbd
+
+artifacts_BEGIN
+✗ Phase 12 verification FAILED:
+  - Missing content: Export artifacts Bundle option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: Open Latest artifacts Report option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: Reveal latest.json option in QuickPick in extension/src/status/statusBarartifacts.ts
+artifacts_END

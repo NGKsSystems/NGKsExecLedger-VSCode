@@ -31,7 +31,7 @@ export function getIndicatorFromState(taskState: TaskState, stepState?: StepStat
   if (taskState === TaskState.BLOCKED_AUDIT_GAP) {
     return StatusIndicator.Red;
   }
-  if (stepState === StepState.AWAITING_PROOF) {
+  if (stepState === StepState.AWAITING_ARTIFACTS) {
     return StatusIndicator.Yellow;
   }
   return StatusIndicator.Blue;

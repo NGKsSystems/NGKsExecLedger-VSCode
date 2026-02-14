@@ -1,0 +1,7 @@
+﻿EXEC_ID=dc53ebfca732ba96
+SESSION_ID=f205bc15-4cbe-4cf2-984d-e8bbc7200f6e
+
+artifacts_BEGIN
+âœ— Phase 10 verification FAILED:
+  - Phase 10 scope violation: unexpected files modified: extension/package.json, extension/src/extension.ts, extension/src/command/runMilestoneGates.ts
+artifacts_END

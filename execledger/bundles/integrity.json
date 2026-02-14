@@ -1,0 +1,11 @@
+{
+    "exec_id":  "012983dea6dbc91c",
+    "session_id":  "a26f61cd-e679-4c07-acb6-0708f346dbbd",
+    "mode":  "milestone",
+    "created_at":  "2026-02-11T18:59:00.7075016Z",
+    "hashes":  {
+                   "summary":  "c604bb7df8f60ad93d23074fe841c2d9562cd573d4910260210931be755f1ac2",
+                   "report":  "b111918501aa3b6bb2f6cbcc3ba5413082fa4a6c8d51240a7e80e8892e0ac218",
+                   "manifest":  "68a1bcef647699d4c5c51263b51289c2a70db49b894f189af2d32ebfc29be4c3"
+               }
+}

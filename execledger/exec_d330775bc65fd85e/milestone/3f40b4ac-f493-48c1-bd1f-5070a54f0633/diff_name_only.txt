@@ -1,0 +1,6 @@
+﻿EXEC_ID=d330775bc65fd85e
+SESSION_ID=3f40b4ac-f493-48c1-bd1f-5070a54f0633
+
+extension/package.json
+extension/src/extension.ts
+tools/run_phase_gates.ps1

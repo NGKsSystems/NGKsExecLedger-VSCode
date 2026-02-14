@@ -1,0 +1,31 @@
+﻿EXEC_ID=4aa3d167aa735cd2
+SESSION_ID=f7e05cf6-43f0-4dd6-9d12-a5e8a7b6656c
+
+artifacts_BEGIN
+artifacts_END
+ðŸ” PHASE 7 USER SETTINGS + UX POLISH GATE
+ðŸ§ª Testing artifacts markers validation...
+  artifacts markers detected: YES
+ðŸ§ª Testing settings schema definition...
+  outputRoot setting exists: YES
+  autoExportOnMilestone setting exists: YES
+  revealBundleAfterExport setting exists: YES
+ðŸ§ª Testing settings default values...
+  outputRoot default (empty string): YES
+  autoExportOnMilestone default (false): YES
+  revealBundleAfterExport default (true): YES
+ðŸ§ª Testing settings usage in code...
+  Configuration API usage: YES
+  outputRoot setting read: YES
+  revealBundle setting read: YES
+ðŸ§ª Testing file scope validation...
+  File scope validation: FAIL
+  Violations: extension/src/extension.ts
+
+ðŸ“Š PHASE 7 BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+SETTINGS_SCHEMA: YES - Settings defined in package.json
+SETTINGS_DEFAULTS: YES - Default values correct
+SETTINGS_USAGE: YES - Settings read in code
+FILE_SCOPE_VALID: NO - Phase 7 scope validated
+OVERALL: FAIL

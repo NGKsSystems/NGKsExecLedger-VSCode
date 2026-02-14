@@ -1,0 +1,65 @@
+{
+    "exec_id":  "4aa3d167aa735cd2",
+    "session_id":  "babeea97-455b-405b-912a-9d8d56f17232",
+    "mode":  "milestone",
+    "repo_root":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger",
+    "head_commit":  "3af4de7a096a2325e7e2d61efc60c57149510210",
+    "created_at_utc":  "2026-02-10T14:14:03.3204756Z",
+    "artifacts_dir":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_4aa3d167aa735cd2/milestone/babeea97-455b-405b-912a-9d8d56f17232",
+    "fail_reasons":  null,
+    "gates":  [
+
+              ],
+    "files":  [
+                  {
+                      "path":  "compile.txt",
+                      "bytes":  202,
+                      "sha256":  "1b31d34ac83d1d15639c5e10d480d0c30a9704f5ad8ace8eb2fb140370ecc9ad"
+                  },
+                  {
+                      "path":  "diff_name_only.txt",
+                      "bytes":  385,
+                      "sha256":  "6b425a270d39e292db94db2e26fcec03ae7a872ded0a71f222dd82bc6fc02709"
+                  },
+                  {
+                      "path":  "status.txt",
+                      "bytes":  503,
+                      "sha256":  "82c8d3cdbe7bf6a8448e4c12a31cf5cc28d9a362070d5ed410b9175738114df9"
+                  },
+                  {
+                      "path":  "summary.txt",
+                      "bytes":  373,
+                      "sha256":  "28ed859a10ca445493d4b28383f75e34dce4279e2bc8f8043ab0effe2a6f915e"
+                  },
+                  {
+                      "path":  "verify_3_7.err.txt",
+                      "bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "verify_3_7.txt",
+                      "bytes":  584,
+                      "sha256":  "34ae87b4dff8d0cdf19bc2bd1f61e747de8ea79746d535ab9fe6496e651530e5"
+                  },
+                  {
+                      "path":  "verify_3_8.err.txt",
+                      "bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "verify_3_8.txt",
+                      "bytes":  1409,
+                      "sha256":  "448581d9bbf50c07fe9f668427580d27fd295ed126bdb8caa8c4c85b33b2aa8d"
+                  },
+                  {
+                      "path":  "verify_3_9.err.txt",
+                      "bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "verify_3_9.txt",
+                      "bytes":  891,
+                      "sha256":  "0b3ef1cdea147b07f4ad3ad189cf216c948dcfb313406510fdcfdf71950078f5"
+                  }
+              ]
+}

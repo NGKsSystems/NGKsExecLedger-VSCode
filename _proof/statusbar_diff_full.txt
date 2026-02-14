@@ -1,0 +1,543 @@
+diff --git a/extension/package.json b/extension/package.json
+index dc02d9f..a6de707 100644
+--- a/extension/package.json
++++ b/extension/package.json
+@@ -97,6 +97,10 @@
+       {
+         "command": "ngksExecLedger.openLatestProofReport",
+         "title": "ExecLedger: Open Latest Proof Report"
++      },
++      {
++        "command": "execLedger.openQuickPick",
++        "title": "ExecLedger: Open Actions Menu"
+       }
+     ],
+     "views": {
+@@ -175,6 +179,27 @@
+           "default": true,
+           "description": "Reveal the exported proof bundle location in file explorer after successful export."
+         },
++        "execLedger.tier": {
++          "type": "string",
++          "default": "FREE",
++          "enum": ["FREE", "PRO", "PREMIUM"],
++          "enumDescriptions": [
++            "FREE - Command Palette access only",
++            "PRO - Command Palette + Status Bar QuickPick menu", 
++            "PREMIUM - Full desktop companion app access"
++          ],
++          "description": "ExecLedger tier level. Controls which UI features are available."
++        },
++        "execLedger.outputRoot": {
++          "type": "string",
++          "default": "",
++          "description": "Root folder containing ExecLedger proof outputs (exec_* folders)."
++        },
++        "execLedger.artifactsRoot": {
++          "type": "string",
++          "default": "",
++          "description": "Override artifacts output root. If empty, uses <workspaceRoot>\\_artifacts"
++        },
+         "execLedger.proof.copyReportToClipboard": {
+           "type": "boolean",
+           "default": false,
+diff --git a/extension/src/command/copyLatestSummary.ts b/extension/src/command/copyLatestSummary.ts
+index a4ec9b6..804e549 100644
+--- a/extension/src/command/copyLatestSummary.ts
++++ b/extension/src/command/copyLatestSummary.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactRoot } from "../core/artifactPaths";
+ 
+ interface LatestProofData {
+   exec_id: string;
+@@ -104,7 +105,7 @@ function getLatestSummaryPath(): string | null {
+     if (outputRoot.trim()) {
+       bundlesDir = path.join(outputRoot.trim(), "bundles");
+     } else {
+-      bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
++      bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
+     }
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+@@ -126,7 +127,7 @@ function getLatestSummaryPath(): string | null {
+     if (outputRoot.trim()) {
+       proofRootDir = outputRoot.trim();
+     } else {
+-      proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
++      proofRootDir = resolveArtifactRoot(workspaceFolder.uri.fsPath).root;
+     }
+ 
+     const proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+diff --git a/extension/src/command/openLatestProofBundle.ts b/extension/src/command/openLatestProofBundle.ts
+index 97d7164..7ef156e 100644
+--- a/extension/src/command/openLatestProofBundle.ts
++++ b/extension/src/command/openLatestProofBundle.ts
+@@ -2,6 +2,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir } from "../core/artifactPaths";
+ 
+ /**
+  * Registers the open latest proof bundle command
+@@ -19,26 +20,15 @@ export function registerOpenLatestProofBundleCommand(context: vscode.ExtensionCo
+  */
+ async function executeOpenLatestProofBundle(): Promise<void> {
+   try {
+-    // Read ExecLedger configuration
+-    const config = vscode.workspace.getConfiguration("execLedger");
+-    const outputRoot = config.get<string>("proof.outputRoot", "");
+-
+-    // Determine workspace/repo root
+-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+-    if (!workspaceFolder) {
+-      vscode.window.showErrorMessage("ExecLedger: No workspace folder found. Open a folder or workspace first.");
++    // Get workspace folder
++    const workspaceFolders = vscode.workspace.workspaceFolders;
++    if (!workspaceFolders || workspaceFolders.length === 0) {
++      vscode.window.showErrorMessage("ExecLedger: No workspace folder is open.");
+       return;
+     }
+-
+-    const repoRoot = workspaceFolder.uri.fsPath;
+     
+-    // Determine bundles directory (respect Phase 7 outputRoot if set)
+-    let bundlesDir: string;
+-    if (outputRoot.trim()) {
+-      bundlesDir = path.join(outputRoot.trim(), "bundles");
+-    } else {
+-      bundlesDir = path.join(repoRoot, "_proof", "bundles");
+-    }
++    // Determine bundles directory with artifacts root migration
++    const bundlesDir = resolveBundlesDir(workspaceFolders[0].uri.fsPath);
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+ 
+diff --git a/extension/src/command/openLatestProofReport.ts b/extension/src/command/openLatestProofReport.ts
+index 6056fe0..2f2aa64 100644
+--- a/extension/src/command/openLatestProofReport.ts
++++ b/extension/src/command/openLatestProofReport.ts
+@@ -2,6 +2,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactRoot } from "../core/artifactPaths";
+ 
+ /**
+  * Registers the open latest proof report command
+@@ -21,25 +22,17 @@ async function executeOpenLatestProofReport(): Promise<void> {
+   try {
+     // Read ExecLedger configuration
+     const config = vscode.workspace.getConfiguration("execLedger");
+-    const outputRoot = config.get<string>("proof.outputRoot", "");
+     const copyToClipboard = config.get<boolean>("proof.copyReportToClipboard", false);
+-
+-    // Determine workspace/repo root
+-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+-    if (!workspaceFolder) {
+-      vscode.window.showErrorMessage("ExecLedger: No workspace folder found. Open a folder or workspace first.");
++    
++    // Get workspace folder
++    const workspaceFolders = vscode.workspace.workspaceFolders;
++    if (!workspaceFolders || workspaceFolders.length === 0) {
++      vscode.window.showErrorMessage("ExecLedger: No workspace folder is open.");
+       return;
+     }
+ 
+-    const repoRoot = workspaceFolder.uri.fsPath;
+-    
+-    // Determine bundles directory (respect Phase 7 outputRoot if set)
+-    let bundlesDir: string;
+-    if (outputRoot.trim()) {
+-      bundlesDir = path.join(outputRoot.trim(), "bundles");
+-    } else {
+-      bundlesDir = path.join(repoRoot, "_proof", "bundles");
+-    }
++    // Determine bundles directory with artifacts root migration
++    const bundlesDir = resolveBundlesDir(workspaceFolders[0].uri.fsPath);
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+ 
+@@ -107,10 +100,10 @@ async function executeOpenLatestProofReport(): Promise<void> {
+       const mode = latestData.mode;
+       
+       let proofRoot: string;
+-      if (outputRoot.trim()) {
+-        proofRoot = outputRoot.trim();
++      if (false) { // outputRoot no longer used - always use artifacts root
++        proofRoot = resolveArtifactRoot(process.cwd()).root; // Use new artifacts root
+       } else {
+-        proofRoot = path.join(repoRoot, "_proof");
++        proofRoot = resolveArtifactRoot(process.cwd()).root;
+       }
+       
+       const proofDir = path.join(proofRoot, `exec_${execId}`, mode, sessionId);
+diff --git a/extension/src/command/openLatestSummary.ts b/extension/src/command/openLatestSummary.ts
+index 53b522b..68f8e53 100644
+--- a/extension/src/command/openLatestSummary.ts
++++ b/extension/src/command/openLatestSummary.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactRoot } from "../core/artifactPaths";
+ 
+ interface LatestProofData {
+   exec_id: string;
+@@ -68,7 +69,7 @@ function getLatestSummaryPath(): string | null {
+     if (outputRoot.trim()) {
+       bundlesDir = path.join(outputRoot.trim(), "bundles");
+     } else {
+-      bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
++      bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
+     }
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+@@ -90,7 +91,7 @@ function getLatestSummaryPath(): string | null {
+     if (outputRoot.trim()) {
+       proofRootDir = outputRoot.trim();
+     } else {
+-      proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
++      proofRootDir = resolveArtifactRoot(workspaceFolder.uri.fsPath).root;
+     }
+ 
+     const proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+diff --git a/extension/src/command/runMilestoneGates.ts b/extension/src/command/runMilestoneGates.ts
+index c7e4cfe..904c999 100644
+--- a/extension/src/command/runMilestoneGates.ts
++++ b/extension/src/command/runMilestoneGates.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveArtifactRoot } from "../core/artifactPaths";
+ import { exec } from "child_process";
+ import { refreshProofStatus } from "../status/statusBarProof";
+ 
+@@ -125,7 +126,13 @@ async function executeRunMilestoneGates(): Promise<void> {
+  */
+ async function findNewestMilestoneSummary(repoRoot: string): Promise<string | null> {
+   try {
+-    const proofDir = path.join(repoRoot, "_proof");
++    const artifactResolution = resolveArtifactRoot(repoRoot);
++    const proofDir = artifactResolution.root;
++    
++    // Log migration if it occurred
++    if (artifactResolution.migrated) {
++      console.log('[ExecLedger] ARTIFACT_ROOT_MIGRATED:', artifactResolution.notes.join(', '));
++    }
+     if (!fs.existsSync(proofDir)) {
+       return null;
+     }
+diff --git a/extension/src/commands/execLedgerAddGuidance.ts b/extension/src/commands/execLedgerAddGuidance.ts
+index a42f41e..d707bca 100644
+--- a/extension/src/commands/execLedgerAddGuidance.ts
++++ b/extension/src/commands/execLedgerAddGuidance.ts
+@@ -76,9 +76,9 @@ export async function addGuidanceCommand(): Promise<void> {
+   const validatePath = path.join(stepPath, 'validate.json');
+   fs.writeFileSync(validatePath, JSON.stringify({}, null, 2), 'utf-8');
+ 
+-  // Update context: step now AWAITING_PROOF
++  // Update context: step now AWAITING_ARTIFACTS
+   contextData.currentStep = currentStep;
+-  contextData.stepState = StepState.AWAITING_PROOF;
++  contextData.stepState = StepState.AWAITING_ARTIFACTS;
+   saveActiveContext(contextData);
+ 
+   // Update task meta
+@@ -99,8 +99,8 @@ export async function addGuidanceCommand(): Promise<void> {
+ 
+   // Update status bar
+   updateStatusBar(
+-    getIndicatorFromState(TaskState.IN_PROGRESS, StepState.AWAITING_PROOF),
+-    `Task: Awaiting Proof [S${String(currentStep).padStart(4, '0')}]`
++    getIndicatorFromState(TaskState.IN_PROGRESS, StepState.AWAITING_ARTIFACTS),
++    `Task: Awaiting Artifacts [S${String(currentStep).padStart(4, '0')}]`
+   );
+ 
+   vscode.window.showInformationMessage(
+diff --git a/extension/src/core/execLedgerState.ts b/extension/src/core/execLedgerState.ts
+index 6f78040..61d4cad 100644
+--- a/extension/src/core/execLedgerState.ts
++++ b/extension/src/core/execLedgerState.ts
+@@ -13,7 +13,7 @@ export enum TaskState {
+  */
+ export enum StepState {
+   GUIDANCE_CAPTURED = 'GUIDANCE_CAPTURED',
+-  AWAITING_PROOF = 'AWAITING_PROOF',
++  AWAITING_ARTIFACTS = 'AWAITING_ARTIFACTS',
+   VALIDATING = 'VALIDATING',
+   COMPLIANT = 'COMPLIANT',
+   NON_COMPLIANT = 'NON_COMPLIANT',
+@@ -97,8 +97,8 @@ export function canTransitionStepState(from: StepState | undefined, to: StepStat
+     return to === StepState.GUIDANCE_CAPTURED;
+   }
+   const allowed: Record<StepState, StepState[]> = {
+-    [StepState.GUIDANCE_CAPTURED]: [StepState.AWAITING_PROOF],
+-    [StepState.AWAITING_PROOF]: [StepState.VALIDATING],
++    [StepState.GUIDANCE_CAPTURED]: [StepState.AWAITING_ARTIFACTS],
++    [StepState.AWAITING_ARTIFACTS]: [StepState.VALIDATING],
+     [StepState.VALIDATING]: [StepState.COMPLIANT, StepState.NON_COMPLIANT],
+     [StepState.COMPLIANT]: [],
+     [StepState.NON_COMPLIANT]: [],
+diff --git a/extension/src/core/execLedgerStatusBar.ts b/extension/src/core/execLedgerStatusBar.ts
+index 28a30d2..d90c46e 100644
+--- a/extension/src/core/execLedgerStatusBar.ts
++++ b/extension/src/core/execLedgerStatusBar.ts
+@@ -31,7 +31,7 @@ export function getIndicatorFromState(taskState: TaskState, stepState?: StepStat
+   if (taskState === TaskState.BLOCKED_AUDIT_GAP) {
+     return StatusIndicator.Red;
+   }
+-  if (stepState === StepState.AWAITING_PROOF) {
++  if (stepState === StepState.AWAITING_ARTIFACTS) {
+     return StatusIndicator.Yellow;
+   }
+   return StatusIndicator.Blue;
+diff --git a/extension/src/extension.ts b/extension/src/extension.ts
+index a693b03..6b342c1 100644
+--- a/extension/src/extension.ts
++++ b/extension/src/extension.ts
+@@ -7,7 +7,6 @@ import { CrashGuard } from "./core/crashGuard";
+ import { openTaskCommand } from "./commands/execLedgerOpenTask";
+ import { addGuidanceCommand } from "./commands/execLedgerAddGuidance";
+ import { closeTaskCommand } from "./commands/execLedgerCloseTask";
+-import { initStatusBar } from "./core/execLedgerStatusBar";
+ import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
+ import { showChangedFilesCommand } from "./commands/showChangedFiles";
+ import { registerExportProofBundleCommand } from "./command/exportProofBundle";
+@@ -17,6 +16,8 @@ import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
+ import { registerOpenLatestProofReportCommand } from "./command/openLatestProofReport";
+ import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
+ import { initProofStatusBar } from "./status/statusBarProof";
++import { isProOrHigher } from "./core/tierEngine";
++import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
+ 
+ const sessions = new SessionManager();
+ let crashGuard: CrashGuard | null = null;
+@@ -25,11 +26,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void>
+   // Hard proof in the UI that activation ran
+   vscode.window.showInformationMessage("NGKs AutoLogger activated");
+ 
+-  // Initialize ExecLedger status bar
+-  initStatusBar(context);
+-
+-  // Initialize proof status bar
++  // Initialize primary ExecLedger status bar (artifacts status)
+   initProofStatusBar(context);
++  
++  // Initialize tier-gated QuickPick command (always register)
++  registerExecLedgerQuickPickCommand(context);
++  
++  // Status bar handled by initProofStatusBar() in statusBarProof.ts
+ 
+   // Register session lifecycle commands
+   context.subscriptions.push(
+diff --git a/extension/src/status/statusBarProof.ts b/extension/src/status/statusBarProof.ts
+index 38ab4a2..06291bf 100644
+--- a/extension/src/status/statusBarProof.ts
++++ b/extension/src/status/statusBarProof.ts
+@@ -1,6 +1,7 @@
+ import * as vscode from "vscode";
+ import * as path from "path";
+ import * as fs from "fs";
++import { resolveBundlesDir, resolveArtifactRoot } from "../core/artifactPaths";
+ import { validateLatestJson, validateIntegrityJson, detectDrift, type ValidationResult } from "../util/validation";
+ 
+ interface LatestProofData {
+@@ -72,7 +73,7 @@ function setupLatestJsonWatcher(context: vscode.ExtensionContext): void {
+   if (outputRoot.trim()) {
+     bundlesDir = path.join(outputRoot.trim(), "bundles");
+   } else {
+-    bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
++    bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
+   }
+ 
+   const latestJsonPath = path.join(bundlesDir, "latest.json");
+@@ -98,15 +99,48 @@ function setupLatestJsonWatcher(context: vscode.ExtensionContext): void {
+ }
+ 
+ /**
+- * Refresh the proof status bar display
++ * Refresh the artifacts status bar display
+  */
+ export function refreshProofStatus(): void {
+   if (!statusBarItem) return;
+ 
++  // Get workspace root
++  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
++  if (!workspaceFolder) {
++    statusBarItem.text = "$(package) ExecLedger: No workspace";
++    statusBarItem.tooltip = "No workspace folder is open. Open a project to use ExecLedger.";
++    statusBarItem.show();
++    return;
++  }
++
++  // Resolve artifact root using single source of truth
++  const artifactResolution = resolveArtifactRoot(workspaceFolder.uri.fsPath);
++  
++  // Check if artifact root directory exists
++  if (!fs.existsSync(artifactResolution.root)) {
++    statusBarItem.text = "$(package) ExecLedger: No artifacts (root missing)";
++    statusBarItem.tooltip = `Artifact root directory does not exist: ${artifactResolution.root}. Click to generate artifacts.`;
++    statusBarItem.show();
++    return;
++  }
++
++  // Check for exec_* folders
++  const execFolders = fs.readdirSync(artifactResolution.root)
++    .filter(name => name.startsWith('exec_'))
++    .filter(name => fs.statSync(path.join(artifactResolution.root, name)).isDirectory());
++    
++  if (execFolders.length === 0) {
++    statusBarItem.text = "$(package) ExecLedger: No artifacts (no runs yet)";
++    statusBarItem.tooltip = `Artifact root exists but no execution runs found in: ${artifactResolution.root}. Click to run milestone gates.`;
++    statusBarItem.show();
++    return;
++  }
++
++  // We have artifacts, proceed with normal status logic
+   const latestData = getLatestProofData();
+   if (!latestData) {
+-    statusBarItem.text = "$(package) ExecLedger: No proof";
+-    statusBarItem.tooltip = "No proof artifacts found. Click to generate or open proof bundle.";
++    statusBarItem.text = "$(package) ExecLedger: Ready";
++    statusBarItem.tooltip = `Found ${execFolders.length} execution run(s) in: ${artifactResolution.root}. Click to access artifacts.`;
+   } else {
+     const summaryData = getProofSummaryData(latestData);
+     const isPass = summaryData && summaryData.fail_reasons === "None";
+@@ -143,7 +177,7 @@ export function refreshProofStatus(): void {
+     // Create detailed tooltip
+     const createdDate = new Date(latestData.created_at).toLocaleString();
+     const tooltipLines = [
+-      `**ExecLedger Proof Status**`,
++      `**ExecLedger Artifacts Status**`,
+       ``,
+       `≡ƒôï **Exec ID**: ${latestData.exec_id}`,
+       `≡ƒåö **Session ID**: ${latestData.session_id}`,
+@@ -156,7 +190,7 @@ export function refreshProofStatus(): void {
+       tooltipLines.push(
+         `≡ƒôè **Status**: ${statusText}`,
+         `Γ¥î **Fail Reasons**: ${summaryData.fail_reasons}`,
+-        `≡ƒôü **Proof Dir**: ${summaryData.proof_dir}`,
++        `≡ƒôü **Artifacts Dir**: ${summaryData.proof_dir}`,
+         ``
+       );
+     }
+@@ -214,7 +248,7 @@ function getLatestProofData(): LatestProofData | null {
+     if (outputRoot.trim()) {
+       bundlesDir = path.join(outputRoot.trim(), "bundles");
+     } else {
+-      bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
++      bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
+     }
+ 
+     const latestJsonPath = path.join(bundlesDir, "latest.json");
+@@ -263,7 +297,7 @@ function getProofSummaryData(latestData: LatestProofData): ProofSummaryData | nu
+       if (outputRoot.trim()) {
+         proofRootDir = outputRoot.trim();
+       } else {
+-        proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
++        proofRootDir = resolveArtifactRoot(workspaceFolder.uri.fsPath).root;
+       }
+       proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+       summaryPath = path.join(proofDir, "summary.txt");
+@@ -316,65 +350,65 @@ function getProofSummaryData(latestData: LatestProofData): ProofSummaryData | nu
+  */
+ async function showProofQuickPick(): Promise<void> {
+   const latestData = getLatestProofData();
+-  const hasProof = !!latestData;
++  const hasArtifacts = !!latestData;
+ 
+   const items: vscode.QuickPickItem[] = [
+     {
+-      label: "$(play) Run Milestone Proof Gates",
++      label: "$(play) Run Milestone Gates",
+       description: "Execute full milestone verification",
+-      detail: "Runs all phase gates and generates proof bundle"
++      detail: "Runs all phase gates and generates artifacts bundle"
+     }
+   ];
+ 
+-  if (hasProof) {
++  if (hasArtifacts) {
+     items.push(
+       {
+         label: "$(list-ordered) Open Latest Summary",
+-        description: "View proof summary in VS Code editor",
+-        detail: "Opens summary.txt from latest proof bundle"
++        description: "View artifacts summary in VS Code editor",
++        detail: "Opens summary.txt from latest artifacts bundle"
+       },
+       {
+         label: "$(file-text) Open Latest Report", 
+-        description: "View proof report in VS Code editor",
+-        detail: "Opens report.txt from latest proof bundle"
++        description: "View artifacts report in VS Code editor",
++        detail: "Opens report.txt from latest artifacts bundle"
+       },
+       {
+-        label: "$(file-directory) Open Latest Proof Folder",
+-        description: "Reveal proof directory in file explorer",
+-        detail: `Opens: ${latestData.proof_dir || 'proof directory'}`
++        label: "$(file-directory) Open Latest Artifacts Folder",
++        description: "Reveal artifacts directory in file explorer",
++        detail: `Opens: ${latestData.proof_dir || 'artifacts directory'}`
+       },
+       {
+-        label: "$(package) Open Latest Proof Bundle (zip)",
+-        description: "Reveal proof bundle zip in file explorer",
++        label: "$(package) Open Latest Artifacts Bundle (zip)",
++        description: "Reveal artifacts bundle zip in file explorer",
+         detail: `Opens: ${latestData.zip_path}`
+       }
+     );
+   } else {
+     items.push({
+-      label: "$(info) No proof found",
+-      description: "Run milestone gates to generate proof",
+-      detail: "Click 'Run Milestone Proof Gates' above to create your first proof"
++      label: "$(info) No artifacts found",
++      description: "Run milestone gates to generate artifacts",
++      detail: "Click 'Run Milestone Gates' above to create your first artifacts"
+     });
+   }
+ 
+   const selected = await vscode.window.showQuickPick(items, {
+-    placeHolder: hasProof 
+-      ? `ExecLedger proof actions - ${latestData.mode} ${latestData.exec_id.substring(0, 8)}`
+-      : "ExecLedger proof actions - No proof found"
++    placeHolder: hasArtifacts 
++      ? `ExecLedger artifacts actions - ${latestData.mode} ${latestData.exec_id.substring(0, 8)}`
++      : "ExecLedger artifacts actions - No artifacts found"
+   });
+ 
+   if (!selected) return;
+ 
+   // Execute the selected action
+-  if (selected.label.includes("Run Milestone Proof Gates")) {
++  if (selected.label.includes("Run Milestone Gates")) {
+     await vscode.commands.executeCommand("ngksExecLedger.runMilestoneGates");
+   } else if (selected.label.includes("Open Latest Summary")) {
+     await vscode.commands.executeCommand("ngksExecLedger.openLatestSummary");
+   } else if (selected.label.includes("Open Latest Report")) {
+     await vscode.commands.executeCommand("ngksExecLedger.openLatestProofReport");
+-  } else if (selected.label.includes("Open Latest Proof Folder")) {
++  } else if (selected.label.includes("Open Latest Artifacts Folder")) {
+     await revealProofFolder();
+-  } else if (selected.label.includes("Open Latest Proof Bundle")) {
++  } else if (selected.label.includes("Open Latest Artifacts Bundle")) {
+     await vscode.commands.executeCommand("ngksExecLedger.openLatestProofBundle");
+   }
+ }
+@@ -410,7 +444,7 @@ async function revealProofFolder(): Promise<void> {
+       if (outputRoot.trim()) {
+         proofRootDir = outputRoot.trim();
+       } else {
+-        proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
++        proofRootDir = resolveArtifactRoot(workspaceFolder.uri.fsPath).root;
+       }
+ 
+       proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);

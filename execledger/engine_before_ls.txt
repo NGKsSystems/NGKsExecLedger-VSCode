@@ -1,0 +1,21 @@
+.FullName : The term '.FullName' is not recognized as the name of a cmdlet, 
+function, script file, or operable program. Check the spelling of the name, or 
+if a path was included, verify that the path is correct and try again.
+At line:1 char:121
++ ... ect Name -Descending | Select-Object -First 1 | % { .FullName; Get-Ch ...
++                                                         ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.FullName:String) [], CommandNo 
+   tFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Get-ChildItem : Cannot find path 
+'C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\.FullName' because 
+it does not exist.
+At line:1 char:132
++ ... g | Select-Object -First 1 | % { .FullName; Get-ChildItem .FullName }
++                                                 ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\suppo\...ogger\.FullNa 
+   me:String) [Get-ChildItem], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetCh 
+   ildItemCommand
+ 

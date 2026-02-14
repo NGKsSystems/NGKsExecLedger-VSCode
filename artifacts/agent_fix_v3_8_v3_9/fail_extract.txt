@@ -1,0 +1,28 @@
+
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:22:=== VERIFY_3_8 ===
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:23:node extension/src/test/verify-phase3.8.js
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:24:-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\82a858e5-bcc6-4d76-8c0f-b5bf63b3850a\verify_3_8.txt
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:25:
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:26:=== VERIFY_3_9 ===
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:27:node extension/src/test/verify-phase3.9.js
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:28:-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\82a858e5-bcc6-4d76-8c0f-b5bf63b3850a\verify_3_9.txt
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:29:
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:30:==== SUMMARY ====
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:31:EXEC_ID=012983dea6dbc91c
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:32:SESSION_ID=82a858e5-bcc6-4d76-8c0f-b5bf63b3850a
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:33:MODE=Milestone
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:34:COMPILE_OK=True
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:35:VERIFY_3_7_OK=True
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:36:VERIFY_3_8_OK=False
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:37:VERIFY_3_8_ADVISORY_SCOPE_ONLY=False
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:38:VERIFY_3_9_OK=False
+> artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:39:FAIL_REASONS=VERIFY_3_8_FAILED,VERIFY_3_9_FAILED
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:40:artifacts_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\82a858e5-bcc6-4d76-8c0f-b5bf63b3850a
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:41:=== VERIFY_5 ===
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:42:node extension/src/test/verify-phase5.js
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:43:-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\82a858e5-bcc6-4d76-8c0f-b5bf63b3850a\verify_5.txt
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:44:
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:45:=== VERIFY_6 ===
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:46:node extension/src/test/verify-phase6.js
+  artifacts\agent_fix_v3_8_v3_9\run_gates_milestone.txt:47:-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\82a858e5-bcc6-4d76-8c0f-b5bf63b3850a\verify_6.txt
+

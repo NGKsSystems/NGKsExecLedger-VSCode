@@ -1,0 +1,10 @@
+{
+  "sessionRoot": "_artifacts\\exec_dc53ebfca732ba96\\milestone\\a38240a0-7e62-4701-8d07-07c06b7ac925",
+  "summaryFile": "_artifacts\\exec_dc53ebfca732ba96\\milestone\\a38240a0-7e62-4701-8d07-07c06b7ac925\\summary.txt",
+  "reportFile": "_artifacts\\exec_dc53ebfca732ba96\\milestone\\a38240a0-7e62-4701-8d07-07c06b7ac925\\report.txt",
+  "artifactsFolder": "_artifacts\\exec_dc53ebfca732ba96\\milestone\\a38240a0-7e62-4701-8d07-07c06b7ac925",
+  "sessionId": "a38240a0-7e62-4701-8d07-07c06b7ac925",
+  "createdAt": "2026-02-10T17:48:41.244Z",
+  "hashes": {}
+}
+EXIT_CODE=0

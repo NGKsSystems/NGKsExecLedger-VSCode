@@ -1,0 +1,8 @@
+﻿EXEC_ID=d330775bc65fd85e
+SESSION_ID=a3850b83-500e-4790-9fad-e603c93ea523
+
+ M extension/package.json
+ M extension/src/extension.ts
+ M tools/run_phase_gates.ps1
+?? extension/src/command/exportartifactsBundle.ts
+?? extension/src/test/verify-phase6.js

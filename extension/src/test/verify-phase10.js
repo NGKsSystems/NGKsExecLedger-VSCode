@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Phase 10 verification gate - human-readable report.txt included in proof bundles
+// Phase 10 verification gate - human-readable report.txt included in artifacts bundles
 // This verifies all Phase 10 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -42,13 +42,13 @@ function verifyFileScope() {
     'extension/package.json',
     'extension/src/extension.ts',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
+    'tools/export_artifacts_bundle.ps1',
     'extension/src/test/verify-phase10.js',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/command/runMilestoneGates.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
     'extension/src/test/verify-phase5.js',
@@ -91,7 +91,7 @@ checkFileContains(
 
 checkFileContains(
   'tools/run_phase_gates.ps1', 
-  'ExecLedger Proof Report',
+  'ExecLedger artifacts Report',
   'required header in report generation'
 );
 
@@ -102,12 +102,12 @@ checkFileContains(
 );
 
 // TASK_B: Export script includes report.txt (via directory inclusion)
-// The export script automatically includes all files in proof directory,
-// so we verify it reads the entire proof directory
+// The export script automatically includes all files in artifacts directory,
+// so we verify it reads the entire artifacts directory
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
-  'Get-ChildItem -Path $proofDirFinal -Recurse -File',
-  'proof directory recursion in export script'
+  'tools/export_artifacts_bundle.ps1',
+  'Get-ChildItem -Path $artifactsDirFinal -Recurse -File',
+  'artifacts directory recursion in export script'
 );
 
 // TASK_C: This file itself (verification gate)
@@ -143,6 +143,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

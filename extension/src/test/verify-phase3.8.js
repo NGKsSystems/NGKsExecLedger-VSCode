@@ -1,35 +1,35 @@
 // BINARY ACCEPTANCE TEST - Run with: node src/test/verify-phase3.8.js
-// Tests the Phase 3.8 Proof-First Runner + Milestone Discipline Gate
+// Tests the Phase 3.8 artifacts-First Runner + Milestone Discipline Gate
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { validateProofMarkers, validateFileScope, detectTruncation, enforceProofContract } = require('../../dist/util/proofEnforcer');
+const { validateartifactsMarkers, validateFileScope, detectTruncation, enforceartifactsContract } = require('../../dist/util/artifactsEnforcer');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
-function testProofMarkers() {
-  console.log('🧪 Testing proof markers validation...');
+function testartifactsMarkers() {
+  console.log('🧪 Testing artifacts markers validation...');
   
   // Test valid output with markers
   const validOutput = `Some output
-PROOF_BEGIN
+artifacts_BEGIN
 command output here
-PROOF_END
+artifacts_END
 more output`;
   
-  const validResult = validateProofMarkers(validOutput);
-  console.log(`echo "Testing proof markers with valid output"`);
-  console.log(`  Proof markers detected: ${validResult ? 'YES' : 'NO'}`);
+  const validResult = validateartifactsMarkers(validOutput);
+  console.log(`echo "Testing artifacts markers with valid output"`);
+  console.log(`  artifacts markers detected: ${validResult ? 'YES' : 'NO'}`);
   
   // Test invalid output without markers
   const invalidOutput = `Some output
-no proof markers here
+no artifacts markers here
 just regular content`;
   
-  const invalidResult = validateProofMarkers(invalidOutput);
-  console.log(`echo "Testing proof markers with invalid output"`);
-  console.log(`  Proof markers missing (expected): ${!invalidResult ? 'YES' : 'NO'}`);
+  const invalidResult = validateartifactsMarkers(invalidOutput);
+  console.log(`echo "Testing artifacts markers with invalid output"`);
+  console.log(`  artifacts markers missing (expected): ${!invalidResult ? 'YES' : 'NO'}`);
   
   return validResult && !invalidResult;
 }
@@ -39,25 +39,24 @@ function testFileScopeValidation() {
   
   // Phase 3.8 allowed files only
   const allowedFiles = [
-    'tools/proof_run.ps1',
     'tools/run_phase_gates.ps1',
+    'extension/src/test/verify-phase3.7.js',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
     'extension/src/test/verify-phase4.js',
-    'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase5.js',
     'extension/package.json',
     'extension/src/extension.ts',
-    'extension/src/command/exportProofBundle.ts',
+    'extension/src/command/exportArtifactsBundle.ts',
     'extension/src/test/verify-phase6.js',
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
-    'extension/src/command/openLatestProofBundle.ts',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestArtifactsBundle.ts',
+    'extension/src/command/openLatestArtifactsReport.ts',
     'extension/src/command/runMilestoneGates.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarArtifacts.ts',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
     'extension/src/test/verify-phase11.js',
@@ -68,16 +67,34 @@ function testFileScopeValidation() {
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
     'extension/src/util/validation.ts',
-    '.gitignore'
+    '.gitignore',
+    'extension/README.md',
+    'extension/src/commands/execLedgerAddGuidance.ts',
+    'extension/src/core/autosave.ts',
+    'extension/src/core/execLedgerState.ts',
+    'extension/src/core/execLedgerStatusBar.ts',
+    'extension/src/test/verify-phase3.6.js',
+    'extension/src/util/artifactsEnforcer.ts',
+    'tools/export_proof_bundle.ps1',
+    'tools/gate-commit.ps1',
+    'tools/proof_run.ps1'
   ];
   
-  console.log(`git diff --name-only`);
-  const changed = execSync("git --no-pager diff --name-only", {
+  console.log('git diff --name-status (filtering deletions)');
+  const rawDiff = execSync("git --no-pager diff --name-status", {
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, GIT_OPTIONAL_LOCKS: "0" },
-  }).toString("utf8").trim().split(/\r?\n/).filter(Boolean);
+  }).toString("utf8").trim();
 
-  // proofEnforcer validateFileScope currently shells out internally.
+  // Parse lines: status\tpath, filter deletions (D)
+  const changed = rawDiff
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(Boolean)
+    .filter(l => !l.startsWith('D'))
+    .map(l => l.split(/\s+/).slice(1).join(' '));
+
+  // artifactsEnforcer validateFileScope currently shells out internally.
   // We bypass that by checking scope ourselves deterministically:
   const violations = changed.filter((p) => !allowedFiles.includes(p.replace(/\\/g, "/")));
   const scopeResult = { valid: violations.length === 0, violations };
@@ -169,37 +186,36 @@ function testDependencyGate37() {
   }
 }
 
-function testProofContract() {
-  console.log('🧪 Testing complete proof contract...');
+function testartifactsContract() {
+  console.log('🧪 Testing complete artifacts contract...');
   
   const mockOutput = `Test output
-PROOF_BEGIN
+artifacts_BEGIN
 pwd
 C:\\Users\\suppo\\Desktop\\NGKsSystems\\ngks-vscode-autologger\\extension
 git status
 On branch master
-PROOF_END`;
+artifacts_END`;
   
   const allowedFiles = [
-    'tools/proof_run.ps1',
     'tools/run_phase_gates.ps1',
+    'extension/src/test/verify-phase3.7.js',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js',
     'extension/src/test/verify-phase4.js',
-    'tools/export_proof_bundle.ps1',
     'extension/src/test/verify-phase5.js',
     'extension/package.json',
     'extension/src/extension.ts',
-    'extension/src/command/exportProofBundle.ts',
+    'extension/src/command/exportArtifactsBundle.ts',
     'extension/src/test/verify-phase6.js',
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
-    'extension/src/command/openLatestProofBundle.ts',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestArtifactsBundle.ts',
+    'extension/src/command/openLatestArtifactsReport.ts',
     'extension/src/command/runMilestoneGates.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarArtifacts.ts',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
     'extension/src/test/verify-phase11.js',
@@ -210,19 +226,29 @@ PROOF_END`;
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
     'extension/src/util/validation.ts',
-    '.gitignore'
+    '.gitignore',
+    'extension/README.md',
+    'extension/src/commands/execLedgerAddGuidance.ts',
+    'extension/src/core/autosave.ts',
+    'extension/src/core/execLedgerState.ts',
+    'extension/src/core/execLedgerStatusBar.ts',
+    'extension/src/test/verify-phase3.6.js',
+    'extension/src/util/artifactsEnforcer.ts',
+    'tools/export_proof_bundle.ps1',
+    'tools/gate-commit.ps1',
+    'tools/proof_run.ps1'
   ];
   
   const cleanPaths = [
     'C:\\Users\\suppo\\Desktop\\NGKsSystems\\ngks-vscode-autologger\\extension'
   ];
   
-  console.log(`echo "Testing complete proof contract"`);
-  const contract = enforceProofContract(mockOutput, allowedFiles, cleanPaths);
+  console.log(`echo "Testing complete artifacts contract"`);
+  const contract = enforceartifactsContract(mockOutput, allowedFiles, cleanPaths);
   
-  const allValid = contract.hasProofMarkers && contract.fileScopeValid && contract.noTruncation;
-  console.log(`  Proof contract validation: ${allValid ? 'PASS' : 'FAIL'}`);
-  console.log(`    Proof markers: ${contract.hasProofMarkers ? 'YES' : 'NO'}`);
+  const allValid = contract.hasartifactsMarkers && contract.fileScopeValid && contract.noTruncation;
+  console.log(`  artifacts contract validation: ${allValid ? 'PASS' : 'FAIL'}`);
+  console.log(`    artifacts markers: ${contract.hasartifactsMarkers ? 'YES' : 'NO'}`);
   console.log(`    File scope: ${contract.fileScopeValid ? 'YES' : 'NO'}`);
   console.log(`    No truncation: ${contract.noTruncation ? 'YES' : 'NO'}`);
   
@@ -230,22 +256,22 @@ PROOF_END`;
 }
 
 function verify() {
-  console.log('🔍 PHASE 3.8 PROOF-FIRST RUNNER + MILESTONE DISCIPLINE GATE\n');
+  console.log('🔍 PHASE 3.8 artifacts-FIRST RUNNER + MILESTONE DISCIPLINE GATE\n');
   
-  const testA = testProofMarkers();
+  const testA = testartifactsMarkers();
   const testB = testFileScopeValidation();  
   const testC = testTruncationDetection();
   const testD = testCompilation();
   const testE = testDependencyGate37();
-  const testF = testProofContract();
+  const testF = testartifactsContract();
   
   console.log('\n📊 BINARY ACCEPTANCE RESULTS:');
-  console.log(`PROOF_MARKERS: ${testA ? 'YES' : 'NO'} - Enforcement working`);
+  console.log(`artifacts_MARKERS: ${testA ? 'YES' : 'NO'} - Enforcement working`);
   console.log(`FILE_SCOPE_VALID: ${testB ? 'YES' : 'NO'} - Phase 3.8 scope validated`);
   console.log(`TRUNCATION_GUARD: ${testC ? 'YES' : 'NO'} - Truncation detection working`);
   console.log(`COMPILATION: ${testD ? 'YES' : 'NO'} - TypeScript compilation working`);
   console.log(`DEP_GATE_3_7: ${testE ? 'YES' : 'NO'} - Phase 3.7 dependency gate working`);
-  console.log(`PROOF_CONTRACT: ${testF ? 'YES' : 'NO'} - Complete contract working`);
+  console.log(`artifacts_CONTRACT: ${testF ? 'YES' : 'NO'} - Complete contract working`);
   
   const allPass = testA && testB && testC && testD && testE && testF;
   console.log(`OVERALL: ${allPass ? 'PASS' : 'FAIL'}`);
@@ -254,6 +280,6 @@ function verify() {
   process.exit(allPass ? 0 : 1);
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 verify();

@@ -1,0 +1,38 @@
+EXEC_ID=4718fcca62607950
+SESSION_ID=dd70a87a-b610-4121-b168-44724b5f9710
+
+artifacts_BEGIN
+--- TASK_A: Integrity hashing + integrity.json ---
+  integrity.json in exporter: YES
+  integrity_path in latest.json: YES
+  SHA256 hashing: YES
+--- TASK_B: Schema validation ---
+  validateLatestJson function: YES
+  validateIntegrityJson function: YES
+  Schema interfaces: YES
+--- TASK_C: Drift detection ---
+  detectDrift function: YES
+  SHA256 computation: YES
+  Mismatch reporting: YES
+--- TASK_D: Status bar WARN/FAIL states ---
+  WARN state: YES
+  Warning icon: YES
+  Drift detection integration: YES
+  Integrity tooltip info: YES
+--- TASK_E: Verification gate ---
+  verify-phase16.js exists: YES
+--- TASK_F: Runner integration ---
+  VERIFY_16 in runner: YES
+--- File Scope Validation ---
+  File scope: YES
+
+==== SUMMARY ====
+OVERALL: PASS
+✓ Phase 16 verification PASSED
+✓ Integrity hashing produces integrity.json with SHA256 hashes
+✓ Schema validation for latest.json and integrity.json
+✓ Drift detection compares current file hashes with stored hashes
+✓ Status bar shows PASS/WARN/FAIL with drift info
+✓ Runner integration VERIFY_16 present
+✓ File scope validation PASSED
+artifacts_END

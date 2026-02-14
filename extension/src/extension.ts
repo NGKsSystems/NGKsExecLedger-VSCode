@@ -7,29 +7,32 @@ import { CrashGuard } from "./core/crashGuard";
 import { openTaskCommand } from "./commands/execLedgerOpenTask";
 import { addGuidanceCommand } from "./commands/execLedgerAddGuidance";
 import { closeTaskCommand } from "./commands/execLedgerCloseTask";
-import { initStatusBar } from "./core/execLedgerStatusBar";
 import { showLatestSessionSummaryCommand } from "./commands/showSessionSummary";
 import { showChangedFilesCommand } from "./commands/showChangedFiles";
-import { registerExportProofBundleCommand } from "./command/exportProofBundle";
-import { registerOpenLatestProofBundleCommand } from "./command/openLatestProofBundle";
+import { registerExportArtifactsBundleCommand } from "./command/exportArtifactsBundle";
+import { registerOpenLatestArtifactsBundleCommand } from "./command/openLatestArtifactsBundle";
 import { registerOpenLatestSummaryCommand } from "./command/openLatestSummary";
 import { registerCopyLatestSummaryCommand } from "./command/copyLatestSummary";
-import { registerOpenLatestProofReportCommand } from "./command/openLatestProofReport";
+import { registerOpenLatestArtifactsReportCommand } from "./command/openLatestArtifactsReport";
 import { registerRunMilestoneGatesCommand } from "./command/runMilestoneGates";
-import { initProofStatusBar } from "./status/statusBarProof";
+import { initArtifactsStatusBar } from "./status/statusBarArtifacts";
+import { isProOrHigher } from "./core/tierEngine";
+import { registerExecLedgerQuickPickCommand } from "./command/execLedgerQuickPick";
 
 const sessions = new SessionManager();
 let crashGuard: CrashGuard | null = null;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  // Hard proof in the UI that activation ran
+  // Hard artifacts in the UI that activation ran
   vscode.window.showInformationMessage("NGKs AutoLogger activated");
 
-  // Initialize ExecLedger status bar
-  initStatusBar(context);
-
-  // Initialize proof status bar
-  initProofStatusBar(context);
+  // Initialize primary ExecLedger status bar (artifacts status)
+  initArtifactsStatusBar(context);
+  
+  // Initialize tier-gated QuickPick command (always register)
+  registerExecLedgerQuickPickCommand(context);
+  
+  // Status bar handled by initartifactsStatusBar() in statusBarartifacts.ts
 
   // Register session lifecycle commands
   context.subscriptions.push(
@@ -92,13 +95,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('ngksExecLedger.closeTask', () => closeTaskCommand())
   );
 
-  // Register proof bundle export command
-  registerExportProofBundleCommand(context);
+  // Register artifacts bundle export command
+  registerExportArtifactsBundleCommand(context);
   registerRunMilestoneGatesCommand(context);
-  registerOpenLatestProofBundleCommand(context);
+  registerOpenLatestArtifactsBundleCommand(context);
   registerOpenLatestSummaryCommand(context);
   registerCopyLatestSummaryCommand(context);
-  registerOpenLatestProofReportCommand(context);
+  registerOpenLatestArtifactsReportCommand(context);
 
   // IMPORTANT: this is what was missing
   await activateExtension(context, sessions);

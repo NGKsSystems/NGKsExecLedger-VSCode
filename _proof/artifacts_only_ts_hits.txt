@@ -1,0 +1,7 @@
+
+extension\src\core\artifactPaths.ts:6: * from legacy "_proof" to canonical "execledger" artifact root.
+extension\src\core\artifactPaths.ts:12:export const LEGACY_ROOT_NAME = "_proof";
+extension\src\core\artifactPaths.ts:26: * 2) Else if <workspace>/_proof exists:
+extension\src\core\artifactPaths.ts:28: *    2b) Move all contents from _proof into execledger (best-effort)
+extension\src\core\artifactPaths.ts:29: *    2c) If _proof empty after move, delete _proof
+

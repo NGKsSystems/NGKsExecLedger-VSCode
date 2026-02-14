@@ -1,0 +1,1 @@
+C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\test\verify-phase3.9.js

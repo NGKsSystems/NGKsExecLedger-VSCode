@@ -1,0 +1,30 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=ee5271b0-64d3-4238-a44c-32ec6ffb8d4e
+
+artifacts_BEGIN
+--- TASK_A: Exporter latest.json pointer paths ---
+  artifacts_dir in exporter: YES
+  summary_path in exporter: YES
+  report_path in exporter: YES
+  diff_name_only_path in exporter: YES
+  status_path in exporter: YES
+  compile_log_path in exporter: YES
+--- TASK_B: Status bar uses pointer paths ---
+  Interface includes optional pointer fields: YES
+  Uses summary_path when present: YES
+--- TASK_C: Commands prefer pointer paths ---
+  openLatestSummary prefers summary_path: YES
+  copyLatestSummary prefers summary_path: YES
+  openLatestartifactsReport prefers report_path: YES
+--- TASK_D: Verification gate ---
+  verify-phase15.js exists: YES
+--- TASK_E: Runner integration ---
+  VERIFY_15 in runner: YES
+--- File Scope Validation ---
+  File scope: YES
+
+==== SUMMARY ====
+OVERALL: FAIL
+✗ Phase 15 verification FAILED:
+  - Phase 15 scope violation: unexpected files modified: .ngkssys/
+artifacts_END

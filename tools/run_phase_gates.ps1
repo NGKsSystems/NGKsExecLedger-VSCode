@@ -69,7 +69,7 @@ function RunToFile([string]$label, [string]$cmd, [string]$outFile) {
   }
 }
 
-function RunNodeProof([string]$scriptPath, [string]$outPath) {
+function RunNodeartifacts([string]$scriptPath, [string]$outPath) {
   $nodeExe = "node"
   $errPath = ($outPath -replace "\.txt$", ".err.txt")
 
@@ -87,8 +87,8 @@ function RunNodeProof([string]$scriptPath, [string]$outPath) {
   return $p.ExitCode
 }
 
-function WriteProofHeader([string]$filePath, [string]$execId, [string]$sessionId) {
-  # TASK C: Lineage propagation - add IDs to all proof files
+function WriteartifactsHeader([string]$filePath, [string]$execId, [string]$sessionId) {
+  # TASK C: Lineage propagation - add IDs to all artifacts files
   $header = @(
     "EXEC_ID=$execId"
     "SESSION_ID=$sessionId"
@@ -115,18 +115,18 @@ function HasOverallPass([string]$txt) {
 
 function IsOnlyFileScopeFailure([string]$txt) {
   # Acceptable "advisory" fail in BUILD mode:
-  # - proof markers YES
+  # - artifacts markers YES
   # - truncation guard YES
   # - compilation YES
   # - dependency gate(s) YES (if present)
   # - file scope NO
-  $proofOk = ($txt -match "PROOF_MARKERS:\s*YES")
+  $artifactsOk = ($txt -match "artifacts_MARKERS:\s*YES")
   $scopeNo = ($txt -match "FILE_SCOPE_(VALID|AUTO_FAIL):\s*NO")
   $truncOk = ($txt -match "TRUNCATION_GUARD:\s*YES")
   $compileOk = ($txt -match "COMPILATION:\s*YES")
   $depOk = (($txt -notmatch "DEP_GATE_3_7") -or ($txt -match "DEP_GATE_3_7:\s*YES"))
 
-  return ($proofOk -and $scopeNo -and $truncOk -and $compileOk -and $depOk)
+  return ($artifactsOk -and $scopeNo -and $truncOk -and $compileOk -and $depOk)
 }
 
 # ROOT SAFETY
@@ -139,56 +139,56 @@ $phaseSet = "3.7-3.9"
 $execId = GenerateExecId $repoHead $phaseSet $Mode
 $sessionId = GenerateSessionId
 
-# TASK D: New proof directory structure with EXEC_ID
+# TASK D: New artifacts directory structure with EXEC_ID
 $modeSubdir = $Mode.ToLower()
-$proofDir = Join-Path $repoRoot "_proof\exec_$execId\$modeSubdir\$sessionId"
-New-Item -ItemType Directory -Force -Path $proofDir | Out-Null
+$artifactsDir = Join-Path $repoRoot "_artifacts\exec_$execId\$modeSubdir\$sessionId"
+New-Item -ItemType Directory -Force -Path $artifactsDir | Out-Null
 
 WriteLine "MODE=$Mode"
 WriteLine "EXEC_ID=$execId"
 WriteLine "SESSION_ID=$sessionId"
-WriteLine "PROOF_DIR=$proofDir"
+WriteLine "artifacts_DIR=$artifactsDir"
 
 # Always capture state up front
-$statusFile = Join-Path $proofDir "status.txt"
-$diffFile = Join-Path $proofDir "diff_name_only.txt"
+$statusFile = Join-Path $artifactsDir "status.txt"
+$diffFile = Join-Path $artifactsDir "diff_name_only.txt"
 RunToFile "GIT_STATUS" "git status --porcelain=v1" $statusFile | Out-Null
 RunToFile "GIT_DIFF_NAME_ONLY" "git diff --name-only" $diffFile | Out-Null
-WriteProofHeader $statusFile $execId $sessionId
-WriteProofHeader $diffFile $execId $sessionId
+WriteartifactsHeader $statusFile $execId $sessionId
+WriteartifactsHeader $diffFile $execId $sessionId
 
 # Compile gate
-$compileFile = Join-Path $proofDir "compile.txt"
+$compileFile = Join-Path $artifactsDir "compile.txt"
 $compileCode = RunToFile "COMPILE" "pnpm --dir extension run compile" $compileFile
 $compileTxt = ReadText $compileFile
 $compileOk = ($compileCode -eq 0)
-WriteProofHeader $compileFile $execId $sessionId
+WriteartifactsHeader $compileFile $execId $sessionId
 
 # Phase gates (existing)
-$g37File = Join-Path $proofDir "verify_3_7.txt"
-$g38File = Join-Path $proofDir "verify_3_8.txt"
-$g39File = Join-Path $proofDir "verify_3_9.txt"
+$g37File = Join-Path $artifactsDir "verify_3_7.txt"
+$g38File = Join-Path $artifactsDir "verify_3_8.txt"
+$g39File = Join-Path $artifactsDir "verify_3_9.txt"
 
 WriteLine ""
 WriteLine "=== VERIFY_3_7 ==="
-$g37Code = RunNodeProof "extension/src/test/verify-phase3.7.js" $g37File
+$g37Code = RunNodeartifacts "extension/src/test/verify-phase3.7.js" $g37File
 WriteLine "node extension/src/test/verify-phase3.7.js"
 WriteLine "-> $g37File"
-WriteProofHeader $g37File $execId $sessionId
+WriteartifactsHeader $g37File $execId $sessionId
 
 WriteLine ""
 WriteLine "=== VERIFY_3_8 ==="
-$g38Code = RunNodeProof "extension/src/test/verify-phase3.8.js" $g38File
+$g38Code = RunNodeartifacts "extension/src/test/verify-phase3.8.js" $g38File
 WriteLine "node extension/src/test/verify-phase3.8.js"
 WriteLine "-> $g38File"
-WriteProofHeader $g38File $execId $sessionId
+WriteartifactsHeader $g38File $execId $sessionId
 
 WriteLine ""
 WriteLine "=== VERIFY_3_9 ==="
-$g39Code = RunNodeProof "extension/src/test/verify-phase3.9.js" $g39File
+$g39Code = RunNodeartifacts "extension/src/test/verify-phase3.9.js" $g39File
 WriteLine "node extension/src/test/verify-phase3.9.js"
 WriteLine "-> $g39File"
-WriteProofHeader $g39File $execId $sessionId
+WriteartifactsHeader $g39File $execId $sessionId
 
 $g37Txt = ReadText $g37File
 $g38Txt = ReadText $g38File
@@ -215,7 +215,7 @@ if (-not $g37Ok) { $failReasons += "VERIFY_3_7_FAILED" }
 if (-not $g38Ok) { $failReasons += "VERIFY_3_8_FAILED" }
 if (-not $g39Ok) { $failReasons += "VERIFY_3_9_FAILED" }
 
-$summary = Join-Path $proofDir "summary.txt"
+$summary = Join-Path $artifactsDir "summary.txt"
 @(
   "EXEC_ID=$execId"
   "SESSION_ID=$sessionId"
@@ -226,7 +226,7 @@ $summary = Join-Path $proofDir "summary.txt"
   ("VERIFY_3_8_ADVISORY_SCOPE_ONLY=" + ($g38Advisory))
   "VERIFY_3_9_OK=$g39Ok"
   ("FAIL_REASONS=" + ($(if ($failReasons.Count -eq 0) { "None" } else { $failReasons -join "," })))
-  "PROOF_DIR=$proofDir"
+  "artifacts_DIR=$artifactsDir"
 ) | Set-Content -Encoding UTF8 $summary
 
 WriteLine ""
@@ -244,127 +244,127 @@ if ($ExportBundle -eq "YES") {
 
 if ($shouldExport) {
   WriteLine "=== VERIFY_5 ==="
-  $verify5Out = Join-Path $proofDir "verify_5.txt"
-  $g5Code = RunNodeProof "extension/src/test/verify-phase5.js" $verify5Out
+  $verify5Out = Join-Path $artifactsDir "verify_5.txt"
+  $g5Code = RunNodeartifacts "extension/src/test/verify-phase5.js" $verify5Out
   $g5Ok = ($g5Code -eq 0)
   WriteLine "node extension/src/test/verify-phase5.js"
   WriteLine "-> $verify5Out"
-  WriteProofHeader $verify5Out $execId $sessionId
+  WriteartifactsHeader $verify5Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_6 ==="
-  $verify6Out = Join-Path $proofDir "verify_6.txt"
-  $g6Code = RunNodeProof "extension/src/test/verify-phase6.js" $verify6Out
+  $verify6Out = Join-Path $artifactsDir "verify_6.txt"
+  $g6Code = RunNodeartifacts "extension/src/test/verify-phase6.js" $verify6Out
   $g6Ok = ($g6Code -eq 0)
   WriteLine "node extension/src/test/verify-phase6.js"
   WriteLine "-> $verify6Out"
-  WriteProofHeader $verify6Out $execId $sessionId
+  WriteartifactsHeader $verify6Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_7 ==="
-  $verify7Out = Join-Path $proofDir "verify_7.txt"
-  $g7Code = RunNodeProof "extension/src/test/verify-phase7.js" $verify7Out
+  $verify7Out = Join-Path $artifactsDir "verify_7.txt"
+  $g7Code = RunNodeartifacts "extension/src/test/verify-phase7.js" $verify7Out
   $g7Ok = ($g7Code -eq 0)
   WriteLine "node extension/src/test/verify-phase7.js"
   WriteLine "-> $verify7Out"
-  WriteProofHeader $verify7Out $execId $sessionId
+  WriteartifactsHeader $verify7Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_8 ==="
-  $verify8Out = Join-Path $proofDir "verify_8.txt"
-  $g8Code = RunNodeProof "extension/src/test/verify-phase8.js" $verify8Out
+  $verify8Out = Join-Path $artifactsDir "verify_8.txt"
+  $g8Code = RunNodeartifacts "extension/src/test/verify-phase8.js" $verify8Out
   $g8Ok = ($g8Code -eq 0)
   WriteLine "node extension/src/test/verify-phase8.js"
   WriteLine "-> $verify8Out"
-  WriteProofHeader $verify8Out $execId $sessionId
+  WriteartifactsHeader $verify8Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_9 ==="
-  $verify9Out = Join-Path $proofDir "verify_9.txt"
-  $g9Code = RunNodeProof "extension/src/test/verify-phase9.js" $verify9Out
+  $verify9Out = Join-Path $artifactsDir "verify_9.txt"
+  $g9Code = RunNodeartifacts "extension/src/test/verify-phase9.js" $verify9Out
   $g9Ok = ($g9Code -eq 0)
   WriteLine "node extension/src/test/verify-phase9.js"
   WriteLine "-> $verify9Out"
-  WriteProofHeader $verify9Out $execId $sessionId
+  WriteartifactsHeader $verify9Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_10 ==="
-  $verify10Out = Join-Path $proofDir "verify_10.txt"
-  $g10Code = RunNodeProof "extension/src/test/verify-phase10.js" $verify10Out
+  $verify10Out = Join-Path $artifactsDir "verify_10.txt"
+  $g10Code = RunNodeartifacts "extension/src/test/verify-phase10.js" $verify10Out
   $g10Ok = ($g10Code -eq 0)
   WriteLine "node extension/src/test/verify-phase10.js"
   WriteLine "-> $verify10Out"
-  WriteProofHeader $verify10Out $execId $sessionId
+  WriteartifactsHeader $verify10Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_11 ==="
-  $verify11Out = Join-Path $proofDir "verify_11.txt"
-  $g11Code = RunNodeProof "extension/src/test/verify-phase11.js" $verify11Out
+  $verify11Out = Join-Path $artifactsDir "verify_11.txt"
+  $g11Code = RunNodeartifacts "extension/src/test/verify-phase11.js" $verify11Out
   $g11Ok = ($g11Code -eq 0)
   WriteLine "node extension/src/test/verify-phase11.js"
   WriteLine "-> $verify11Out"
-  WriteProofHeader $verify11Out $execId $sessionId
+  WriteartifactsHeader $verify11Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_12 ==="
-  $verify12Out = Join-Path $proofDir "verify_12.txt"
-  $g12Code = RunNodeProof "extension/src/test/verify-phase12.js" $verify12Out
+  $verify12Out = Join-Path $artifactsDir "verify_12.txt"
+  $g12Code = RunNodeartifacts "extension/src/test/verify-phase12.js" $verify12Out
   $g12Ok = ($g12Code -eq 0)
   WriteLine "node extension/src/test/verify-phase12.js"
   WriteLine "-> $verify12Out"
-  WriteProofHeader $verify12Out $execId $sessionId
+  WriteartifactsHeader $verify12Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_13 ==="
-  $verify13Out = Join-Path $proofDir "verify_13.txt"
-  $g13Code = RunNodeProof "extension/src/test/verify-phase13.js" $verify13Out
+  $verify13Out = Join-Path $artifactsDir "verify_13.txt"
+  $g13Code = RunNodeartifacts "extension/src/test/verify-phase13.js" $verify13Out
   $g13Ok = ($g13Code -eq 0)
   WriteLine "node extension/src/test/verify-phase13.js"
   WriteLine "-> $verify13Out"
-  WriteProofHeader $verify13Out $execId $sessionId
+  WriteartifactsHeader $verify13Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_14 ==="
-  $verify14Out = Join-Path $proofDir "verify_14.txt"
-  $g14Code = RunNodeProof "extension/src/test/verify-phase14.js" $verify14Out
+  $verify14Out = Join-Path $artifactsDir "verify_14.txt"
+  $g14Code = RunNodeartifacts "extension/src/test/verify-phase14.js" $verify14Out
   $g14Ok = ($g14Code -eq 0)
   WriteLine "node extension/src/test/verify-phase14.js"
   WriteLine "-> $verify14Out"
-  WriteProofHeader $verify14Out $execId $sessionId
+  WriteartifactsHeader $verify14Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_15 ==="
-  $verify15Out = Join-Path $proofDir "verify_15.txt"
-  $g15Code = RunNodeProof "extension/src/test/verify-phase15.js" $verify15Out
+  $verify15Out = Join-Path $artifactsDir "verify_15.txt"
+  $g15Code = RunNodeartifacts "extension/src/test/verify-phase15.js" $verify15Out
   $g15Ok = ($g15Code -eq 0)
   WriteLine "node extension/src/test/verify-phase15.js"
   WriteLine "-> $verify15Out"
-  WriteProofHeader $verify15Out $execId $sessionId
+  WriteartifactsHeader $verify15Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_16 ==="
-  $verify16Out = Join-Path $proofDir "verify_16.txt"
-  $g16Code = RunNodeProof "extension/src/test/verify-phase16.js" $verify16Out
+  $verify16Out = Join-Path $artifactsDir "verify_16.txt"
+  $g16Code = RunNodeartifacts "extension/src/test/verify-phase16.js" $verify16Out
   $g16Ok = ($g16Code -eq 0)
   WriteLine "node extension/src/test/verify-phase16.js"
   WriteLine "-> $verify16Out"
-  WriteProofHeader $verify16Out $execId $sessionId
+  WriteartifactsHeader $verify16Out $execId $sessionId
 
   WriteLine ""
   WriteLine "=== VERIFY_17 ==="
-  $verify17Out = Join-Path $proofDir "verify_17.txt"
-  $g17Code = RunNodeProof "extension/src/test/verify-phase17.js" $verify17Out
+  $verify17Out = Join-Path $artifactsDir "verify_17.txt"
+  $g17Code = RunNodeartifacts "extension/src/test/verify-phase17.js" $verify17Out
   $g17Ok = ($g17Code -eq 0)
   WriteLine "node extension/src/test/verify-phase17.js"
   WriteLine "-> $verify17Out"
-  WriteProofHeader $verify17Out $execId $sessionId
+  WriteartifactsHeader $verify17Out $execId $sessionId
 
   # Generate human-readable report.txt
   $utcTimestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
-  $report = Join-Path $proofDir "report.txt"
+  $report = Join-Path $artifactsDir "report.txt"
   
   # Read changed files from diff_name_only.txt
-  $diffFile = Join-Path $proofDir "diff_name_only.txt"
+  $diffFile = Join-Path $artifactsDir "diff_name_only.txt"
   $changedFiles = @()
   if (Test-Path $diffFile) {
     $changedFiles = Get-Content $diffFile | Where-Object { $_.Trim() } | ForEach-Object { "  - $_" }
@@ -378,20 +378,20 @@ if ($shouldExport) {
   $bundleManifest = "N/A" 
   $bundleLatest = "N/A"
   if ($shouldExport) {
-    $bundleZip = Join-Path $repoRoot "_proof\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.zip"
-    $bundleManifest = Join-Path $repoRoot "_proof\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.manifest.json"
-    $bundleLatest = Join-Path $repoRoot "_proof\bundles\latest.json"
+    $bundleZip = Join-Path $repoRoot "_artifacts\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.zip"
+    $bundleManifest = Join-Path $repoRoot "_artifacts\bundles\exec_${execId}__${Mode.ToLower()}__${sessionId}.manifest.json"
+    $bundleLatest = Join-Path $repoRoot "_artifacts\bundles\latest.json"
   }
   
   @(
-    "ExecLedger Proof Report",
+    "ExecLedger artifacts Report",
     "",
     "EXEC_ID: $execId",
     "SESSION_ID: $sessionId",
     "MODE: $Mode",
     "UTC_TIMESTAMP: $utcTimestamp",
     "",
-    "PROOF_DIR: $proofDir",
+    "artifacts_DIR: $artifactsDir",
     "BUNDLE_ZIP: $bundleZip", 
     "BUNDLE_MANIFEST: $bundleManifest",
     "BUNDLE_LATEST: $bundleLatest",

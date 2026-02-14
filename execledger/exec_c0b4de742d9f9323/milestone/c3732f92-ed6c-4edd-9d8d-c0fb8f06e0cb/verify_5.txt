@@ -1,0 +1,27 @@
+﻿EXEC_ID=c0b4de742d9f9323
+SESSION_ID=c3732f92-ed6c-4edd-9d8d-c0fb8f06e0cb
+
+artifacts_BEGIN
+artifacts_END
+≡ƒöì PHASE 5 artifacts BUNDLE EXPORT + MANIFEST INTEGRITY GATE
+≡ƒº¬ Testing artifacts markers validation...
+  artifacts markers detected: YES
+≡ƒº¬ Testing bundle + manifest presence...
+  Manifest exists: YES
+  Zip exists: YES
+  Zip non-empty: YES
+  Manifest JSON parse: PASS
+  Required fields valid: YES
+≡ƒº¬ Validating manifest file entries...
+  Entries valid: YES
+  Missing files: 0
+  Bad hashes: 0
+≡ƒº¬ Testing file scope validation...
+  File scope validation: FAIL
+  Violations: extension/src/test/verify-phase3.8.js
+
+≡ƒôè PHASE 5 BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+BUNDLE_PRESENT: YES - Zip + manifest present and valid
+FILE_SCOPE_VALID: NO - Phase 5 scope validated
+OVERALL: FAIL

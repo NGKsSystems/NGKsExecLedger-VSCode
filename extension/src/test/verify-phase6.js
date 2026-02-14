@@ -2,7 +2,7 @@
 // Phase 6 Gate: Command-Level Export (User-Facing Value)
 
 /**
- * PHASE 6 — COMMAND-LEVEL PROOF EXPORT GATE
+ * PHASE 6 — COMMAND-LEVEL artifacts EXPORT GATE
  *
  * Goals:
  *  - Assert command is defined in package.json contributes.commands
@@ -11,8 +11,8 @@
  *  - Assert proper command structure and naming
  *
  * Contract:
- *  - Command ID: ngksExecLedger.exportProofBundle
- *  - Command implementation in extension/src/command/exportProofBundle.ts
+ *  - Command ID: ngksExecLedger.exportartifactsBundle
+ *  - Command implementation in extension/src/command/exportartifactsBundle.ts
  *  - Registration in extension.ts
  *  - File scope validation
  */
@@ -30,15 +30,15 @@ function repoRoot() {
   return path.resolve(__dirname, "../../../");
 }
 
-function testProofMarkers() {
-  console.log("🧪 Testing proof markers validation...");
-  // Validate proof markers are enforced
-  const sampleOk = 'PROOF_BEGIN\\nContent\\nPROOF_END\\n';
+function testartifactsMarkers() {
+  console.log("🧪 Testing artifacts markers validation...");
+  // Validate artifacts markers are enforced
+  const sampleOk = 'artifacts_BEGIN\\nContent\\nartifacts_END\\n';
   const sampleBad = 'No markers here\\n';
-  const hasMarkers = sampleOk.includes('PROOF_BEGIN') && sampleOk.includes('PROOF_END');
-  const lacksMarkers = !sampleBad.includes('PROOF_BEGIN') || !sampleBad.includes('PROOF_END');
+  const hasMarkers = sampleOk.includes('artifacts_BEGIN') && sampleOk.includes('artifacts_END');
+  const lacksMarkers = !sampleBad.includes('artifacts_BEGIN') || !sampleBad.includes('artifacts_END');
   
-  console.log(`  Proof markers detected: ${hasMarkers ? 'YES' : 'NO'}`);
+  console.log(`  artifacts markers detected: ${hasMarkers ? 'YES' : 'NO'}`);
   return hasMarkers && lacksMarkers;
 }
 
@@ -54,9 +54,9 @@ function testCommandDefinition() {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   const commands = packageJson.contributes?.commands || [];
   
-  const exportCommand = commands.find(cmd => cmd.command === "ngksExecLedger.exportProofBundle");
+  const exportCommand = commands.find(cmd => cmd.command === "ngksExecLedger.exportartifactsBundle");
   const hasCommand = !!exportCommand;
-  const hasTitle = exportCommand?.title === "ExecLedger: Export Proof Bundle";
+  const hasTitle = exportCommand?.title === "ExecLedger: Export artifacts Bundle";
   
   console.log(`  Command exists: ${hasCommand ? 'YES' : 'NO'}`);
   console.log(`  Command title correct: ${hasTitle ? 'YES' : 'NO'}`);
@@ -67,7 +67,7 @@ function testCommandDefinition() {
 function testCommandImplementation() {
   console.log("🧪 Testing command implementation...");
   
-  const commandFilePath = path.join(repoRoot(), "extension", "src", "command", "exportProofBundle.ts");
+  const commandFilePath = path.join(repoRoot(), "extension", "src", "command", "exportartifactsBundle.ts");
   const extensionFilePath = path.join(repoRoot(), "extension", "src", "extension.ts");
   
   const commandExists = fs.existsSync(commandFilePath);
@@ -79,8 +79,8 @@ function testCommandImplementation() {
   
   // Check if command is properly implemented
   const commandContent = fs.readFileSync(commandFilePath, 'utf8');
-  const hasRegisterFunction = commandContent.includes('registerExportProofBundleCommand');
-  const hasCommandId = commandContent.includes('ngksExecLedger.exportProofBundle');
+  const hasRegisterFunction = commandContent.includes('registerExportartifactsBundleCommand');
+  const hasCommandId = commandContent.includes('ngksExecLedger.exportartifactsBundle');
   
   console.log(`  Register function exists: ${hasRegisterFunction ? 'YES' : 'NO'}`);
   console.log(`  Command ID correct: ${hasCommandId ? 'YES' : 'NO'}`);
@@ -89,7 +89,7 @@ function testCommandImplementation() {
   let extensionRegistersCommand = false;
   if (fs.existsSync(extensionFilePath)) {
     const extensionContent = fs.readFileSync(extensionFilePath, 'utf8');
-    extensionRegistersCommand = extensionContent.includes('registerExportProofBundleCommand');
+    extensionRegistersCommand = extensionContent.includes('registerExportartifactsBundleCommand');
   }
   
   console.log(`  Extension registers command: ${extensionRegistersCommand ? 'YES' : 'NO'}`);
@@ -124,17 +124,17 @@ function testFileScope() {
   // Phase 6 allowed files only
   const allowedFiles = [
     "extension/package.json",
-    "extension/src/command/exportProofBundle.ts",
+    "extension/src/command/exportartifactsBundle.ts",
     "extension/src/extension.ts",
     "extension/src/test/verify-phase6.js",
     "extension/src/test/verify-phase3.8.js",
     "extension/src/test/verify-phase3.9.js", 
     "extension/src/test/verify-phase5.js",
-    "extension/src/test/verify-phase7.js",    "extension/src/test/verify-phase13.js",    "extension/src/test/verify-phase8.js",    "extension/src/test/verify-phase11.js",    "extension/src/command/openLatestProofBundle.ts",
-    "extension/src/command/openLatestProofReport.ts",
+    "extension/src/test/verify-phase7.js",    "extension/src/test/verify-phase13.js",    "extension/src/test/verify-phase8.js",    "extension/src/test/verify-phase11.js",    "extension/src/command/openLatestartifactsBundle.ts",
+    "extension/src/command/openLatestartifactsReport.ts",
     "extension/src/command/openLatestSummary.ts",
     "extension/src/command/copyLatestSummary.ts",
-    "extension/src/status/statusBarProof.ts",
+    "extension/src/status/statusBarartifacts.ts",
     "extension/src/test/verify-phase9.js",
     "extension/src/test/verify-phase10.js",
     "extension/src/test/verify-phase12.js",
@@ -145,7 +145,7 @@ function testFileScope() {
     "extension/src/test/verify-phase17.js",
     "extension/src/util/validation.ts",
     "tools/run_phase_gates.ps1",
-    "tools/export_proof_bundle.ps1",
+    "tools/export_artifacts_bundle.ps1",
     ".gitignore"
   ];
   
@@ -153,18 +153,18 @@ function testFileScope() {
 }
 
 (function main() {
-  console.log('PROOF_BEGIN');
-  console.log('PROOF_END');
+  console.log('artifacts_BEGIN');
+  console.log('artifacts_END');
   console.log('🔍 PHASE 6 COMMAND-LEVEL EXPORT GATE');
 
-  const a = testProofMarkers();
+  const a = testartifactsMarkers();
   const b = testCommandDefinition();
   const c = testCommandImplementation();
   const d = testFileScope();
 
   console.log('');
   console.log('📊 PHASE 6 BINARY ACCEPTANCE RESULTS:');
-  console.log(`PROOF_MARKERS: ${a ? 'YES' : 'NO'} - Enforcement working`);
+  console.log(`artifacts_MARKERS: ${a ? 'YES' : 'NO'} - Enforcement working`);
   console.log(`COMMAND_DEFINED: ${b ? 'YES' : 'NO'} - Package.json command definition`);
   console.log(`COMMAND_IMPLEMENTED: ${c ? 'YES' : 'NO'} - Implementation and registration`); 
   console.log(`FILE_SCOPE_VALID: ${d ? 'YES' : 'NO'} - Phase 6 scope validated`);

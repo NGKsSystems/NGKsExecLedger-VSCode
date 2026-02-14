@@ -1,0 +1,27 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=3b55cce5-fa41-4c9c-abef-208f36b9584b
+
+artifacts_BEGIN
+artifacts_END
+🔍 PHASE 5 artifacts BUNDLE EXPORT + MANIFEST INTEGRITY GATE
+🧪 Testing artifacts markers validation...
+  artifacts markers detected: YES
+🧪 Testing bundle + manifest presence...
+  Manifest exists: YES
+  Zip exists: YES
+  Zip non-empty: YES
+  Manifest JSON parse: PASS
+  Required fields valid: YES
+🧪 Validating manifest file entries...
+  Entries valid: YES
+  Missing files: 0
+  Bad hashes: 0
+🧪 Testing file scope validation...
+  File scope validation: FAIL
+  Violations: extension/pnpm-lock.yaml
+
+📊 PHASE 5 BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+BUNDLE_PRESENT: YES - Zip + manifest present and valid
+FILE_SCOPE_VALID: NO - Phase 5 scope validated
+OVERALL: FAIL

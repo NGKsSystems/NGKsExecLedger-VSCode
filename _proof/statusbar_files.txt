@@ -1,0 +1,6 @@
+extension/src/core/execLedgerStatusBar.ts
+extension/src/status/statusBarProof.ts
+extension/src/ui/statusBarToggle.ts
+extension/src/command/runMilestoneGates.ts
+extension/src/core/execLedgerState.ts
+extension/src/command/execLedgerQuickPick.ts

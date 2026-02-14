@@ -1,0 +1,10 @@
+artifacts_BEGIN
+Γ£ô Phase 14 verification PASSED
+Γ£ô Status bar shows PASS/FAIL with detailed tooltip
+Γ£ô Command ngksExecLedger.openLatestSummary defined and implemented
+Γ£ô Command ngksExecLedger.copyLatestSummary defined with config toggle
+Γ£ô Both commands integrated in status bar quick pick
+Γ£ô Extension registration completed for both commands
+Γ£ô Runner integration present
+Γ£ô File scope validation PASSED
+artifacts_END

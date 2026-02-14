@@ -1,0 +1,7 @@
+﻿EXEC_ID=c0b4de742d9f9323
+SESSION_ID=2945d53d-49d6-4c35-b576-74b726fd5d2d
+
+ M .gitignore
+ M tools/run_phase_gates.ps1
+?? extension/src/test/verify-phase5.js
+?? tools/export_artifacts_bundle.ps1

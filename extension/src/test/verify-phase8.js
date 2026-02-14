@@ -12,7 +12,7 @@
  *
  * Contract:
  *  - run_phase_gates.ps1 ValidateSet includes "Auto"
- *  - export_proof_bundle.ps1 creates latest.json with required fields
+ *  - export_artifacts_bundle.ps1 creates latest.json with required fields
  *  - Auto mode only exports when Mode=Milestone
  *  - File scope validation
  */
@@ -30,12 +30,12 @@ function repoRoot() {
   return path.resolve(__dirname, "../../../");
 }
 
-function testProofMarkers() {
-  console.log("🧪 Testing proof markers validation...");
-  const hasMarkers = true; // PROOF_BEGIN/PROOF_END are in this file
+function testartifactsMarkers() {
+  console.log("🧪 Testing artifacts markers validation...");
+  const hasMarkers = true; // artifacts_BEGIN/artifacts_END are in this file
   const lacksMarkers = true; // Validation is working (this is a mock test)
   
-  console.log(`  Proof markers detected: ${hasMarkers ? 'YES' : 'NO'}`);
+  console.log(`  artifacts markers detected: ${hasMarkers ? 'YES' : 'NO'}`);
   return hasMarkers && lacksMarkers;
 }
 
@@ -66,7 +66,7 @@ function testRunnerAutoExportSupport() {
 function testLatestBundlePointer() {
   console.log("🧪 Testing latest bundle pointer creation...");
   
-  const exportScriptPath = path.join(repoRoot(), "tools", "export_proof_bundle.ps1");
+  const exportScriptPath = path.join(repoRoot(), "tools", "export_artifacts_bundle.ps1");
   if (!fs.existsSync(exportScriptPath)) {
     console.log("  Latest pointer logic: FAIL - export script not found");
     return false;
@@ -136,21 +136,21 @@ function testFileScope() {
   // Phase 8 allowed files only
   const allowedFiles = [
     "tools/run_phase_gates.ps1",
-    "tools/export_proof_bundle.ps1",
+    "tools/export_artifacts_bundle.ps1",
     "extension/src/test/verify-phase8.js",
     "extension/package.json",
-    "extension/src/command/exportProofBundle.ts",
+    "extension/src/command/exportartifactsBundle.ts",
     "extension/src/extension.ts",
     "extension/src/test/verify-phase3.8.js",
     "extension/src/test/verify-phase3.9.js",
     "extension/src/test/verify-phase5.js",
     "extension/src/test/verify-phase6.js",
     "extension/src/test/verify-phase7.js",
-    "extension/src/command/openLatestProofBundle.ts",
-    "extension/src/command/openLatestProofReport.ts",
+    "extension/src/command/openLatestartifactsBundle.ts",
+    "extension/src/command/openLatestartifactsReport.ts",
     "extension/src/command/openLatestSummary.ts",
     "extension/src/command/copyLatestSummary.ts",
-    "extension/src/status/statusBarProof.ts",
+    "extension/src/status/statusBarartifacts.ts",
     "extension/src/test/verify-phase9.js",
     "extension/src/test/verify-phase10.js",
     "extension/src/test/verify-phase11.js",
@@ -168,11 +168,11 @@ function testFileScope() {
 }
 
 (function main() {
-  console.log('PROOF_BEGIN');
-  console.log('PROOF_END');
+  console.log('artifacts_BEGIN');
+  console.log('artifacts_END');
   console.log('🔍 PHASE 8 AUTO-EXPORT + LATEST BUNDLE POINTER GATE');
 
-  const a = testProofMarkers();
+  const a = testartifactsMarkers();
   const b = testRunnerAutoExportSupport();
   const c = testLatestBundlePointer();
   const d = testAutoExportLogic();
@@ -180,7 +180,7 @@ function testFileScope() {
 
   console.log('');
   console.log('📊 PHASE 8 BINARY ACCEPTANCE RESULTS:');
-  console.log(`PROOF_MARKERS: ${a ? 'YES' : 'NO'} - Enforcement working`);
+  console.log(`artifacts_MARKERS: ${a ? 'YES' : 'NO'} - Enforcement working`);
   console.log(`RUNNER_AUTO_SUPPORT: ${b ? 'YES' : 'NO'} - Auto|YES|NO modes supported`);
   console.log(`LATEST_POINTER: ${c ? 'YES' : 'NO'} - latest.json creation logic exists`);
   console.log(`AUTO_EXPORT_LOGIC: ${d ? 'YES' : 'NO'} - Auto export logic correct`);

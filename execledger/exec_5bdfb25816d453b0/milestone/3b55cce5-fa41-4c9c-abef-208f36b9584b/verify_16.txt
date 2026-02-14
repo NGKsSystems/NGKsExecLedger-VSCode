@@ -1,0 +1,33 @@
+EXEC_ID=5bdfb25816d453b0
+SESSION_ID=3b55cce5-fa41-4c9c-abef-208f36b9584b
+
+artifacts_BEGIN
+--- TASK_A: Integrity hashing + integrity.json ---
+  integrity.json in exporter: YES
+  integrity_path in latest.json: YES
+  SHA256 hashing: YES
+--- TASK_B: Schema validation ---
+  validateLatestJson function: YES
+  validateIntegrityJson function: YES
+  Schema interfaces: YES
+--- TASK_C: Drift detection ---
+  detectDrift function: YES
+  SHA256 computation: YES
+  Mismatch reporting: YES
+--- TASK_D: Status bar WARN/FAIL states ---
+  WARN state: YES
+  Warning icon: YES
+  Drift detection integration: YES
+  Integrity tooltip info: YES
+--- TASK_E: Verification gate ---
+  verify-phase16.js exists: YES
+--- TASK_F: Runner integration ---
+  VERIFY_16 in runner: YES
+--- File Scope Validation ---
+  File scope: YES
+
+==== SUMMARY ====
+OVERALL: FAIL
+✗ Phase 16 verification FAILED:
+  - Phase 16 scope violation: unexpected files modified: extension/pnpm-lock.yaml, .ngkssys/
+artifacts_END

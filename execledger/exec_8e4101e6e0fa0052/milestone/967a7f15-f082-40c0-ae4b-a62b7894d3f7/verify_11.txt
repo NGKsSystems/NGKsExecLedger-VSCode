@@ -1,0 +1,13 @@
+EXEC_ID=8e4101e6e0fa0052
+SESSION_ID=967a7f15-f082-40c0-ae4b-a62b7894d3f7
+
+artifacts_BEGIN
+✓ Phase 11 verification PASSED
+✓ Command ngksExecLedger.openLatestartifactsReport defined
+✓ Configuration execLedger.artifacts.copyReportToClipboard defined
+✓ Command implementation exists with report.txt opening logic
+✓ Optional clipboard copy functionality present
+✓ Extension registration completed
+✓ Runner integration present
+✓ File scope validation PASSED
+artifacts_END

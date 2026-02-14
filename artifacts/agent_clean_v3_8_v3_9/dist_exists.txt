@@ -1,0 +1,2 @@
+extension/dist/util/artifactsEnforcer.js => True
+extension/dist/util/proofEnforcer.js => False

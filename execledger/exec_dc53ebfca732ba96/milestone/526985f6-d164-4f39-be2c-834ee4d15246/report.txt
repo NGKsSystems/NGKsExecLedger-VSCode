@@ -1,0 +1,45 @@
+ExecLedger artifacts Report
+
+EXEC_ID: dc53ebfca732ba96
+SESSION_ID: 526985f6-d164-4f39-be2c-834ee4d15246
+MODE: Milestone
+UTC_TIMESTAMP: 2026-02-10T20:47:18Z
+
+artifacts_DIR: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_dc53ebfca732ba96\milestone\526985f6-d164-4f39-be2c-834ee4d15246
+BUNDLE_ZIP: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_dc53ebfca732ba96____526985f6-d164-4f39-be2c-834ee4d15246.zip
+BUNDLE_MANIFEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\exec_dc53ebfca732ba96____526985f6-d164-4f39-be2c-834ee4d15246.manifest.json
+BUNDLE_LATEST: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\bundles\latest.json
+
+GATE_RESULTS:
+  COMPILE: True
+  VERIFY_3_7: True
+  VERIFY_3_8: False
+  VERIFY_3_9: True
+  VERIFY_5: True
+  VERIFY_6: True
+  VERIFY_7: True
+  VERIFY_8: True
+  VERIFY_9: True
+  VERIFY_10: True
+  VERIFY_11: True
+  VERIFY_12: True
+  VERIFY_13: True
+  FAIL_REASONS: 
+VERIFY_3_8_FAILED
+
+CHANGED_FILES:
+  - EXEC_ID=dc53ebfca732ba96
+  - SESSION_ID=526985f6-d164-4f39-be2c-834ee4d15246
+  - extension/package.json
+  - extension/src/extension.ts
+  - extension/src/test/verify-phase10.js
+  - extension/src/test/verify-phase11.js
+  - extension/src/test/verify-phase12.js
+  - extension/src/test/verify-phase3.8.js
+  - extension/src/test/verify-phase3.9.js
+  - extension/src/test/verify-phase5.js
+  - extension/src/test/verify-phase6.js
+  - extension/src/test/verify-phase7.js
+  - extension/src/test/verify-phase8.js
+  - extension/src/test/verify-phase9.js
+  - tools/run_phase_gates.ps1

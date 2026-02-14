@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Phase 12 verification gate - status bar latest-proof indicator + quick actions
+// Phase 12 verification gate - status bar latest-artifacts indicator + quick actions
 // This verifies all Phase 12 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -40,12 +40,12 @@ function checkFileContains(filePath, searchString, description) {
 function verifyFileScope() {
   const allowedFiles = [
     'extension/src/extension.ts', 
-    'extension/src/status/statusBarProof.ts',
-    'extension/src/command/exportProofBundle.ts',
+    'extension/src/status/statusBarArtifacts.ts',
+    'extension/src/command/exportartifactsBundle.ts',
     'extension/src/test/verify-phase12.js',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarArtifacts.ts',
     'tools/run_phase_gates.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
@@ -89,81 +89,81 @@ function verifyFileScope() {
 
 // TASK_A: Status bar module exists
 checkFileExists(
-  'extension/src/status/statusBarProof.ts',
-  'statusBarProof.ts status bar module'
+  'extension/src/status/statusBarArtifacts.ts',
+  'statusBarArtifacts.ts status bar module'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'export function initProofStatusBar',
-  'initProofStatusBar function in status bar module'
+  'extension/src/status/statusBarArtifacts.ts',
+  'export function initArtifactsStatusBar',
+  'initArtifactsStatusBar function in status bar module'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'ExecLedger: No proof',
-  'default status text for no proof'
+  'extension/src/status/statusBarArtifacts.ts',
+  'ExecLedger: No artifacts',
+  'default status text for no artifacts'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'latest.json',
   'latest.json handling logic'
 );
 
 // TASK_B: QuickPick options include all 4 actions
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Export Proof Bundle',
-  'Export Proof Bundle option in QuickPick'
+  'extension/src/status/statusBarArtifacts.ts',
+  'Run Milestone Gates',
+  'Run Milestone Gates option in QuickPick'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Open Latest Proof Bundle',
-  'Open Latest Proof Bundle option in QuickPick'
+  'extension/src/status/statusBarArtifacts.ts',
+  'Open Latest Artifacts Bundle',
+  'Open Latest artifacts Bundle option in QuickPick'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'Open Latest Proof Report',
-  'Open Latest Proof Report option in QuickPick'
+  'extension/src/status/statusBarArtifacts.ts',
+  'Open Latest Report',
+  'Open Latest artifacts Report option in QuickPick'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'Reveal latest.json',
   'Reveal latest.json option in QuickPick'
 );
 
 // TASK_C: Watcher exists
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'FileSystemWatcher',
   'file system watcher for latest.json'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarArtifacts.ts',
   'setupLatestJsonWatcher',
   'watcher setup function'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
-  'refreshProofStatus',
+  'extension/src/status/statusBarArtifacts.ts',
+  'refreshArtifactsStatus',
   'refresh function for status bar'
 );
 
 // TASK_C: Export command hooks refresh (static check)
 checkFileContains(
-  'extension/src/command/exportProofBundle.ts',
+  'extension/src/command/exportartifactsBundle.ts',
   'onExportComplete',
   'export command calls refresh hook'
 );
 
 checkFileContains(
-  'extension/src/command/exportProofBundle.ts',
+  'extension/src/command/exportartifactsBundle.ts',
   'import { onExportComplete }',
   'export command imports refresh hook'
 );
@@ -171,14 +171,14 @@ checkFileContains(
 // Extension.ts wiring
 checkFileContains(
   'extension/src/extension.ts',
-  'import { initProofStatusBar }',
-  'import statement for proof status bar in extension.ts'
+  'import { initArtifactsStatusBar }',
+  'import statement for artifacts status bar in extension.ts'
 );
 
 checkFileContains(
   'extension/src/extension.ts',
-  'initProofStatusBar(context)',
-  'initialization call for proof status bar in extension.ts'
+  'initArtifactsStatusBar(context)',
+  'initialization call for artifacts status bar in extension.ts'
 );
 
 // TASK_E: Runner integration check basic structure 
@@ -199,7 +199,7 @@ verifyFileScope();
 
 if (passed) {
   console.log('✓ Phase 12 verification PASSED');
-  console.log('✓ Status bar module exists with proof indicator');
+  console.log('✓ Status bar module exists with artifacts indicator');
   console.log('✓ QuickPick options include all 4 required actions');
   console.log('✓ File system watcher and refresh behavior implemented');
   console.log('✓ Export command hooks refresh');
@@ -211,6 +211,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

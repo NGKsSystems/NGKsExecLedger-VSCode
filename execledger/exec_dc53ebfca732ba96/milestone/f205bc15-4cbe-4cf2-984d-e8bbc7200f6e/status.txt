@@ -1,0 +1,18 @@
+﻿EXEC_ID=dc53ebfca732ba96
+SESSION_ID=f205bc15-4cbe-4cf2-984d-e8bbc7200f6e
+
+ M extension/package.json
+ M extension/src/extension.ts
+ M extension/src/test/verify-phase10.js
+ M extension/src/test/verify-phase11.js
+ M extension/src/test/verify-phase12.js
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M extension/src/test/verify-phase9.js
+ M tools/run_phase_gates.ps1
+?? extension/src/command/runMilestoneGates.ts
+?? extension/src/test/verify-phase13.js

@@ -1,0 +1,27 @@
+EXEC_ID=c94ba88a63d05abe
+SESSION_ID=624dc975-a8cc-4955-83e8-c3bc481bdeb7
+
+artifacts_BEGIN
+artifacts_END
+🔍 PHASE 5 artifacts BUNDLE EXPORT + MANIFEST INTEGRITY GATE
+🧪 Testing artifacts markers validation...
+  artifacts markers detected: YES
+🧪 Testing bundle + manifest presence...
+  Manifest exists: YES
+  Zip exists: YES
+  Zip non-empty: YES
+  Manifest JSON parse: PASS
+  Required fields valid: YES
+🧪 Validating manifest file entries...
+  Entries valid: YES
+  Missing files: 0
+  Bad hashes: 0
+🧪 Testing file scope validation...
+  File scope validation: FAIL
+  Violations: extension/src/command/openLatestartifactsReport.ts
+
+📊 PHASE 5 BINARY ACCEPTANCE RESULTS:
+artifacts_MARKERS: YES - Enforcement working
+BUNDLE_PRESENT: YES - Zip + manifest present and valid
+FILE_SCOPE_VALID: NO - Phase 5 scope validated
+OVERALL: FAIL

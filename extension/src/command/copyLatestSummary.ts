@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { resolveBundlesDir, resolveArtifactRoot } from "../core/artifactPaths";
 
-interface LatestProofData {
+interface LatestartifactsData {
   exec_id: string;
   session_id: string;
   mode: string;
@@ -10,7 +11,7 @@ interface LatestProofData {
   manifest_path: string;
   created_at: string;
   // Phase 15: Optional pointer paths
-  proof_dir?: string;
+  artifacts_dir?: string;
   summary_path?: string;
   report_path?: string;
 }
@@ -33,15 +34,15 @@ async function copyLatestSummary(): Promise<void> {
   try {
     // Read ExecLedger configuration
     const config = vscode.workspace.getConfiguration("execLedger");
-    const copySummaryToClipboard = config.get<boolean>("proof.copySummaryToClipboard", true);
+    const copySummaryToClipboard = config.get<boolean>("artifacts.copySummaryToClipboard", true);
     
     if (!copySummaryToClipboard) {
       vscode.window.showWarningMessage(
-        "ExecLedger: Summary clipboard copy is disabled. Enable 'execLedger.proof.copySummaryToClipboard' setting to use this command.",
+        "ExecLedger: Summary clipboard copy is disabled. Enable 'execLedger.artifacts.copySummaryToClipboard' setting to use this command.",
         "Enable Setting"
       ).then(action => {
         if (action === "Enable Setting") {
-          vscode.commands.executeCommand("workbench.action.openSettings", "execLedger.proof.copySummaryToClipboard");
+          vscode.commands.executeCommand("workbench.action.openSettings", "execLedger.artifacts.copySummaryToClipboard");
         }
       });
       return;
@@ -50,7 +51,7 @@ async function copyLatestSummary(): Promise<void> {
     const summaryPath = getLatestSummaryPath();
     
     if (!summaryPath || !fs.existsSync(summaryPath)) {
-      vscode.window.showErrorMessage("ExecLedger: Latest summary.txt not found. Generate a proof bundle first.");
+      vscode.window.showErrorMessage("ExecLedger: Latest summary.txt not found. Generate artifacts first.");
       return;
     }
 
@@ -98,13 +99,13 @@ function getLatestSummaryPath(): string | null {
     if (!workspaceFolder) return null;
 
     const config = vscode.workspace.getConfiguration("execLedger");
-    const outputRoot = config.get<string>("proof.outputRoot", "");
+    const outputRoot = config.get<string>("artifacts.outputRoot", "");
     
     let bundlesDir: string;
     if (outputRoot.trim()) {
       bundlesDir = path.join(outputRoot.trim(), "bundles");
     } else {
-      bundlesDir = path.join(workspaceFolder.uri.fsPath, "_proof", "bundles");
+      bundlesDir = resolveBundlesDir(workspaceFolder.uri.fsPath);
     }
 
     const latestJsonPath = path.join(bundlesDir, "latest.json");
@@ -114,23 +115,23 @@ function getLatestSummaryPath(): string | null {
     }
 
     const content = fs.readFileSync(latestJsonPath, "utf8");
-    const latestData = JSON.parse(content) as LatestProofData;
+    const latestData = JSON.parse(content) as LatestartifactsData;
 
     // Phase 15: Prefer summary_path from latest.json when present
     if (latestData.summary_path && fs.existsSync(latestData.summary_path)) {
       return latestData.summary_path;
     }
 
-    // Fallback: Construct the proof directory path from components
-    let proofRootDir: string;
+    // Fallback: Construct the artifacts directory path from components
+    let artifactsRootDir: string;
     if (outputRoot.trim()) {
-      proofRootDir = outputRoot.trim();
+      artifactsRootDir = outputRoot.trim();
     } else {
-      proofRootDir = path.join(workspaceFolder.uri.fsPath, "_proof");
+      artifactsRootDir = resolveArtifactRoot(workspaceFolder.uri.fsPath).root;
     }
 
-    const proofDir = path.join(proofRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
-    const summaryPath = path.join(proofDir, "summary.txt");
+    const artifactsDir = path.join(artifactsRootDir, `exec_${latestData.exec_id}`, latestData.mode, latestData.session_id);
+    const summaryPath = path.join(artifactsDir, "summary.txt");
     
     return summaryPath;
   } catch (error) {

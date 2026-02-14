@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Phase 13 verification gate - run milestone proof gates command
+// Phase 13 verification gate - run milestone artifacts gates command
 // This verifies all Phase 13 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -42,13 +42,13 @@ function verifyFileScope() {
     'extension/package.json',
     'extension/src/extension.ts', 
     'extension/src/command/runMilestoneGates.ts',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase13.js',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
+    'tools/export_artifacts_bundle.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
     'extension/src/test/verify-phase5.js',
@@ -91,7 +91,7 @@ checkFileContains(
 
 checkFileContains(
   'extension/package.json', 
-  '"title": "ExecLedger: Run Milestone Proof Gates"',
+  '"title": "ExecLedger: Run Milestone artifacts Gates"',
   'command title in package.json'
 );
 
@@ -151,17 +151,17 @@ checkFileContains(
   'function to parse summary results'
 );
 
-// Phase 12 proof status bar refresh integration
+// Phase 12 artifacts status bar refresh integration
 checkFileContains(
   'extension/src/command/runMilestoneGates.ts',
-  'import { refreshProofStatus }',
-  'import of proof status bar refresh function'
+  'import { refreshartifactsStatus }',
+  'import of artifacts status bar refresh function'
 );
 
 checkFileContains(
   'extension/src/command/runMilestoneGates.ts',
-  'refreshProofStatus()',
-  'call to refresh proof status bar'
+  'refreshartifactsStatus()',
+  'call to refresh artifacts status bar'
 );
 
 // TASK_C: Extension.ts registers the command
@@ -198,7 +198,7 @@ if (passed) {
   console.log('✓ Command ngksExecLedger.runMilestoneGates defined');
   console.log('✓ Implementation file exists with PowerShell runner invocation');
   console.log('✓ Summary reading and parsing logic implemented');
-  console.log('✓ Phase 12 proof status bar refresh integration present');
+  console.log('✓ Phase 12 artifacts status bar refresh integration present');
   console.log('✓ Extension registration completed');
   console.log('✓ Runner integration present');
   console.log('✓ File scope validation PASSED');
@@ -207,6 +207,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

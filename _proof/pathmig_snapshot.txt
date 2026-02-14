@@ -1,0 +1,28 @@
+ M extension/package.json
+ M extension/src/command/copyLatestSummary.ts
+ M extension/src/command/openLatestProofBundle.ts
+ M extension/src/command/openLatestProofReport.ts
+ M extension/src/command/openLatestSummary.ts
+ M extension/src/extension.ts
+ M extension/src/status/statusBarProof.ts
+?? desktop-companion/
+?? execledger/
+?? extension/src/command/execLedgerQuickPick.ts
+?? extension/src/core/retrievalController.ts
+?? extension/src/core/tierEngine.ts
+?? extension/src/test/verify-phaseArtifactsMigration.js
+?? extension/src/test/verify-phaseDesktopBoundary.js
+?? extension/src/test/verify-phaseRetrievalController.js
+?? extension/src/test/verify-phaseStatusBarGating.js
+?? extension/src/test/verify-phaseTierEngine.js
+?? extension/src/utils/
+extension/package.json
+extension/src/command/copyLatestSummary.ts
+extension/src/command/openLatestProofBundle.ts
+extension/src/command/openLatestProofReport.ts
+extension/src/command/openLatestSummary.ts
+extension/src/extension.ts
+extension/src/status/statusBarProof.ts
+v25.4.0
+Python 3.13.5
+10.28.2

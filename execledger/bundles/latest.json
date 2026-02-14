@@ -1,0 +1,15 @@
+{
+    "exec_id":  "012983dea6dbc91c",
+    "session_id":  "a26f61cd-e679-4c07-acb6-0708f346dbbd",
+    "mode":  "milestone",
+    "zip_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/bundles/exec_012983dea6dbc91c__milestone__a26f61cd-e679-4c07-acb6-0708f346dbbd.zip",
+    "manifest_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/bundles/exec_012983dea6dbc91c__milestone__a26f61cd-e679-4c07-acb6-0708f346dbbd.manifest.json",
+    "created_at":  "2026-02-11T18:59:00.7075016Z",
+    "artifacts_dir":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd",
+    "summary_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd/summary.txt",
+    "report_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd/report.txt",
+    "diff_name_only_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd/diff_name_only.txt",
+    "status_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd/status.txt",
+    "compile_log_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/exec_012983dea6dbc91c/milestone/a26f61cd-e679-4c07-acb6-0708f346dbbd/compile.txt",
+    "integrity_path":  "C:/Users/suppo/Desktop/NGKsSystems/ngks-vscode-autologger/_artifacts/bundles/integrity.json"
+}

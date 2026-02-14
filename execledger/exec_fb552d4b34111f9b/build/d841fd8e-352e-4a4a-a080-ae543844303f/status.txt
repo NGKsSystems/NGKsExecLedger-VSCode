@@ -1,0 +1,16 @@
+﻿EXEC_ID=fb552d4b34111f9b
+SESSION_ID=d841fd8e-352e-4a4a-a080-ae543844303f
+
+ M extension/package.json
+ M extension/src/extension.ts
+ M extension/src/test/verify-phase10.js
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M extension/src/test/verify-phase9.js
+ M tools/run_phase_gates.ps1
+?? extension/src/command/openLatestProofReport.ts
+?? extension/src/test/verify-phase11.js

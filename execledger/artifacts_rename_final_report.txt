@@ -1,0 +1,26 @@
+ARTIFACTS RENAME VALIDATION REPORT - 02/13/2026 07:55:12
+
+=== VALIDATION TESTS ===
+Config Module: PASS - Loads successfully
+Widgets Module: PASS - No syntax errors
+ProjectEditDialog: UPDATED - Now shows Project Root with Artifacts Root preview
+
+=== FILES UPDATED ===
+desktop-companion/ui/config.py - Schema migration complete
+desktop-companion/ui/app.py - Multi-project selector + terminology updates
+desktop-companion/ui/widgets.py - ProjectEditDialog enhanced with live preview
+desktop-companion/ui/views_runs.py - UI text updated to 'Artifacts'
+desktop-companion/ui/views_session.py - UI text updated to 'Artifacts'
+desktop-companion/ui/views_exports.py - UI text updated to 'Artifacts' + function docs
+
+=== BACKWARDS COMPATIBILITY ===
+config.artifacts_root property: MAINTAINED - Returns artifacts_root from active project
+Engine integration: VERIFIED - All views receive correct artifacts_root path
+
+=== PHASE COMPLETION STATUS ===
+Phase 1: Schema Migration - COMPLETE
+Phase 2: UI Text Updates - COMPLETE
+Phase 3: ProjectEditDialog Enhancement - COMPLETE
+Phase 4: Engine Integration Verification - COMPLETE
+Phase 5: Validation - COMPLETE
+

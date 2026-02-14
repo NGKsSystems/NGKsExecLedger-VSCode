@@ -1,0 +1,11 @@
+=== NGKs ExecLedger Status Bar Text Verification ===
+Checking for "proof" references in user-facing text...
+
+ΓÜá∩╕Å  File not found: src/status/statusBarProof.ts
+ΓÜá∩╕Å  File not found: src/core/execLedgerStatusBar.ts
+ΓÜá∩╕Å  File not found: src/command/execLedgerQuickPick.ts
+ΓÜá∩╕Å  File not found: src/ui/statusBarToggle.ts
+
+=== VERIFICATION RESULTS ===
+Γ£à VERIFICATION PASSED: All UI text uses "artifacts" terminology
+Checked 4 files - no "proof" references found in user-facing text

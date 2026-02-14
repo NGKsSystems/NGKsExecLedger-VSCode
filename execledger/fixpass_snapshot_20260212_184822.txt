@@ -1,0 +1,16 @@
+=== SNAPSHOT 20260212_184822 ===
+ M extension/package.json
+ M extension/src/extension.ts
+?? desktop-companion/
+?? extension/src/command/execLedgerQuickPick.ts
+?? extension/src/core/retrievalController.ts
+?? extension/src/core/tierEngine.ts
+?? extension/src/test/verify-phaseDesktopBoundary.js
+?? extension/src/test/verify-phaseRetrievalController.js
+?? extension/src/test/verify-phaseStatusBarGating.js
+?? extension/src/test/verify-phaseTierEngine.js
+extension/package.json
+extension/src/extension.ts
+v25.4.0
+10.28.2
+11.7.0

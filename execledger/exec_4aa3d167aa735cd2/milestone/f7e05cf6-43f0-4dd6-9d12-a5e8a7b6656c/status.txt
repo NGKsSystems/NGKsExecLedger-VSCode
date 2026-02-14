@@ -1,0 +1,14 @@
+﻿EXEC_ID=4aa3d167aa735cd2
+SESSION_ID=f7e05cf6-43f0-4dd6-9d12-a5e8a7b6656c
+
+ M extension/package.json
+ M extension/src/extension.ts
+ M extension/src/test/verify-phase3.8.js
+ M extension/src/test/verify-phase3.9.js
+ M extension/src/test/verify-phase5.js
+ M extension/src/test/verify-phase6.js
+ M extension/src/test/verify-phase7.js
+ M extension/src/test/verify-phase8.js
+ M tools/run_phase_gates.ps1
+?? extension/src/command/openLatestartifactsBundle.ts
+?? extension/src/test/verify-phase9.js

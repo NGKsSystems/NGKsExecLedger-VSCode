@@ -1,0 +1,7 @@
+extension/package.json
+extension/src/command/copyLatestSummary.ts
+extension/src/command/openLatestartifactsBundle.ts
+extension/src/command/openLatestartifactsReport.ts
+extension/src/command/openLatestSummary.ts
+extension/src/extension.ts
+extension/src/status/statusBarartifacts.ts

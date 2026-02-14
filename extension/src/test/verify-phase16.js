@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -44,8 +44,8 @@ function verifyFileScope() {
     'extension/src/util/validation.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/command/openLatestProofReport.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
     'extension/src/test/verify-phase15.js',
@@ -63,7 +63,7 @@ function verifyFileScope() {
     'extension/src/test/verify-phase12.js',
     'extension/src/test/verify-phase13.js',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1'
+    'tools/export_artifacts_bundle.ps1'
   ];
 
   try {
@@ -86,25 +86,25 @@ function verifyFileScope() {
 console.log('--- TASK_A: Integrity hashing + integrity.json ---');
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'integrity.json',
   'integrity.json creation in exporter'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'integrity_path',
   'integrity_path field in latest.json'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'Get-SHA256Hex',
   'SHA256 hashing function usage for integrity'
 );
 
 checkFileContains(
-  'tools/export_proof_bundle.ps1',
+  'tools/export_artifacts_bundle.ps1',
   'hashes',
   'hashes object in integrity.json'
 );
@@ -184,43 +184,43 @@ console.log('  Mismatch reporting: YES');
 console.log('--- TASK_D: Status bar WARN/FAIL states ---');
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'WARN',
   'WARN state text in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   '$(warning)',
   'Warning icon for drift state'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'isDrifted',
   'Drift state check in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'detectDrift',
   'detectDrift integration in status bar'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'integrity_path',
-  'integrity_path field in status bar LatestProofData'
+  'integrity_path field in status bar LatestartifactsData'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'Integrity Drift Detected',
   'Drift detected message in tooltip'
 );
 
 checkFileContains(
-  'extension/src/status/statusBarProof.ts',
+  'extension/src/status/statusBarartifacts.ts',
   'Integrity',
   'Integrity info in tooltip'
 );
@@ -281,6 +281,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

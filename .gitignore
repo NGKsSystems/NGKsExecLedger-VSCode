@@ -50,8 +50,8 @@ extension/.ngkssys/
 extension/*.vsix
 *.log
 
-# Proof / scratch output (keep if you want these committed; otherwise ignore)
-_proof/
+# artifacts / scratch output (keep if you want these committed; otherwise ignore)
+_artifacts/
 
 # Universal Agent Ruleset docs (local only)
 Universal Agent Ruleset*.txt

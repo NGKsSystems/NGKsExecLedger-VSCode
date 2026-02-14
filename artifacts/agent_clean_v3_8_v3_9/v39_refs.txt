@@ -1,0 +1,41 @@
+
+> extension\src\test\verify-phase3.9.js:33:function fileScopeAllowed(changed) {
+> extension\src\test\verify-phase3.9.js:34:  const allowed = new Set([
+  extension\src\test\verify-phase3.9.js:35:    '.gitignore',
+  extension\src\test\verify-phase3.9.js:36:    'tools/run_phase_gates.ps1',
+> extension\src\test\verify-phase3.9.js:42:    'tools/export_artifacts_bundle.ps1',
+  extension\src\test\verify-phase3.9.js:43:    'extension/package.json',
+  extension\src\test\verify-phase3.9.js:44:    'extension/src/extension.ts',
+> extension\src\test\verify-phase3.9.js:45:    'extension/src/command/exportartifactsBundle.ts',
+  extension\src\test\verify-phase3.9.js:46:    'extension/src/test/verify-phase6.js',
+  extension\src\test\verify-phase3.9.js:47:    'extension/src/test/verify-phase7.js',
+> extension\src\test\verify-phase3.9.js:49:    'extension/src/command/openLatestartifactsBundle.ts',
+> extension\src\test\verify-phase3.9.js:50:    'extension/src/command/openLatestartifactsReport.ts',
+  extension\src\test\verify-phase3.9.js:51:    'extension/src/command/openLatestSummary.ts',
+  extension\src\test\verify-phase3.9.js:52:    'extension/src/command/copyLatestSummary.ts',
+> extension\src\test\verify-phase3.9.js:53:    'extension/src/status/statusBarartifacts.ts',
+  extension\src\test\verify-phase3.9.js:54:    'extension/src/test/verify-phase9.js',
+  extension\src\test\verify-phase3.9.js:55:    'extension/src/test/verify-phase10.js',
+> extension\src\test\verify-phase3.9.js:66:    'extension/src/command/exportProofBundle.ts',
+> extension\src\test\verify-phase3.9.js:67:    'extension/src/command/openLatestProofBundle.ts',
+> extension\src\test\verify-phase3.9.js:68:    'extension/src/command/openLatestProofReport.ts',
+  extension\src\test\verify-phase3.9.js:69:    'extension/src/command/runMilestoneGates.ts',
+  extension\src\test\verify-phase3.9.js:70:    'extension/src/commands/execLedgerAddGuidance.ts',
+> extension\src\test\verify-phase3.9.js:71:    'extension/src/commands/exportProofBundle.ts',
+  extension\src\test\verify-phase3.9.js:72:    'extension/src/core/autosave.ts',
+  extension\src\test\verify-phase3.9.js:73:    'extension/src/core/execLedgerState.ts',
+> extension\src\test\verify-phase3.9.js:75:    'extension/src/status/statusBarProof.ts',
+  extension\src\test\verify-phase3.9.js:76:    'extension/src/test/verify-phase3.6.js',
+  extension\src\test\verify-phase3.9.js:77:    'extension/src/test/verify-phase3.7.js',
+> extension\src\test\verify-phase3.9.js:78:    'extension/src/util/proofEnforcer.ts',
+> extension\src\test\verify-phase3.9.js:79:    'tools/export_proof_bundle.ps1',
+  extension\src\test\verify-phase3.9.js:80:    'tools/gate-commit.ps1',
+> extension\src\test\verify-phase3.9.js:81:    'tools/proof_run.ps1',
+  extension\src\test\verify-phase3.9.js:82:  ]);
+> extension\src\test\verify-phase3.9.js:83:  const violations = changed.filter(f => f && !allowed.has(f));
+  extension\src\test\verify-phase3.9.js:84:  return { pass: violations.length === 0, violations };
+  extension\src\test\verify-phase3.9.js:85:}
+> extension\src\test\verify-phase3.9.js:117:  const scope = fileScopeAllowed(diffList);
+  extension\src\test\verify-phase3.9.js:118:  okLine('  File scope validation', scope.pass ? 'PASS' : 'FAIL');
+  extension\src\test\verify-phase3.9.js:119:  if (!scope.pass) {
+

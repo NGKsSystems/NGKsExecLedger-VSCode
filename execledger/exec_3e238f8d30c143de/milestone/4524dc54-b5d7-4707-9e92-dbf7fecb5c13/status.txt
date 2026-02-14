@@ -1,0 +1,6 @@
+﻿EXEC_ID=3e238f8d30c143de
+SESSION_ID=4524dc54-b5d7-4707-9e92-dbf7fecb5c13
+
+ M tools/run_phase_gates.ps1
+?? NGKsExecLedger-clean/
+?? extension/src/test/verify-phase4.js

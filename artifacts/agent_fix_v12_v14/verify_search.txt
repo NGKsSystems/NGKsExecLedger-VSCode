@@ -1,0 +1,2 @@
+C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\test\verify-phase12.js
+C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\extension\src\test\verify-phase14.js

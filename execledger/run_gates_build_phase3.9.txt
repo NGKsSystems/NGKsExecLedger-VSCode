@@ -1,0 +1,20 @@
+MODE=Build
+artifacts_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\phase3.9_20260209_200517
+
+=== GIT_STATUS ===
+git status --porcelain=v1
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\phase3.9_20260209_200517\status.txt
+
+=== GIT_DIFF_NAME_ONLY ===
+git diff --name-only
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\phase3.9_20260209_200517\diff_name_only.txt
+powershell : warning: in the working copy of '.gitignore', LF will be replaced 
+by CRLF the next time Git touches it
+At C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\tools\run_phase_ga
+tes.ps1:21 char:3
++   powershell -NoProfile -ExecutionPolicy Bypass -Command $cmd *> $out ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: in the... Git touches it 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

@@ -1,35 +1,35 @@
 // BINARY ACCEPTANCE TEST - Run with: node src/test/verify-phase3.6.js
-// Tests the Phase 3.6 Proof Enforcement & Anti-Lie Guards
+// Tests the Phase 3.6 artifacts Enforcement & Anti-Lie Guards
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { validateProofMarkers, validateFileScope, detectTruncation, enforceProofContract } = require('../../dist/util/proofEnforcer');
+const { validateartifactsMarkers, validateFileScope, detectTruncation, enforceartifactsContract } = require('../../dist/util/artifactsEnforcer');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
-function testProofMarkers() {
-  console.log('🧪 Testing proof markers validation...');
+function testartifactsMarkers() {
+  console.log('🧪 Testing artifacts markers validation...');
   
   // Test valid output with markers
   const validOutput = `Some output
-PROOF_BEGIN
+artifacts_BEGIN
 command output here
-PROOF_END
+artifacts_END
 more output`;
   
-  const validResult = validateProofMarkers(validOutput);
-  console.log(`echo "Testing proof markers with valid output"`);
-  console.log(`  Proof markers detected: ${validResult ? 'YES' : 'NO'}`);
+  const validResult = validateartifactsMarkers(validOutput);
+  console.log(`echo "Testing artifacts markers with valid output"`);
+  console.log(`  artifacts markers detected: ${validResult ? 'YES' : 'NO'}`);
   
   // Test invalid output without markers
   const invalidOutput = `Some output
-no proof markers here
+no artifacts markers here
 just regular content`;
   
-  const invalidResult = validateProofMarkers(invalidOutput);
-  console.log(`echo "Testing proof markers with invalid output"`);
-  console.log(`  Proof markers missing (expected): ${!invalidResult ? 'YES' : 'NO'}`);
+  const invalidResult = validateartifactsMarkers(invalidOutput);
+  console.log(`echo "Testing artifacts markers with invalid output"`);
+  console.log(`  artifacts markers missing (expected): ${!invalidResult ? 'YES' : 'NO'}`);
   
   return validResult && !invalidResult;
 }
@@ -40,7 +40,7 @@ function testFileScopeValidation() {
   // Test with current allowed files for Phase 3.6
   const allowedFiles = [
     'extension/src/test/verify-phase3.6.js',
-    'extension/src/util/proofEnforcer.ts'
+    'extension/src/util/artifactsEnforcer.ts'
   ];
   
   console.log(`git diff --name-only`);
@@ -81,32 +81,32 @@ function testTruncationDetection() {
   return hasTruncation && noTruncation;
 }
 
-function testProofContract() {
-  console.log('🧪 Testing complete proof contract...');
+function testartifactsContract() {
+  console.log('🧪 Testing complete artifacts contract...');
   
   const mockOutput = `Test output
-PROOF_BEGIN
+artifacts_BEGIN
 pwd
 C:\\Users\\suppo\\Desktop\\NGKsSystems\\ngks-vscode-autologger\\extension
 git status
 On branch master
-PROOF_END`;
+artifacts_END`;
   
   const allowedFiles = [
     'extension/src/test/verify-phase3.6.js',
-    'extension/src/util/proofEnforcer.ts'
+    'extension/src/util/artifactsEnforcer.ts'
   ];
   
   const cleanPaths = [
     'C:\\Users\\suppo\\Desktop\\NGKsSystems\\ngks-vscode-autologger\\extension'
   ];
   
-  console.log(`echo "Testing complete proof contract"`);
-  const contract = enforceProofContract(mockOutput, allowedFiles, cleanPaths);
+  console.log(`echo "Testing complete artifacts contract"`);
+  const contract = enforceartifactsContract(mockOutput, allowedFiles, cleanPaths);
   
-  const allValid = contract.hasProofMarkers && contract.fileScopeValid && contract.noTruncation;
-  console.log(`  Proof contract validation: ${allValid ? 'PASS' : 'FAIL'}`);
-  console.log(`    Proof markers: ${contract.hasProofMarkers ? 'YES' : 'NO'}`);
+  const allValid = contract.hasartifactsMarkers && contract.fileScopeValid && contract.noTruncation;
+  console.log(`  artifacts contract validation: ${allValid ? 'PASS' : 'FAIL'}`);
+  console.log(`    artifacts markers: ${contract.hasartifactsMarkers ? 'YES' : 'NO'}`);
   console.log(`    File scope: ${contract.fileScopeValid ? 'YES' : 'NO'}`);
   console.log(`    No truncation: ${contract.noTruncation ? 'YES' : 'NO'}`);
   
@@ -116,21 +116,21 @@ PROOF_END`;
 function verify() {
   console.log('🔍 PHASE 3.6 BINARY ACCEPTANCE TEST\n');
   
-  const testA = testProofMarkers();
+  const testA = testartifactsMarkers();
   const testB = testFileScopeValidation();  
   const testC = testTruncationDetection();
-  const testD = testProofContract();
+  const testD = testartifactsContract();
   
   console.log('\n📊 BINARY ACCEPTANCE RESULTS:');
-  console.log(`PROOF_MARKERS: ${testA ? 'YES' : 'NO'} - Enforcement working`);
+  console.log(`artifacts_MARKERS: ${testA ? 'YES' : 'NO'} - Enforcement working`);
   console.log(`FILE_SCOPE_AUTO_FAIL: ${testB ? 'YES' : 'NO'} - Scope validation working`);
   console.log(`TRUNCATION_GUARD: ${testC ? 'YES' : 'NO'} - Truncation detection working`);
-  console.log(`PROOF_CONTRACT: ${testD ? 'YES' : 'NO'} - Complete contract working`);
+  console.log(`artifacts_CONTRACT: ${testD ? 'YES' : 'NO'} - Complete contract working`);
   
   const allPass = testA && testB && testC && testD;
   console.log(`OVERALL: ${allPass ? 'PASS' : 'FAIL'}`);
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 verify();

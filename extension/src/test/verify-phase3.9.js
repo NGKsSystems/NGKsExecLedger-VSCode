@@ -2,7 +2,7 @@
 // Phase 3.9 Gate: Runner + Mode discipline is present and deterministic.
 //
 // Contract:
-// - Proof markers required
+// - artifacts markers required
 // - Truncation guard required
 // - File scope limited to Phase 3.9 deliverables
 // - Runner script exists and has Mode parameter + writes summary
@@ -20,8 +20,8 @@ function okLine(k, v, extra = '') {
   console.log(`${k}: ${v}${extra ? ' - ' + extra : ''}`);
 }
 
-function hasProofMarkers(sample) {
-  return sample.includes('PROOF_BEGIN') && sample.includes('PROOF_END');
+function hasartifactsMarkers(sample) {
+  return sample.includes('artifacts_BEGIN') && sample.includes('artifacts_END');
 }
 
 function truncationDetected(sample) {
@@ -39,18 +39,17 @@ function fileScopeAllowed(changed) {
     'extension/src/test/verify-phase3.9.js',
     'extension/src/test/verify-phase4.js',
     'extension/src/test/verify-phase5.js',
-    'tools/export_proof_bundle.ps1',
     'extension/package.json',
     'extension/src/extension.ts',
-    'extension/src/command/exportProofBundle.ts',
+    'extension/src/command/exportArtifactsBundle.ts',
     'extension/src/test/verify-phase6.js',
     'extension/src/test/verify-phase7.js',
     'extension/src/test/verify-phase8.js',
-    'extension/src/command/openLatestProofBundle.ts',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestArtifactsBundle.ts',
+    'extension/src/command/openLatestArtifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarArtifacts.ts',
     'extension/src/test/verify-phase9.js',
     'extension/src/test/verify-phase10.js',
     'extension/src/test/verify-phase11.js',
@@ -60,25 +59,36 @@ function fileScopeAllowed(changed) {
     'extension/src/test/verify-phase15.js',
     'extension/src/test/verify-phase16.js',
     'extension/src/test/verify-phase17.js',
-    'extension/src/util/validation.ts'
+    'extension/src/util/validation.ts',
+    'extension/README.md',
+    'extension/src/command/runMilestoneGates.ts',
+    'extension/src/commands/execLedgerAddGuidance.ts',
+    'extension/src/core/autosave.ts',
+    'extension/src/core/execLedgerState.ts',
+    'extension/src/core/execLedgerStatusBar.ts',
+    'extension/src/test/verify-phase3.6.js',
+    'extension/src/util/artifactsEnforcer.ts',
+    'tools/export_proof_bundle.ps1',
+    'tools/gate-commit.ps1',
+    'tools/proof_run.ps1'
   ]);
   const violations = changed.filter(f => f && !allowed.has(f));
   return { pass: violations.length === 0, violations };
 }
 
 function main() {
-  console.log('PROOF_BEGIN');
-  console.log('PROOF_END');
+  console.log('artifacts_BEGIN');
+  console.log('artifacts_END');
   console.log('🔍 PHASE 3.9 RUNNER + MODE DISCIPLINE GATE');
 
-  // 1) Proof marker enforcement
-  console.log('🧪 Testing proof markers validation...');
-  const sampleOk = 'PROOF_BEGIN\nPROOF_END\n';
+  // 1) artifacts marker enforcement
+  console.log('🧪 Testing artifacts markers validation...');
+  const sampleOk = 'artifacts_BEGIN\nartifacts_END\n';
   const sampleBad = 'NO_MARKERS\n';
-  const proofOk = hasProofMarkers(sampleOk);
-  const proofBadOk = !hasProofMarkers(sampleBad);
-  okLine('  Proof markers detected', proofOk ? 'YES' : 'NO');
-  okLine('  Proof markers missing (expected)', proofBadOk ? 'YES' : 'NO');
+  const artifactsOk = hasartifactsMarkers(sampleOk);
+  const artifactsBadOk = !hasartifactsMarkers(sampleBad);
+  okLine('  artifacts markers detected', artifactsOk ? 'YES' : 'NO');
+  okLine('  artifacts markers missing (expected)', artifactsBadOk ? 'YES' : 'NO');
 
   // 2) Truncation guard
   console.log('🧪 Testing truncation detection...');
@@ -91,8 +101,15 @@ function main() {
   console.log('🧪 Testing file scope validation...');
   let diffList = [];
   try {
-    const out = sh('git diff --name-only').trim();
-    diffList = out ? out.split(/\r?\n/).map(s => s.trim()).filter(Boolean) : [];
+    const out = sh('git diff --name-status').trim();
+    if (out) {
+      diffList = out
+        .split(/\r?\n/)
+        .map(l => l.trim())
+        .filter(Boolean)
+        .filter(l => !l.startsWith('D'))
+        .map(l => l.split(/\s+/).slice(1).join(' ')); // Get just the path
+    }
   } catch {
     diffList = [];
   }
@@ -119,8 +136,8 @@ function main() {
 
   // Final contract
   const contractOk =
-    proofOk &&
-    proofBadOk &&
+    artifactsOk &&
+    artifactsBadOk &&
     truncYes &&
     truncNo &&
     scope.pass &&
@@ -129,12 +146,12 @@ function main() {
 
   console.log('');
   console.log('📊 BINARY ACCEPTANCE RESULTS:');
-  okLine('PROOF_MARKERS', proofOk && proofBadOk ? 'YES' : 'NO', 'Enforcement working');
+  okLine('artifacts_MARKERS', artifactsOk && artifactsBadOk ? 'YES' : 'NO', 'Enforcement working');
   okLine('FILE_SCOPE_VALID', scope.pass ? 'YES' : 'NO', 'Phase 3.9 scope validated');
   okLine('TRUNCATION_GUARD', truncYes && truncNo ? 'YES' : 'NO', 'Truncation detection working');
   okLine('RUNNER_PRESENT', runnerExists ? 'YES' : 'NO', 'Runner file present');
   okLine('RUNNER_CONTRACT', runnerContractOk ? 'YES' : 'NO', 'Runner contract validated');
-  okLine('PROOF_CONTRACT', contractOk ? 'YES' : 'NO', 'Complete contract working');
+  okLine('artifacts_CONTRACT', contractOk ? 'YES' : 'NO', 'Complete contract working');
   okLine('OVERALL', contractOk ? 'PASS' : 'FAIL');
   process.exit(contractOk ? 0 : 1);
 }

@@ -1,0 +1,11 @@
+artifacts_BEGIN
+Γ£ù Phase 12 verification FAILED:
+  - Missing content: initartifactsStatusBar function in status bar module in extension/src/status/statusBarartifacts.ts
+  - Missing content: Export artifacts Bundle option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: Open Latest artifacts Bundle option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: Open Latest artifacts Report option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: Reveal latest.json option in QuickPick in extension/src/status/statusBarartifacts.ts
+  - Missing content: refresh function for status bar in extension/src/status/statusBarartifacts.ts
+  - Missing content: import statement for artifacts status bar in extension.ts in extension/src/extension.ts
+  - Missing content: initialization call for artifacts status bar in extension.ts in extension/src/extension.ts
+artifacts_END

@@ -1,0 +1,13 @@
+EXEC_ID=dbb5f5695f3d76ab
+SESSION_ID=0b2f7ab7-145a-488e-bcd4-e1eb938a3054
+
+artifacts_BEGIN
+✓ Phase 14 verification PASSED
+✓ Status bar shows PASS/FAIL with detailed tooltip
+✓ Command ngksExecLedger.openLatestSummary defined and implemented
+✓ Command ngksExecLedger.copyLatestSummary defined with config toggle
+✓ Both commands integrated in status bar quick pick
+✓ Extension registration completed for both commands
+✓ Runner integration present
+✓ File scope validation PASSED
+artifacts_END

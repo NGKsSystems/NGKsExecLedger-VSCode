@@ -1,0 +1,101 @@
+MODE=Milestone
+EXEC_ID=012983dea6dbc91c
+SESSION_ID=c42c1778-afa0-4894-8199-3f0cf543a589
+artifacts_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589
+
+=== GIT_STATUS ===
+git status --porcelain=v1
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\status.txt
+
+=== GIT_DIFF_NAME_ONLY ===
+git diff --name-only
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\diff_name_only.txt
+
+=== COMPILE ===
+pnpm --dir extension run compile
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\compile.txt
+
+=== VERIFY_3_7 ===
+node extension/src/test/verify-phase3.7.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_3_7.txt
+
+=== VERIFY_3_8 ===
+node extension/src/test/verify-phase3.8.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_3_8.txt
+
+=== VERIFY_3_9 ===
+node extension/src/test/verify-phase3.9.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_3_9.txt
+
+==== SUMMARY ====
+EXEC_ID=012983dea6dbc91c
+SESSION_ID=c42c1778-afa0-4894-8199-3f0cf543a589
+MODE=Milestone
+COMPILE_OK=True
+VERIFY_3_7_OK=True
+VERIFY_3_8_OK=True
+VERIFY_3_8_ADVISORY_SCOPE_ONLY=False
+VERIFY_3_9_OK=True
+FAIL_REASONS=None
+artifacts_DIR=C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589
+=== VERIFY_5 ===
+node extension/src/test/verify-phase5.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_5.txt
+
+=== VERIFY_6 ===
+node extension/src/test/verify-phase6.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_6.txt
+
+=== VERIFY_7 ===
+node extension/src/test/verify-phase7.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_7.txt
+
+=== VERIFY_8 ===
+node extension/src/test/verify-phase8.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_8.txt
+
+=== VERIFY_9 ===
+node extension/src/test/verify-phase9.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_9.txt
+
+=== VERIFY_10 ===
+node extension/src/test/verify-phase10.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_10.txt
+
+=== VERIFY_11 ===
+node extension/src/test/verify-phase11.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_11.txt
+
+=== VERIFY_12 ===
+node extension/src/test/verify-phase12.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_12.txt
+
+=== VERIFY_13 ===
+node extension/src/test/verify-phase13.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_13.txt
+
+=== VERIFY_14 ===
+node extension/src/test/verify-phase14.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_14.txt
+
+=== VERIFY_15 ===
+node extension/src/test/verify-phase15.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_15.txt
+
+=== VERIFY_16 ===
+node extension/src/test/verify-phase16.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_16.txt
+
+=== VERIFY_17 ===
+node extension/src/test/verify-phase17.js
+-> C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\verify_17.txt
+Generated report: C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\_artifacts\exec_012983dea6dbc91c\milestone\c42c1778-afa0-4894-8199-3f0cf543a589\report.txt
+True
+=== EXPORT_BUNDLE ===
+The argument 'C:\Users\suppo\Desktop\NGKsSystems\ngks-vscode-autologger\tools\export_artifacts_bundle.ps1' to the -File parameter does not exist. Provide the path to an existing '.ps1' file as an argument to the -File parameter.
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+

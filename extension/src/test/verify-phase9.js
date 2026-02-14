@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Phase 9 verification gate - command to open latest proof bundle
+// Phase 9 verification gate - command to open latest artifacts bundle
 // This verifies all Phase 9 deliverables are correctly implemented
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('PROOF_BEGIN');
+console.log('artifacts_BEGIN');
 
 let passed = true;
 const failures = [];
@@ -41,15 +41,15 @@ function verifyFileScope() {
   const allowedFiles = [
     'extension/package.json',
     'extension/src/extension.ts', 
-    'extension/src/command/openLatestProofBundle.ts',
-    'extension/src/command/openLatestProofReport.ts',
+    'extension/src/command/openLatestartifactsBundle.ts',
+    'extension/src/command/openLatestartifactsReport.ts',
     'extension/src/command/openLatestSummary.ts',
     'extension/src/command/copyLatestSummary.ts',
     'extension/src/command/runMilestoneGates.ts',
-    'extension/src/status/statusBarProof.ts',
+    'extension/src/status/statusBarartifacts.ts',
     'extension/src/test/verify-phase9.js',
     'tools/run_phase_gates.ps1',
-    'tools/export_proof_bundle.ps1',
+    'tools/export_artifacts_bundle.ps1',
     'extension/src/test/verify-phase3.8.js',
     'extension/src/test/verify-phase3.9.js', 
     'extension/src/test/verify-phase5.js',
@@ -86,36 +86,36 @@ function verifyFileScope() {
 // TASK_A: Command exists in package.json
 checkFileContains(
   'extension/package.json',
-  '"command": "ngksExecLedger.openLatestProofBundle"',
+  '"command": "ngksExecLedger.openLatestartifactsBundle"',
   'command definition in package.json'
 );
 
 checkFileContains(
   'extension/package.json', 
-  '"title": "ExecLedger: Open Latest Proof Bundle"',
+  '"title": "ExecLedger: Open Latest artifacts Bundle"',
   'command title in package.json'
 );
 
 // TASK_B: Command file exists with correct structure
 checkFileExists(
-  'extension/src/command/openLatestProofBundle.ts',
-  'openLatestProofBundle.ts command file'
+  'extension/src/command/openLatestartifactsBundle.ts',
+  'openLatestartifactsBundle.ts command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
-  'export function registerOpenLatestProofBundleCommand',
+  'extension/src/command/openLatestartifactsBundle.ts',
+  'export function registerOpenLatestartifactsBundleCommand',
   'register function in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
-  '"ngksExecLedger.openLatestProofBundle"',
+  'extension/src/command/openLatestartifactsBundle.ts',
+  '"ngksExecLedger.openLatestartifactsBundle"',
   'correct command id in command file'
 );
 
 checkFileContains(
-  'extension/src/command/openLatestProofBundle.ts',
+  'extension/src/command/openLatestartifactsBundle.ts',
   'latest.json',
   'latest.json reading logic'
 );
@@ -123,13 +123,13 @@ checkFileContains(
 // TASK_C: Extension.ts registers the command
 checkFileContains(
   'extension/src/extension.ts',
-  'import { registerOpenLatestProofBundleCommand }',
+  'import { registerOpenLatestartifactsBundleCommand }',
   'import statement in extension.ts'
 );
 
 checkFileContains(
   'extension/src/extension.ts',
-  'registerOpenLatestProofBundleCommand(context)',
+  'registerOpenLatestartifactsBundleCommand(context)',
   'command registration in extension.ts'
 );
 
@@ -151,7 +151,7 @@ verifyFileScope();
 
 if (passed) {
   console.log('✓ Phase 9 verification PASSED');
-  console.log('✓ Command ngksExecLedger.openLatestProofBundle defined');
+  console.log('✓ Command ngksExecLedger.openLatestartifactsBundle defined');
   console.log('✓ Command implementation exists with latest.json logic');
   console.log('✓ Extension registration completed');
   console.log('✓ Runner integration present');
@@ -161,6 +161,6 @@ if (passed) {
   failures.forEach(failure => console.log(`  - ${failure}`));
 }
 
-console.log('PROOF_END');
+console.log('artifacts_END');
 
 process.exit(passed ? 0 : 1);

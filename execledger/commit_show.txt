@@ -1,0 +1,9 @@
+commit b902ab37c47c6533d97a9b0e4ec67eee6a1e0ccb
+Author: Gene <support@ngkssystems.com>
+Date:   Mon Feb 9 21:35:53 2026 +0300
+
+    Milestone: Phase 3.7ΓÇô3.9 integration hardening + artifacts runner
+
+.gitignore
+extension/src/test/verify-phase3.9.js
+tools/run_phase_gates.ps1

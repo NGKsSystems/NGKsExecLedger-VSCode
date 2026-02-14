@@ -13,7 +13,7 @@ export enum TaskState {
  */
 export enum StepState {
   GUIDANCE_CAPTURED = 'GUIDANCE_CAPTURED',
-  AWAITING_PROOF = 'AWAITING_PROOF',
+  AWAITING_ARTIFACTS = 'AWAITING_ARTIFACTS',
   VALIDATING = 'VALIDATING',
   COMPLIANT = 'COMPLIANT',
   NON_COMPLIANT = 'NON_COMPLIANT',
@@ -72,7 +72,7 @@ export interface TaskMeta {
  */
 export interface LedgerEvent {
   ts: string;
-  kind: 'TASK_OPENED' | 'GUIDANCE_ADDED' | 'PROOF_RECEIVED' | 'TASK_SEALED' | 'STEP_STATE_CHANGED';
+  kind: 'TASK_OPENED' | 'GUIDANCE_ADDED' | 'artifacts_RECEIVED' | 'TASK_SEALED' | 'STEP_STATE_CHANGED';
   sessionId: string;
   taskId?: string;
   step?: number;
@@ -97,8 +97,8 @@ export function canTransitionStepState(from: StepState | undefined, to: StepStat
     return to === StepState.GUIDANCE_CAPTURED;
   }
   const allowed: Record<StepState, StepState[]> = {
-    [StepState.GUIDANCE_CAPTURED]: [StepState.AWAITING_PROOF],
-    [StepState.AWAITING_PROOF]: [StepState.VALIDATING],
+    [StepState.GUIDANCE_CAPTURED]: [StepState.AWAITING_ARTIFACTS],
+    [StepState.AWAITING_ARTIFACTS]: [StepState.VALIDATING],
     [StepState.VALIDATING]: [StepState.COMPLIANT, StepState.NON_COMPLIANT],
     [StepState.COMPLIANT]: [],
     [StepState.NON_COMPLIANT]: [],
